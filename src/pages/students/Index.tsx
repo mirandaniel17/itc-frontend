@@ -11,25 +11,18 @@ import Pagination from "../../components/Pagination";
 import AddButton from "../../components/AddButton";
 import Modal from "../../components/Modal";
 import StudentForm from "../../components/StudentForm";
-
-interface Student {
-  id: number;
-  last_name: string;
-  second_last_name: string;
-  first_name: string;
-  second_name: string;
-  dateofbirth: string;
-  placeofbirth: string;
-  phone: string;
-  gender: string;
-  status: boolean;
-}
+import ConfirmationModal from "../../components/ConfirmationModal";
+import { Student } from "../../types/student";
+import { formatDate } from "../../utils/dateUtils";
 
 const Index = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<number | null>(null);
 
   const fetchStudents = async (page: number) => {
     try {
@@ -58,58 +51,87 @@ const Index = () => {
     fetchStudents(currentPage);
   }, [currentPage]);
 
-  const handleEdit = (id: number) => {
-    alert(`Edit clicked for student with id: ${id}`);
+  const handleEdit = (student: Student) => {
+    setSelectedStudent(student);
+    setIsModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    alert(`Delete clicked for student with id: ${id}`);
+  const handleDeleteClick = (id: number) => {
+    setStudentToDelete(id);
+    setIsConfirmationModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (studentToDelete !== null) {
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/students/${studentToDelete}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Student deleted successfully:", data);
+        setIsConfirmationModalOpen(false);
+        setStudentToDelete(null);
+        fetchStudents(currentPage);
+      } catch (error) {
+        console.error("Error deleting student:", error);
+      }
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsConfirmationModalOpen(false);
+    setStudentToDelete(null);
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = date.getUTCDate();
-    const month = date.toLocaleString("es-ES", { month: "long" });
-    const year = date.getUTCFullYear();
-    return `${day} de ${month} de ${year}`;
-  };
-
   const handleNew = () => {
+    setSelectedStudent(null);
     setIsModalOpen(true);
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setSelectedStudent(null);
   };
 
   const handleStudentSubmit = async (formData: any) => {
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/register-student",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(formData),
-        }
-      );
+      const method = selectedStudent ? "PUT" : "POST";
+      const url = selectedStudent
+        ? `http://127.0.0.1:8000/api/students/${selectedStudent.id}`
+        : "http://127.0.0.1:8000/api/students";
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Student registered successfully:", data);
+      console.log("Student saved successfully:", data);
       setIsModalOpen(false);
       fetchStudents(currentPage);
     } catch (error) {
-      console.error("Error registering student:", error);
+      console.error("Error saving student:", error);
     }
   };
 
@@ -150,8 +172,8 @@ const Index = () => {
                   </TableCell>
                   <TableCell>{formatDate(student.dateofbirth)}</TableCell>
                   <TableActionButtons
-                    onEdit={() => handleEdit(student.id)}
-                    onDelete={() => handleDelete(student.id)}
+                    onEdit={() => handleEdit(student)}
+                    onDelete={() => handleDeleteClick(student.id)}
                   />
                 </TableRow>
               ))}
@@ -165,12 +187,26 @@ const Index = () => {
         </div>
       </div>
       <Modal
-        title="FORMULARIO DE REGISTRO DE ESTUDIANTE"
+        title={
+          selectedStudent
+            ? "EDITAR ESTUDIANTE"
+            : "FORMULARIO DE REGISTRO DE ESTUDIANTE"
+        }
         isVisible={isModalOpen}
         onClose={handleModalClose}
       >
-        <StudentForm onSubmit={handleStudentSubmit} />
+        <StudentForm
+          onSubmit={handleStudentSubmit}
+          initialData={selectedStudent}
+        />
       </Modal>
+
+      <ConfirmationModal
+        message="¿Estás seguro de que quieres eliminar a este estudiante?"
+        isVisible={isConfirmationModalOpen}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 };

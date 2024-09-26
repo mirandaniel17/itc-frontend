@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 interface StudentFormProps {
   onSubmit: (formData: any) => void;
+  initialData?: any; // Si está presente, estamos en modo edición
 }
 
-const StudentForm: React.FC<StudentFormProps> = ({ onSubmit }) => {
+const StudentForm: React.FC<StudentFormProps> = ({ onSubmit, initialData }) => {
+  // Estado para manejar los datos del formulario
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,6 +21,27 @@ const StudentForm: React.FC<StudentFormProps> = ({ onSubmit }) => {
     gender: "",
   });
 
+  useEffect(() => {
+    if (initialData) {
+      // Si tenemos datos iniciales, rellenamos el formulario con ellos
+      setFormData({
+        first_name: initialData.first_name || "",
+        second_name: initialData.second_name || "",
+        last_name: initialData.last_name || "",
+        second_last_name: initialData.second_last_name || "",
+        dateofbirth: initialData.dateofbirth
+          ? new Date(initialData.dateofbirth).toISOString().split("T")[0]
+          : "",
+        placeofbirth: initialData.placeofbirth || "",
+        phone: initialData.phone || "",
+        gender: initialData.gender || "",
+        name: "", // Campos vacíos, no utilizados en edición
+        email: "", // Campos vacíos, no utilizados en edición
+        password: "", // Campos vacíos, no utilizados en edición
+      });
+    }
+  }, [initialData]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -31,6 +54,64 @@ const StudentForm: React.FC<StudentFormProps> = ({ onSubmit }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-5 p-2 md:grid-cols-1">
+        {/* Campos para el modo de creación */}
+        {!initialData && (
+          <>
+            <div className="flex flex-col">
+              <label
+                htmlFor="name"
+                className="block mb-1 text-xs font-medium text-gray-700"
+              >
+                Nombre de Usuario
+              </label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Nombre de Usuario"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                required={!initialData}
+              />
+            </div>
+            <div className="flex flex-col">
+              <label
+                htmlFor="email"
+                className="block mb-1 text-xs font-medium text-gray-700"
+              >
+                Correo Electrónico
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Correo Electrónico"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                required={!initialData}
+              />
+            </div>
+            <div className="flex flex-col">
+              <label
+                htmlFor="password"
+                className="block mb-1 text-xs font-medium text-gray-700"
+              >
+                Contraseña
+              </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Contraseña"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                required={!initialData}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Campos comunes para creación y edición */}
         <div className="flex flex-col">
           <label
             htmlFor="first_name"
@@ -160,57 +241,6 @@ const StudentForm: React.FC<StudentFormProps> = ({ onSubmit }) => {
             value={formData.gender}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
-          />
-        </div>
-        <div className="flex flex-col">
-          <label
-            htmlFor="name"
-            className="block mb-1 text-xs font-medium text-gray-700"
-          >
-            Nombre de Usuario
-          </label>
-          <input
-            type="text"
-            name="name"
-            placeholder="Nombre de Usuario"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
-            required
-          />
-        </div>
-        <div className="flex flex-col">
-          <label
-            htmlFor="email"
-            className="block mb-1 text-xs font-medium text-gray-700"
-          >
-            Correo Electrónico
-          </label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Correo Electrónico"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
-            required
-          />
-        </div>
-        <div className="flex flex-col">
-          <label
-            htmlFor="password"
-            className="block mb-1 text-xs font-medium text-gray-700"
-          >
-            Contraseña
-          </label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Contraseña"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
-            required
           />
         </div>
       </div>
