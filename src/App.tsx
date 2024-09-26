@@ -4,6 +4,8 @@ import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
 import Users from "./pages/admin/Users";
+import Index from "./pages/students/Index";
+
 function App() {
   return (
     <div className="App">
@@ -23,6 +25,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Users />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/students"
+            element={
+              <ProtectedRoute>
+                <Index />
               </ProtectedRoute>
             }
           />
