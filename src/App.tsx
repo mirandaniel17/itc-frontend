@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
 import Users from "./pages/admin/Users";
 import Index from "./pages/students/Index";
+import Create from "./pages/students/Create";
+import Edit from "./pages/students/Edit";
 
 function App() {
   return (
@@ -33,6 +35,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Index />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/students/create"
+            element={
+              <ProtectedRoute>
+                <Create />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/students/edit/:id"
+            element={
+              <ProtectedRoute>
+                <Edit />
               </ProtectedRoute>
             }
           />

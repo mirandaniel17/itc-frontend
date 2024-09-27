@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import Table from "../../components/Table";
@@ -9,8 +10,6 @@ import TableCell from "../../components/TableCell";
 import TableActionButtons from "../../components/TableActionButtons";
 import Pagination from "../../components/Pagination";
 import AddButton from "../../components/AddButton";
-import Modal from "../../components/Modal";
-import StudentForm from "../../components/StudentForm";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { Student } from "../../types/student";
 import { formatDate } from "../../utils/dateUtils";
@@ -19,10 +18,9 @@ const Index = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const fetchStudents = async (page: number) => {
     try {
@@ -52,8 +50,7 @@ const Index = () => {
   }, [currentPage]);
 
   const handleEdit = (student: Student) => {
-    setSelectedStudent(student);
-    setIsModalOpen(true);
+    navigate(`/students/edit/${student.id}`);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -97,42 +94,7 @@ const Index = () => {
   };
 
   const handleNew = () => {
-    setSelectedStudent(null);
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-    setSelectedStudent(null);
-  };
-
-  const handleStudentSubmit = async (formData: any) => {
-    try {
-      const method = selectedStudent ? "PUT" : "POST";
-      const url = selectedStudent
-        ? `http://127.0.0.1:8000/api/students/${selectedStudent.id}`
-        : "http://127.0.0.1:8000/api/students";
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Student saved successfully:", data);
-      setIsModalOpen(false);
-      fetchStudents(currentPage);
-    } catch (error) {
-      console.error("Error saving student:", error);
-    }
+    navigate("/students/create");
   };
 
   return (
@@ -150,6 +112,7 @@ const Index = () => {
                 "Apellido",
                 "Nombre",
                 "Fecha de Nacimiento",
+                "Carnet de Identidad",
                 "Acciones",
               ]}
             />
@@ -166,11 +129,16 @@ const Index = () => {
                   <TableCell>
                     <div className="ps-3">
                       <div className="font-semibold text-xs">
-                        {student.first_name} {student.second_name}
+                        {student.name}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>{formatDate(student.dateofbirth)}</TableCell>
+                  <TableCell>
+                    <div className="ps-3">
+                      <div className="font-semibold text-xs">{student.ci}</div>
+                    </div>
+                  </TableCell>
                   <TableActionButtons
                     onEdit={() => handleEdit(student)}
                     onDelete={() => handleDeleteClick(student.id)}
@@ -186,20 +154,6 @@ const Index = () => {
           />
         </div>
       </div>
-      <Modal
-        title={
-          selectedStudent
-            ? "EDITAR ESTUDIANTE"
-            : "FORMULARIO DE REGISTRO DE ESTUDIANTE"
-        }
-        isVisible={isModalOpen}
-        onClose={handleModalClose}
-      >
-        <StudentForm
-          onSubmit={handleStudentSubmit}
-          initialData={selectedStudent}
-        />
-      </Modal>
 
       <ConfirmationModal
         message="¿Estás seguro de que quieres eliminar a este estudiante?"

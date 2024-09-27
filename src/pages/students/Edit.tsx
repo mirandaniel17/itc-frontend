@@ -1,0 +1,351 @@
+import React, { useState, useEffect } from "react";
+import Sidebar from "../../components/Sidebar";
+import Navbar from "../../components/Navbar";
+import { useNavigate, useParams } from "react-router-dom";
+
+const Edit = () => {
+  const { id } = useParams();
+  const [formData, setFormData] = useState({
+    name: "",
+    last_name: "",
+    second_last_name: "",
+    ci: "",
+    program_type: "",
+    school_cycle: "",
+    shift: "",
+    parallel: "",
+    dateofbirth: "",
+    placeofbirth: "",
+    phone: "",
+    gender: "",
+    status: true,
+  });
+
+  const navigate = useNavigate();
+
+  // Fetch student data on mount
+  useEffect(() => {
+    const fetchStudent = async () => {
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/students/${id}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setFormData({
+          name: data.name || "",
+          last_name: data.last_name || "",
+          second_last_name: data.second_last_name || "",
+          ci: data.ci || "",
+          program_type: data.program_type || "",
+          school_cycle: data.school_cycle || "",
+          shift: data.shift || "",
+          parallel: data.parallel || "",
+          dateofbirth: data.dateofbirth
+            ? new Date(data.dateofbirth).toISOString().split("T")[0]
+            : "",
+          placeofbirth: data.placeofbirth || "",
+          phone: data.phone || "",
+          gender: data.gender || "",
+          status: data.status !== undefined ? data.status : true,
+        });
+      } catch (error) {
+        console.error("Error fetching student:", error);
+      }
+    };
+
+    fetchStudent();
+  }, [id]);
+
+  // Handle input change
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Handle form submit
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/students/${id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Student updated successfully:", result);
+      navigate("/students");
+    } catch (error) {
+      console.error("Error updating student:", error);
+    }
+  };
+
+  return (
+    <div>
+      <Sidebar />
+      <Navbar />
+      <div className="p-6 sm:ml-64 flex justify-center">
+        <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-5xl">
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Editar Estudiante
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div className="flex flex-col">
+                <label
+                  htmlFor="name"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Nombres
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Nombres"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  required
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="last_name"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Apellido Paterno
+                </label>
+                <input
+                  type="text"
+                  name="last_name"
+                  placeholder="Apellido Paterno"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  required
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="second_last_name"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Apellido Materno
+                </label>
+                <input
+                  type="text"
+                  name="second_last_name"
+                  placeholder="Apellido Materno"
+                  value={formData.second_last_name}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="ci"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Cédula de Identidad (CI)
+                </label>
+                <input
+                  type="text"
+                  name="ci"
+                  placeholder="Cédula de Identidad"
+                  value={formData.ci}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="program_type"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Tipo de Programa
+                </label>
+                <select
+                  name="program_type"
+                  value={formData.program_type}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  required
+                >
+                  <option value="" disabled>
+                    Seleccionar Tipo de Programa
+                  </option>
+                  <option value="MODULAR">Modular</option>
+                  <option value="CARRERA">Carrera</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="school_cycle"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Ciclo Escolar
+                </label>
+                <input
+                  type="text"
+                  name="school_cycle"
+                  placeholder="Ciclo Escolar"
+                  value={formData.school_cycle}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="shift"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Turno
+                </label>
+                <select
+                  name="shift"
+                  value={formData.shift}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  required
+                >
+                  <option value="" disabled>
+                    Seleccionar Turno
+                  </option>
+                  <option value="MAÑANA">Mañana</option>
+                  <option value="TARDE">Tarde</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="parallel"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Paralelo
+                </label>
+                <input
+                  type="text"
+                  name="parallel"
+                  placeholder="Paralelo"
+                  value={formData.parallel}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="dateofbirth"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Fecha de Nacimiento
+                </label>
+                <input
+                  type="date"
+                  name="dateofbirth"
+                  value={formData.dateofbirth}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  required
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="placeofbirth"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Lugar de Nacimiento
+                </label>
+                <select
+                  name="placeofbirth"
+                  value={formData.placeofbirth}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  required
+                >
+                  <option value="" disabled>
+                    Seleccionar Departamento
+                  </option>
+                  <option value="LA PAZ">La Paz</option>
+                  <option value="COCHABAMBA">Cochabamba</option>
+                  <option value="SANTA CRUZ">Santa Cruz</option>
+                  <option value="ORURO">Oruro</option>
+                  <option value="POTOSI">Potosí</option>
+                  <option value="SUCRE">Sucre</option>
+                  <option value="TARIJA">Tarija</option>
+                  <option value="BENI">Beni</option>
+                  <option value="PANDO">Pando</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="phone"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Teléfono
+                </label>
+                <input
+                  type="text"
+                  name="phone"
+                  placeholder="Teléfono"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  required
+                />
+              </div>
+              <div className="flex flex-col">
+                <label
+                  htmlFor="gender"
+                  className="block mb-1 text-xs font-medium text-gray-700"
+                >
+                  Género
+                </label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  required
+                >
+                  <option value="" disabled>
+                    Seleccionar Género
+                  </option>
+                  <option value="MASCULINO">Masculino</option>
+                  <option value="FEMENINO">Femenino</option>
+                  <option value="OTRO">Otro</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end mt-4">
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg shadow-md hover:bg-blue-600 transition-all"
+              >
+                Actualizar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Edit;
