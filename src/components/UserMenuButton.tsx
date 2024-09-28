@@ -8,7 +8,7 @@ const UserMenuButton: React.FC<UserMenuButtonProps> = ({ onClick }) => {
   return (
     <button
       type="button"
-      className="flex text-sm bg-sky-900 md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 border border-gray-300 dark:border-gray-600 p-2 text-white rounded-lg"
+      className="flex text-sm text-black uppercase tracking-wider mx-10"
       onClick={onClick}
     >
       <span className="mdi mdi-chevron-down mr-1"></span>

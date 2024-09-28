@@ -5,10 +5,15 @@ import { Link } from "react-router-dom";
 
 interface UserDropdownProps {
   isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>; // Agregamos esta propiedad
   setName: (name: string) => void;
 }
 
-const UserDropdown: React.FC<UserDropdownProps> = ({ isOpen, setName }) => {
+const UserDropdown: React.FC<UserDropdownProps> = ({
+  isOpen,
+  setIsOpen,
+  setName,
+}) => {
   const navigate = useNavigate();
 
   if (!isOpen) return null;
@@ -22,6 +27,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ isOpen, setName }) => {
       });
       setName("");
       navigate("/login");
+      setIsOpen(false);
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }

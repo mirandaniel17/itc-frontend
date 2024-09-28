@@ -100,12 +100,28 @@ const Index = () => {
   return (
     <div>
       <Sidebar />
-      <Navbar />
       <div className="p-2 sm:ml-64">
-        <div className="flex justify-end">
-          <AddButton label="Nuevo" onClick={handleNew} />
-        </div>
-        <div className="p-4 border-2 border-gray-200 rounded-lg dark:border-gray-700 bg-white dark:bg-gray-800 text-black dark:text-white">
+        <Navbar />
+
+        <div className="p-4 border-2 border-gray-200 rounded-lg dark:border-gray-700 bg-white dark:bg-gray-800 text-black dark:text-white m-4">
+          <div className="flex justify-between items-center mb-4">
+            <form className="max-w-lg">
+              <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
+                Search
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span className="mdi mdi-magnify"></span>
+                </div>
+                <input
+                  type="search"
+                  className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500"
+                  placeholder="Texto a buscar"
+                />
+              </div>
+            </form>
+            <AddButton label="Nuevo" onClick={handleNew} />
+          </div>
           <Table>
             <TableHead
               headers={[
@@ -120,14 +136,14 @@ const Index = () => {
               {students.map((student) => (
                 <TableRow key={student.id}>
                   <TableCell>
-                    <div className="ps-3">
+                    <div className="pl-3">
                       <div className="font-semibold text-xs">
                         {student.last_name} {student.second_last_name}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="ps-3">
+                    <div className="pl-3">
                       <div className="font-semibold text-xs">
                         {student.name}
                       </div>
@@ -135,7 +151,7 @@ const Index = () => {
                   </TableCell>
                   <TableCell>{formatDate(student.dateofbirth)}</TableCell>
                   <TableCell>
-                    <div className="ps-3">
+                    <div className="pl-3">
                       <div className="font-semibold text-xs">{student.ci}</div>
                     </div>
                   </TableCell>

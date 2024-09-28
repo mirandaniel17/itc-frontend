@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import SubmitButton from "../../components/SubmitButton";
+import InputLabel from "../../components/InputLabel";
+import TextInput from "../../components/TextInput";
+import SelectInput from "../../components/SelectInput";
 
 const Create = () => {
   const [formData, setFormData] = useState({
@@ -41,11 +45,13 @@ const Create = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const data = new FormData();
+
     for (const key in formData) {
       if (Object.prototype.hasOwnProperty.call(formData, key)) {
         data.append(key, formData[key as keyof typeof formData] as string);
       }
     }
+
     if (image) {
       data.append("image", image);
     }
@@ -56,6 +62,7 @@ const Create = () => {
         credentials: "include",
         body: data,
       });
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -68,92 +75,69 @@ const Create = () => {
   return (
     <div>
       <Sidebar />
-      <Navbar />
-      <div className="p-6 sm:ml-64 flex justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-5xl">
-          <h2 className="text-2xl font-bold mb-4 text-center">
-            Crear Estudiante
+      <div className="p-2 sm:ml-64">
+        <Navbar />
+        <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
+          <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
+            FORMULARIO DE REGISTRO DE ESTUDIANTE
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div className="flex flex-col">
-                <label
-                  htmlFor="name"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
-                  Nombres
-                </label>
-                <input
+                <InputLabel htmlFor="name">Nombres</InputLabel>
+                <TextInput
                   type="text"
                   name="name"
                   placeholder="Nombres"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                   required
                 />
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="last_name"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
-                  Apellido Paterno
-                </label>
-                <input
+                <InputLabel htmlFor="last_name">Apellido Paterno</InputLabel>
+                <TextInput
                   type="text"
                   name="last_name"
                   placeholder="Apellido Paterno"
                   value={formData.last_name}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                   required
                 />
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="second_last_name"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
+                <InputLabel htmlFor="second_last_name">
                   Apellido Materno
-                </label>
-                <input
+                </InputLabel>
+                <TextInput
                   type="text"
                   name="second_last_name"
                   placeholder="Apellido Materno"
                   value={formData.second_last_name}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                 />
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="ci"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
-                  Cédula de Identidad (CI)
-                </label>
-                <input
+                <InputLabel htmlFor="ci">Cédula de Identidad (CI)</InputLabel>
+                <TextInput
                   type="text"
                   name="ci"
                   placeholder="Cédula de Identidad"
                   value={formData.ci}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                 />
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="program_type"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
-                  Tipo de Programa
-                </label>
-                <select
+                <InputLabel htmlFor="program_type">Tipo de Programa</InputLabel>
+                <SelectInput
                   name="program_type"
                   value={formData.program_type}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                   required
                 >
                   <option value="" disabled>
@@ -161,36 +145,26 @@ const Create = () => {
                   </option>
                   <option value="MODULAR">Modular</option>
                   <option value="CARRERA">Carrera</option>
-                </select>
+                </SelectInput>
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="school_cycle"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
-                  Ciclo Escolar
-                </label>
-                <input
+                <InputLabel htmlFor="school_cycle">Ciclo Escolar</InputLabel>
+                <TextInput
                   type="text"
                   name="school_cycle"
                   placeholder="Ciclo Escolar"
                   value={formData.school_cycle}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                 />
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="shift"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
-                  Turno
-                </label>
-                <select
+                <InputLabel htmlFor="shift">Turno</InputLabel>
+                <SelectInput
                   name="shift"
                   value={formData.shift}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                   required
                 >
                   <option value="" disabled>
@@ -198,52 +172,41 @@ const Create = () => {
                   </option>
                   <option value="MAÑANA">Mañana</option>
                   <option value="TARDE">Tarde</option>
-                </select>
+                </SelectInput>
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="parallel"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
-                  Paralelo
-                </label>
-                <input
+                <InputLabel htmlFor="parallel">Paralelo</InputLabel>
+                <TextInput
                   type="text"
                   name="parallel"
                   placeholder="Paralelo"
                   value={formData.parallel}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                 />
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="dateofbirth"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
+                <InputLabel htmlFor="dateofbirth">
                   Fecha de Nacimiento
-                </label>
-                <input
+                </InputLabel>
+                <TextInput
                   type="date"
                   name="dateofbirth"
                   value={formData.dateofbirth}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                   required
                 />
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="placeofbirth"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
+                <InputLabel htmlFor="placeofbirth">
                   Lugar de Nacimiento
-                </label>
-                <select
+                </InputLabel>
+                <SelectInput
                   name="placeofbirth"
                   value={formData.placeofbirth}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                   required
                 >
                   <option value="" disabled>
@@ -258,37 +221,27 @@ const Create = () => {
                   <option value="TARIJA">Tarija</option>
                   <option value="BENI">Beni</option>
                   <option value="PANDO">Pando</option>
-                </select>
+                </SelectInput>
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="phone"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
-                  Teléfono
-                </label>
-                <input
+                <InputLabel htmlFor="phone">Teléfono</InputLabel>
+                <TextInput
                   type="text"
                   name="phone"
                   placeholder="Teléfono"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                   required
                 />
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="gender"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
-                  Género
-                </label>
-                <select
+                <InputLabel htmlFor="gender">Género</InputLabel>
+                <SelectInput
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                   required
                 >
                   <option value="" disabled>
@@ -297,28 +250,23 @@ const Create = () => {
                   <option value="MASCULINO">Masculino</option>
                   <option value="FEMENINO">Femenino</option>
                   <option value="OTRO">Otro</option>
-                </select>
+                </SelectInput>
               </div>
               <div className="flex flex-col">
-                <label
-                  htmlFor="image"
-                  className="block mb-1 text-xs font-medium text-gray-700"
-                >
+                <InputLabel htmlFor="image">
                   Fotografía del Estudiante
-                </label>
-                <input
+                </InputLabel>
+                <TextInput
                   type="file"
                   name="image"
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="w-full p-3 border rounded-lg text-sm shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                  className="w-full p-3"
                 />
               </div>
               {previewImage && (
                 <div className="flex flex-col">
-                  <label className="block mb-1 text-xs font-medium text-gray-700">
-                    Vista Previa
-                  </label>
+                  <InputLabel>Vista Previa</InputLabel>
                   <img
                     src={previewImage}
                     alt="Vista previa"
@@ -328,12 +276,7 @@ const Create = () => {
               )}
             </div>
             <div className="flex justify-end mt-4">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-green-500 text-white font-medium rounded-lg shadow-md hover:bg-green-600 transition-all"
-              >
-                Guardar
-              </button>
+              <SubmitButton type="submit">Guardar</SubmitButton>
             </div>
           </form>
         </div>
