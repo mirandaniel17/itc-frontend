@@ -97,7 +97,9 @@ const Edit = () => {
 
       const result = await response.json();
       console.log("Student updated successfully:", result);
-      navigate("/students");
+      navigate("/students", {
+        state: { message: "Estudiante actualizado con éxito", color: "green" },
+      });
     } catch (error) {
       console.error("Error updating student:", error);
     }

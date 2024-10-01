@@ -71,7 +71,9 @@ const Create = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      navigate("/students");
+      navigate("/students", {
+        state: { message: "Estudiante creado con éxito", color: "green" },
+      });
     } catch (error) {
       console.error("Error creating student:", error);
     }

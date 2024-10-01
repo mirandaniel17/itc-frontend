@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import Table from "../../components/Table";
@@ -11,6 +11,7 @@ import TableActionButtons from "../../components/TableActionButtons";
 import Pagination from "../../components/Pagination";
 import AddButton from "../../components/AddButton";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import Alert from "../../components/Alert";
 import { Student } from "../../types/student";
 import { formatDate } from "../../utils/dateUtils";
 import { debounce } from "lodash";
@@ -19,10 +20,15 @@ const Index = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(""); // Estado para la búsqueda
+  const [searchQuery, setSearchQuery] = useState("");
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<number | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertColor, setAlertColor] = useState("blue");
   const navigate = useNavigate();
+
+  const location = useLocation();
 
   const fetchStudents = async (page: number, query = "") => {
     try {
@@ -47,10 +53,19 @@ const Index = () => {
     }
   };
 
-  // Debounce para evitar múltiples llamadas mientras se escribe
   const debouncedFetchStudents = debounce((query: string, page: number) => {
     fetchStudents(page, query);
   }, 500);
+
+  useEffect(() => {
+    if (location.state?.message) {
+      showAlertWithMessage(
+        location.state.message,
+        location.state.color || "blue"
+      );
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     fetchStudents(currentPage, searchQuery);
@@ -58,6 +73,7 @@ const Index = () => {
 
   const handleEdit = (student: Student) => {
     navigate(`/students/edit/${student.id}`);
+    showAlertWithMessage("Estudiante actualizado con éxito", "green");
   };
 
   const handleDeleteClick = (id: number) => {
@@ -79,12 +95,12 @@ const Index = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
         console.log("Student deleted successfully:", data);
         setIsConfirmationModalOpen(false);
         setStudentToDelete(null);
         fetchStudents(currentPage, searchQuery);
+        showAlertWithMessage("Estudiante eliminado con éxito", "red");
       } catch (error) {
         console.error("Error deleting student:", error);
       }
@@ -104,11 +120,19 @@ const Index = () => {
     navigate("/students/create");
   };
 
-  // Actualizar la búsqueda y ejecutar la solicitud con debounce
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
-    debouncedFetchStudents(query, 1); // Reinicia la paginación al hacer una nueva búsqueda
+    debouncedFetchStudents(query, 1);
+  };
+
+  const showAlertWithMessage = (message: string, color: string) => {
+    setAlertMessage(message);
+    setAlertColor(color);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 5000);
   };
 
   return (
@@ -116,8 +140,8 @@ const Index = () => {
       <Sidebar />
       <div className="p-2 sm:ml-64">
         <Navbar />
-
         <div className="p-4 border-2 border-gray-200 rounded-lg dark:border-gray-700 bg-white dark:bg-gray-800 text-black dark:text-white m-4">
+          {showAlert && <Alert message={alertMessage} color={alertColor} />}{" "}
           <div className="flex justify-between items-center mb-4">
             <form className="max-w-lg">
               <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
@@ -129,8 +153,8 @@ const Index = () => {
                 </div>
                 <input
                   type="search"
-                  value={searchQuery} // Vinculamos el estado de búsqueda
-                  onChange={handleSearchChange} // Maneja los cambios en tiempo real
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                   className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500"
                   placeholder="Texto a buscar"
                 />
