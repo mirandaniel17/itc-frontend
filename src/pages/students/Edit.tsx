@@ -6,6 +6,7 @@ import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
+import InputError from "../../components/InputError";
 
 const Edit = () => {
   const { id } = useParams();
@@ -25,6 +26,7 @@ const Edit = () => {
     status: true,
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,6 +90,8 @@ const Edit = () => {
       });
 
       if (!response.ok) {
+        const result = await response.json();
+        setErrors(result.errors || {});
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -121,7 +125,9 @@ const Edit = () => {
                   className="w-full p-3"
                   required
                 />
+                <InputError message={errors.name?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="last_name">Apellido Paterno</InputLabel>
                 <TextInput
@@ -133,7 +139,9 @@ const Edit = () => {
                   className="w-full p-3"
                   required
                 />
+                <InputError message={errors.last_name?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="second_last_name">
                   Apellido Materno
@@ -146,7 +154,9 @@ const Edit = () => {
                   onChange={handleChange}
                   className="w-full p-3"
                 />
+                <InputError message={errors.second_last_name?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="ci">Cédula de Identidad (CI)</InputLabel>
                 <TextInput
@@ -157,7 +167,9 @@ const Edit = () => {
                   onChange={handleChange}
                   className="w-full p-3"
                 />
+                <InputError message={errors.ci?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="program_type">Tipo de Programa</InputLabel>
                 <SelectInput
@@ -173,7 +185,9 @@ const Edit = () => {
                   <option value="MODULAR">Modular</option>
                   <option value="CARRERA">Carrera</option>
                 </SelectInput>
+                <InputError message={errors.program_type?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="school_cycle">Ciclo Escolar</InputLabel>
                 <TextInput
@@ -184,7 +198,9 @@ const Edit = () => {
                   onChange={handleChange}
                   className="w-full p-3"
                 />
+                <InputError message={errors.school_cycle?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="shift">Turno</InputLabel>
                 <SelectInput
@@ -200,7 +216,9 @@ const Edit = () => {
                   <option value="MAÑANA">Mañana</option>
                   <option value="TARDE">Tarde</option>
                 </SelectInput>
+                <InputError message={errors.shift?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="parallel">Paralelo</InputLabel>
                 <TextInput
@@ -211,7 +229,9 @@ const Edit = () => {
                   onChange={handleChange}
                   className="w-full p-3"
                 />
+                <InputError message={errors.parallel?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="dateofbirth">
                   Fecha de Nacimiento
@@ -224,7 +244,9 @@ const Edit = () => {
                   className="w-full p-3"
                   required
                 />
+                <InputError message={errors.dateofbirth?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="placeofbirth">
                   Lugar de Nacimiento
@@ -249,7 +271,9 @@ const Edit = () => {
                   <option value="BENI">Beni</option>
                   <option value="PANDO">Pando</option>
                 </SelectInput>
+                <InputError message={errors.placeofbirth?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="phone">Teléfono</InputLabel>
                 <TextInput
@@ -261,7 +285,9 @@ const Edit = () => {
                   className="w-full p-3"
                   required
                 />
+                <InputError message={errors.phone?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="gender">Género</InputLabel>
                 <SelectInput
@@ -278,8 +304,10 @@ const Edit = () => {
                   <option value="FEMENINO">Femenino</option>
                   <option value="OTRO">Otro</option>
                 </SelectInput>
+                <InputError message={errors.gender?.[0]} />
               </div>
             </div>
+
             <div className="flex justify-end mt-4">
               <SubmitButton type="submit">Actualizar</SubmitButton>
             </div>

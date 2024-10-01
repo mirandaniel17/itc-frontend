@@ -6,6 +6,7 @@ import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
+import InputError from "../../components/InputError";
 
 const Create = () => {
   const [formData, setFormData] = useState({
@@ -26,6 +27,7 @@ const Create = () => {
 
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
 
   const handleChange = (
@@ -64,8 +66,11 @@ const Create = () => {
       });
 
       if (!response.ok) {
+        const result = await response.json();
+        setErrors(result.errors || {});
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       navigate("/students");
     } catch (error) {
       console.error("Error creating student:", error);
@@ -94,7 +99,9 @@ const Create = () => {
                   className="w-full p-3"
                   required
                 />
+                <InputError message={errors.name?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="last_name">Apellido Paterno</InputLabel>
                 <TextInput
@@ -106,7 +113,9 @@ const Create = () => {
                   className="w-full p-3"
                   required
                 />
+                <InputError message={errors.last_name?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="second_last_name">
                   Apellido Materno
@@ -118,8 +127,11 @@ const Create = () => {
                   value={formData.second_last_name}
                   onChange={handleChange}
                   className="w-full p-3"
+                  required
                 />
+                <InputError message={errors.second_last_name?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="ci">Cédula de Identidad (CI)</InputLabel>
                 <TextInput
@@ -129,8 +141,11 @@ const Create = () => {
                   value={formData.ci}
                   onChange={handleChange}
                   className="w-full p-3"
+                  required
                 />
+                <InputError message={errors.ci?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="program_type">Tipo de Programa</InputLabel>
                 <SelectInput
@@ -146,7 +161,9 @@ const Create = () => {
                   <option value="MODULAR">Modular</option>
                   <option value="CARRERA">Carrera</option>
                 </SelectInput>
+                <InputError message={errors.program_type?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="school_cycle">Ciclo Escolar</InputLabel>
                 <TextInput
@@ -157,7 +174,9 @@ const Create = () => {
                   onChange={handleChange}
                   className="w-full p-3"
                 />
+                <InputError message={errors.school_cycle?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="shift">Turno</InputLabel>
                 <SelectInput
@@ -173,7 +192,9 @@ const Create = () => {
                   <option value="MAÑANA">Mañana</option>
                   <option value="TARDE">Tarde</option>
                 </SelectInput>
+                <InputError message={errors.shift?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="parallel">Paralelo</InputLabel>
                 <TextInput
@@ -184,7 +205,9 @@ const Create = () => {
                   onChange={handleChange}
                   className="w-full p-3"
                 />
+                <InputError message={errors.parallel?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="dateofbirth">
                   Fecha de Nacimiento
@@ -197,7 +220,9 @@ const Create = () => {
                   className="w-full p-3"
                   required
                 />
+                <InputError message={errors.dateofbirth?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="placeofbirth">
                   Lugar de Nacimiento
@@ -222,7 +247,9 @@ const Create = () => {
                   <option value="BENI">Beni</option>
                   <option value="PANDO">Pando</option>
                 </SelectInput>
+                <InputError message={errors.placeofbirth?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="phone">Teléfono</InputLabel>
                 <TextInput
@@ -234,7 +261,9 @@ const Create = () => {
                   className="w-full p-3"
                   required
                 />
+                <InputError message={errors.phone?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="gender">Género</InputLabel>
                 <SelectInput
@@ -251,7 +280,9 @@ const Create = () => {
                   <option value="FEMENINO">Femenino</option>
                   <option value="OTRO">Otro</option>
                 </SelectInput>
+                <InputError message={errors.gender?.[0]} />
               </div>
+
               <div className="flex flex-col">
                 <InputLabel htmlFor="image">
                   Fotografía del Estudiante
@@ -263,18 +294,20 @@ const Create = () => {
                   onChange={handleFileChange}
                   className="w-full p-3"
                 />
+                {previewImage && (
+                  <div className="flex flex-col">
+                    <InputLabel>Vista Previa</InputLabel>
+                    <img
+                      src={previewImage}
+                      alt="Vista previa"
+                      className="w-52 h-auto border rounded-lg"
+                    />
+                  </div>
+                )}
+                <InputError message={errors.image?.[0]} />
               </div>
-              {previewImage && (
-                <div className="flex flex-col">
-                  <InputLabel>Vista Previa</InputLabel>
-                  <img
-                    src={previewImage}
-                    alt="Vista previa"
-                    className="w-52 h-auto border rounded-lg"
-                  />
-                </div>
-              )}
             </div>
+
             <div className="flex justify-end mt-4">
               <SubmitButton type="submit">Guardar</SubmitButton>
             </div>

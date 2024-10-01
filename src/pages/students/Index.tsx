@@ -13,19 +13,21 @@ import AddButton from "../../components/AddButton";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { Student } from "../../types/student";
 import { formatDate } from "../../utils/dateUtils";
+import { debounce } from "lodash";
 
 const Index = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(""); // Estado para la búsqueda
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<number | null>(null);
   const navigate = useNavigate();
 
-  const fetchStudents = async (page: number) => {
+  const fetchStudents = async (page: number, query = "") => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/students?per_page=10&page=${page}`,
+        `http://127.0.0.1:8000/api/students?per_page=10&page=${page}&query=${query}`,
         {
           method: "GET",
           credentials: "include",
@@ -45,8 +47,13 @@ const Index = () => {
     }
   };
 
+  // Debounce para evitar múltiples llamadas mientras se escribe
+  const debouncedFetchStudents = debounce((query: string, page: number) => {
+    fetchStudents(page, query);
+  }, 500);
+
   useEffect(() => {
-    fetchStudents(currentPage);
+    fetchStudents(currentPage, searchQuery);
   }, [currentPage]);
 
   const handleEdit = (student: Student) => {
@@ -77,7 +84,7 @@ const Index = () => {
         console.log("Student deleted successfully:", data);
         setIsConfirmationModalOpen(false);
         setStudentToDelete(null);
-        fetchStudents(currentPage);
+        fetchStudents(currentPage, searchQuery);
       } catch (error) {
         console.error("Error deleting student:", error);
       }
@@ -95,6 +102,13 @@ const Index = () => {
 
   const handleNew = () => {
     navigate("/students/create");
+  };
+
+  // Actualizar la búsqueda y ejecutar la solicitud con debounce
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    debouncedFetchStudents(query, 1); // Reinicia la paginación al hacer una nueva búsqueda
   };
 
   return (
@@ -115,6 +129,8 @@ const Index = () => {
                 </div>
                 <input
                   type="search"
+                  value={searchQuery} // Vinculamos el estado de búsqueda
+                  onChange={handleSearchChange} // Maneja los cambios en tiempo real
                   className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500"
                   placeholder="Texto a buscar"
                 />
