@@ -25,25 +25,26 @@ const Edit = () => {
     gender: "",
     status: true,
   });
-
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchStudent = async () => {
       try {
+        const token = localStorage.getItem("token");
         const response = await fetch(
           `http://127.0.0.1:8000/api/students/${id}`,
           {
             method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
             credentials: "include",
           }
         );
-
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
         setFormData({
           name: data.name || "",
@@ -66,7 +67,6 @@ const Edit = () => {
         console.error("Error fetching student:", error);
       }
     };
-
     fetchStudent();
   }, [id]);
 
@@ -78,27 +78,27 @@ const Edit = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`http://127.0.0.1:8000/api/students/${id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
-
       if (!response.ok) {
         const result = await response.json();
         setErrors(result.errors || {});
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      const result = await response.json();
-      console.log("Student updated successfully:", result);
       navigate("/students", {
-        state: { message: "Estudiante actualizado con éxito", color: "green" },
+        state: {
+          message: "Datos del estudiante actualizado con éxito",
+          color: "green",
+        },
       });
     } catch (error) {
       console.error("Error updating student:", error);

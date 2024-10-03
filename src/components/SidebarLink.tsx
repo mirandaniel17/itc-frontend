@@ -4,9 +4,15 @@ interface SidebarLinkProps {
   to: string;
   icon: string;
   label: string;
+  onClick?: () => void;
 }
 
-const SidebarLink: React.FC<SidebarLinkProps> = ({ to, icon, label }) => {
+const SidebarLink: React.FC<SidebarLinkProps> = ({
+  to,
+  icon,
+  label,
+  onClick,
+}) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
@@ -14,6 +20,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ to, icon, label }) => {
     <li>
       <Link
         to={to}
+        onClick={onClick}
         className={`flex items-center p-2 rounded-lg ${
           isActive
             ? "bg-sky-900 text-white"

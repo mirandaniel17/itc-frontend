@@ -59,23 +59,25 @@ const Create = () => {
     }
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch("http://127.0.0.1:8000/api/students", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: "include",
         body: data,
       });
-
       if (!response.ok) {
         const result = await response.json();
         setErrors(result.errors || {});
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       navigate("/students", {
-        state: { message: "Estudiante creado con éxito", color: "green" },
+        state: { message: "Estudiante registrado con éxito", color: "green" },
       });
     } catch (error) {
-      console.error("Error creating student:", error);
+      console.error("Error al registrar al estudiante:", error);
     }
   };
 

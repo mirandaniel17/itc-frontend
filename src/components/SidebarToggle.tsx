@@ -27,7 +27,7 @@ const SidebarToggle: React.FC<SidebarToggleProps> = ({
       }`}
     >
       <span className="sr-only">Open sidebar</span>
-      <span className="mdi mdi-format-align-left"></span>
+      <span className="mdi mdi-chevron-right-circle-outline text-4xl"></span>
     </button>
   );
 };

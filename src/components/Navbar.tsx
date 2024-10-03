@@ -1,36 +1,72 @@
-import React, { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import UserMenuButton from "./UserMenuButton";
 import UserDropdown from "./UserDropdown";
 
 const Navbar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
-  const [userName, setUserName] = useState("Daniel Miranda");
-  const location = useLocation();
+  const [userName, setUserName] = useState("Cargando...");
+  const [userEmail, setUserEmail] = useState("Cargando...");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/user", {
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+        const data = await response.json();
+        setUserName(data.name);
+        setUserEmail(data.email);
+      } catch (error) {
+        console.error("Error al obtener el usuario:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:8000/api/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      setUserName("");
+      setUserEmail("");
+      navigate("/login");
+      setIsDropdownOpen(false);
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
+
   const breadcrumbMap: { [key: string]: string } = {
     "/": "Inicio",
-    "/dashboard": "Dashboard",
     "/students": "Estudiantes",
     "/students/create": "Crear Estudiante",
     "/students/edit": "Editar Estudiante",
+    "/users": "Usuarios",
   };
 
   const generateBreadcrumb = () => {
+    const location = useLocation();
+    const { userId } = useParams<{ userId: string }>();
     const pathnames = location.pathname.split("/").filter((x) => x);
-    let breadcrumb = pathnames
-      .map((part, index) => {
-        const route = `/${pathnames.slice(0, index + 1).join("/")}`;
-        if (breadcrumbMap[route]) {
-          return breadcrumbMap[route];
-        }
-        return null;
-      })
-      .filter(Boolean);
-    breadcrumb = breadcrumb.filter(
-      (item, index, self) => item !== self[index - 1]
-    );
-
+    let breadcrumb = pathnames.map((part, index) => {
+      const route = `/${pathnames.slice(0, index + 1).join("/")}`;
+      if (breadcrumbMap[route]) {
+        return breadcrumbMap[route];
+      }
+      if (route.startsWith("/users/") && userId) {
+        return "Detalles del Usuario";
+      }
+      return null;
+    });
+    breadcrumb = breadcrumb.filter(Boolean);
     return breadcrumb.join(" / ") || breadcrumbMap["/"];
   };
 
@@ -57,7 +93,10 @@ const Navbar: React.FC = () => {
 
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             <div className="relative ml-3">
-              <UserMenuButton onClick={handleToggleDropdown} />
+              <UserMenuButton
+                onClick={handleToggleDropdown}
+                userName={userName}
+              />
               <UserDropdown
                 isOpen={isDropdownOpen}
                 setIsOpen={setIsDropdownOpen}
@@ -98,18 +137,7 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className={(isNavOpen ? "block" : "hidden") + " sm:hidden"}>
-        <div className="space-y-1 pb-3 pt-2">
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) =>
-              isActive
-                ? "block px-4 py-2 text-base font-medium text-gray-900 dark:text-gray-300"
-                : "block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-400"
-            }
-          >
-            Dashboard
-          </NavLink>
-        </div>
+        <div className="space-y-1 pb-3 pt-2"></div>
 
         <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">
           <div className="px-4">
@@ -117,7 +145,7 @@ const Navbar: React.FC = () => {
               {userName}
             </div>
             <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              name@columbia.com
+              {userEmail}
             </div>
           </div>
 
@@ -129,7 +157,7 @@ const Navbar: React.FC = () => {
               Perfil
             </NavLink>
             <button
-              onClick={() => {}}
+              onClick={logout}
               className="block w-full px-4 py-2 text-left text-base font-medium text-gray-500 dark:text-gray-400"
             >
               Salir

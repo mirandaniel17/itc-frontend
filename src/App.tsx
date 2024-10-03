@@ -3,10 +3,12 @@ import Login from "../src/pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
-import Users from "./pages/admin/Users";
+import Users from "./pages/users/Users";
 import Index from "./pages/students/Index";
 import Create from "./pages/students/Create";
 import Edit from "./pages/students/Edit";
+import Roles from "./pages/users/Roles";
+import UserDetail from "./pages/users/UserDetail";
 
 function App() {
   return (
@@ -31,6 +33,22 @@ function App() {
             }
           />
           <Route
+            path="/users/:userId"
+            element={
+              <ProtectedRoute>
+                <UserDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/roles"
+            element={
+              <ProtectedRoute>
+                <Roles />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/students"
             element={
               <ProtectedRoute>
@@ -51,6 +69,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Edit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/create"
+            element={
+              <ProtectedRoute>
+                <Create />
               </ProtectedRoute>
             }
           />

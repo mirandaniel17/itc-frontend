@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DropdownItem from "./DropdownUserItem";
 import { Link } from "react-router-dom";
 
 interface UserDropdownProps {
   isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>; // Agregamos esta propiedad
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setName: (name: string) => void;
 }
 
@@ -14,9 +14,29 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
   setIsOpen,
   setName,
 }) => {
+  const [user, setUser] = useState<{ name: string; email: string } | null>(
+    null
+  );
   const navigate = useNavigate();
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/user", {
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.error("Error al obtener los datos del usuario:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (!isOpen || !user) return null;
 
   const logout = async () => {
     try {
@@ -37,15 +57,17 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
     <div className="z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 absolute top-full right-0 mt-2">
       <div className="px-4 py-3">
         <span className="block text-sm text-gray-900 dark:text-white">
-          Daniel Miranda
+          {user.name}
         </span>
         <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
-          name@columbia.com
+          {user.email}
         </span>
       </div>
       <ul className="py-2">
         <li>
           <DropdownItem label="Perfil" to="/profile" />
+        </li>
+        <li>
           <Link
             to="/login"
             onClick={logout}
