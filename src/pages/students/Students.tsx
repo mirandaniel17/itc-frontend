@@ -16,7 +16,7 @@ import { Student } from "../../types/student";
 import { formatDate } from "../../utils/dateUtils";
 import { debounce } from "lodash";
 
-const Index = () => {
+const Students = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -238,4 +238,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Students;

@@ -4,10 +4,10 @@ import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
 import Users from "./pages/users/Users";
-import Index from "./pages/students/Index";
+import Students from "./pages/students/Students";
 import Create from "./pages/students/Create";
 import Edit from "./pages/students/Edit";
-import Roles from "./pages/users/Roles";
+import Permissions from "./pages/users/Permissions";
 import UserDetail from "./pages/users/UserDetail";
 
 function App() {
@@ -41,10 +41,10 @@ function App() {
             }
           />
           <Route
-            path="/users/roles"
+            path="/users/:userId/permissions"
             element={
               <ProtectedRoute>
-                <Roles />
+                <Permissions />
               </ProtectedRoute>
             }
           />
@@ -52,7 +52,7 @@ function App() {
             path="/students"
             element={
               <ProtectedRoute>
-                <Index />
+                <Students />
               </ProtectedRoute>
             }
           />

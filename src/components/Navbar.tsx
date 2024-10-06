@@ -50,6 +50,7 @@ const Navbar: React.FC = () => {
     "/students/create": "Crear Estudiante",
     "/students/edit": "Editar Estudiante",
     "/users": "Usuarios",
+    "/users/permissions": "Permisos",
   };
 
   const generateBreadcrumb = () => {
@@ -58,14 +59,22 @@ const Navbar: React.FC = () => {
     const pathnames = location.pathname.split("/").filter((x) => x);
     let breadcrumb = pathnames.map((part, index) => {
       const route = `/${pathnames.slice(0, index + 1).join("/")}`;
+
+      if (route === `/users/${userId}/permissions`) {
+        return "Permisos";
+      }
+
       if (breadcrumbMap[route]) {
         return breadcrumbMap[route];
       }
+
       if (route.startsWith("/users/") && userId) {
         return "Detalles del Usuario";
       }
+
       return null;
     });
+
     breadcrumb = breadcrumb.filter(Boolean);
     return breadcrumb.join(" / ") || breadcrumbMap["/"];
   };
