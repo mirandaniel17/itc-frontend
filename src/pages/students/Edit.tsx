@@ -7,6 +7,12 @@ import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
 import InputError from "../../components/InputError";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale } from "react-datepicker";
+import { es } from "date-fns/locale";
+
+registerLocale("es", es);
 
 const Edit = () => {
   const { id } = useParams();
@@ -25,8 +31,11 @@ const Edit = () => {
     gender: "",
     status: true,
   });
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchStudent = async () => {
       try {
@@ -63,6 +72,7 @@ const Edit = () => {
           gender: data.gender || "",
           status: data.status !== undefined ? data.status : true,
         });
+        setSelectedDate(data.dateofbirth ? new Date(data.dateofbirth) : null);
       } catch (error) {
         console.error("Error fetching student:", error);
       }
@@ -78,6 +88,12 @@ const Edit = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!selectedDate) {
+      setErrors({ dateofbirth: ["La fecha de nacimiento es obligatoria"] });
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`http://127.0.0.1:8000/api/students/${id}`, {
@@ -87,7 +103,10 @@ const Edit = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          dateofbirth: selectedDate.toISOString(),
+        }),
       });
       if (!response.ok) {
         const result = await response.json();
@@ -238,12 +257,21 @@ const Edit = () => {
                 <InputLabel htmlFor="dateofbirth">
                   Fecha de Nacimiento
                 </InputLabel>
-                <TextInput
-                  type="date"
-                  name="dateofbirth"
-                  value={formData.dateofbirth}
-                  onChange={handleChange}
-                  className="w-full p-3"
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={(date: Date | null) => {
+                    if (date) {
+                      setSelectedDate(date);
+                    }
+                  }}
+                  locale="es"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="Ingresar fecha"
+                  maxDate={new Date()}
+                  className="w-full p-3 text-xs tracking-tighter"
                   required
                 />
                 <InputError message={errors.dateofbirth?.[0]} />

@@ -2,13 +2,17 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
+import { User } from "../../types/user";
 
 const UserDetail = () => {
   const { userId } = useParams<{ userId: string }>();
-  const [user, setUser] = useState<any>({
+
+  const [user, setUser] = useState<User>({
+    id: 0,
     name: "Cargando...",
     email: "Cargando...",
-    created_at: new Date(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     roles: [],
     permissions: [],
   });
@@ -34,16 +38,12 @@ const UserDetail = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+      const data: User = await response.json();
       setUser(data);
     } catch (error) {
       console.log("Error fetching user details:", error);
     }
   };
-
-  useEffect(() => {
-    fetchUserDetails();
-  }, [userId]);
 
   useEffect(() => {
     fetchUserDetails();
@@ -75,7 +75,7 @@ const UserDetail = () => {
           <h2 className="text-lg font-semibold mt-4">Rol</h2>
           {user.roles.length > 0 ? (
             <ul>
-              {user.roles.map((role: any) => (
+              {user.roles.map((role) => (
                 <li key={role.id}>{role.name}</li>
               ))}
             </ul>
@@ -85,7 +85,7 @@ const UserDetail = () => {
           <h2 className="text-lg font-semibold mt-4">Permisos</h2>
           {user.permissions.length > 0 ? (
             <ul>
-              {user.permissions.map((permission: any) => (
+              {user.permissions.map((permission) => (
                 <li key={permission.id}>{permission.name}</li>
               ))}
             </ul>

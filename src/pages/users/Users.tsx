@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { User } from "../../types/user";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import Table from "../../components/Table";
@@ -14,7 +15,7 @@ import Alert from "../../components/Alert";
 import { debounce } from "lodash";
 
 const Users = () => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -129,6 +130,10 @@ const Users = () => {
     navigate(`/users/${userId}/permissions`);
   };
 
+  const handleViewRoles = (userId: number) => {
+    navigate(`/users/${userId}/roles`);
+  };
+
   return (
     <div>
       <Sidebar />
@@ -187,6 +192,12 @@ const Users = () => {
                         onClick: () => handleViewPermissions(user.id),
                         className:
                           "text-white text-xs bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                      },
+                      {
+                        label: "Roles",
+                        onClick: () => handleViewRoles(user.id),
+                        className:
+                          "text-white text-xs bg-gradient-to-r from-sky-400 via-sky-500 to-sky-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-sky-300 dark:focus:ring-sky-800 shadow-lg shadow-sky-500/50 dark:shadow-lg dark:shadow-sky-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
                       },
                     ]}
                   />

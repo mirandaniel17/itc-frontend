@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // Importar useNavigate
+import { useParams, useNavigate } from "react-router-dom";
+import { User } from "../../types/user";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import Alert from "../../components/Alert";
 
 const Permissions = () => {
   const { userId } = useParams<{ userId: string }>();
-  const navigate = useNavigate(); // Hook para navegar
-  const [user, setUser] = useState<any>({
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User>({
+    id: 0,
     name: "Cargando...",
+    email: "Cargando...",
+    roles: [],
     permissions: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   });
   const [allPermissions, setAllPermissions] = useState<string[]>([]);
   const [assignedPermissions, setAssignedPermissions] = useState<string[]>([]);
@@ -66,7 +72,7 @@ const Permissions = () => {
 
       await response.json();
       setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+      setTimeout(() => setShowAlert(false), 5000);
     } catch (error) {
       console.error("Error saving permissions:", error);
     }
@@ -92,7 +98,7 @@ const Permissions = () => {
   };
 
   const goBackToUsers = () => {
-    navigate("/users"); // Navegar a la lista de usuarios
+    navigate("/users");
   };
 
   useEffect(() => {
