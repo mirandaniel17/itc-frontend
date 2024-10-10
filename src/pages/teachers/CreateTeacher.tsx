@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
@@ -11,74 +11,23 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale";
-
 registerLocale("es", es);
 
-const Edit = () => {
-  const { id } = useParams();
+const CreateTeacher = () => {
   const [formData, setFormData] = useState({
     name: "",
     last_name: "",
     second_last_name: "",
-    ci: "",
-    program_type: "",
-    school_cycle: "",
-    shift: "",
-    parallel: "",
-    dateofbirth: "",
-    placeofbirth: "",
     phone: "",
     gender: "",
-    status: true,
+    specialty: "",
+    dateofbirth: "",
+    placeofbirth: "",
   });
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchStudent = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/students/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setFormData({
-          name: data.name || "",
-          last_name: data.last_name || "",
-          second_last_name: data.second_last_name || "",
-          ci: data.ci || "",
-          program_type: data.program_type || "",
-          school_cycle: data.school_cycle || "",
-          shift: data.shift || "",
-          parallel: data.parallel || "",
-          dateofbirth: data.dateofbirth
-            ? new Date(data.dateofbirth).toISOString().split("T")[0]
-            : "",
-          placeofbirth: data.placeofbirth || "",
-          phone: data.phone || "",
-          gender: data.gender || "",
-          status: data.status !== undefined ? data.status : true,
-        });
-        setSelectedDate(data.dateofbirth ? new Date(data.dateofbirth) : null);
-      } catch (error) {
-        console.error("Error fetching student:", error);
-      }
-    };
-    fetchStudent();
-  }, [id]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -94,33 +43,37 @@ const Edit = () => {
       return;
     }
 
+    const data = new FormData();
+    for (const key in formData) {
+      if (Object.prototype.hasOwnProperty.call(formData, key)) {
+        data.append(key, formData[key as keyof typeof formData] as string);
+      }
+    }
+
+    if (selectedDate) {
+      data.append("dateofbirth", selectedDate.toISOString());
+    }
+
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://127.0.0.1:8000/api/students/${id}`, {
-        method: "PUT",
-        credentials: "include",
+      const response = await fetch("http://127.0.0.1:8000/api/teachers", {
+        method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          ...formData,
-          dateofbirth: selectedDate.toISOString(),
-        }),
+        credentials: "include",
+        body: data,
       });
       if (!response.ok) {
         const result = await response.json();
         setErrors(result.errors || {});
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      navigate("/students", {
-        state: {
-          message: "Datos del estudiante actualizado con éxito",
-          color: "green",
-        },
+      navigate("/teachers", {
+        state: { message: "Docente registrado con éxito", color: "green" },
       });
     } catch (error) {
-      console.error("Error updating student:", error);
+      console.error("Error al registrar al docente:", error);
     }
   };
 
@@ -131,7 +84,7 @@ const Edit = () => {
         <Navbar />
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
-            Editar Estudiante
+            FORMULARIO DE REGISTRO DE DOCENTE
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -174,107 +127,23 @@ const Edit = () => {
                   value={formData.second_last_name}
                   onChange={handleChange}
                   className="w-full p-3"
+                  required
                 />
                 <InputError message={errors.second_last_name?.[0]} />
               </div>
 
               <div className="flex flex-col">
-                <InputLabel htmlFor="ci">Cédula de Identidad (CI)</InputLabel>
+                <InputLabel htmlFor="phone">Teléfono</InputLabel>
                 <TextInput
                   type="text"
-                  name="ci"
-                  placeholder="Cédula de Identidad"
-                  value={formData.ci}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                />
-                <InputError message={errors.ci?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="program_type">Tipo de Programa</InputLabel>
-                <SelectInput
-                  name="program_type"
-                  value={formData.program_type}
+                  name="phone"
+                  placeholder="Teléfono"
+                  value={formData.phone}
                   onChange={handleChange}
                   className="w-full p-3"
                   required
-                >
-                  <option value="" disabled>
-                    Seleccionar Tipo de Programa
-                  </option>
-                  <option value="MODULAR">Modular</option>
-                  <option value="CARRERA">Carrera</option>
-                </SelectInput>
-                <InputError message={errors.program_type?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="school_cycle">Ciclo Escolar</InputLabel>
-                <TextInput
-                  type="text"
-                  name="school_cycle"
-                  placeholder="Ciclo Escolar"
-                  value={formData.school_cycle}
-                  onChange={handleChange}
-                  className="w-full p-3"
                 />
-                <InputError message={errors.school_cycle?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="shift">Turno</InputLabel>
-                <SelectInput
-                  name="shift"
-                  value={formData.shift}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                  required
-                >
-                  <option value="" disabled>
-                    Seleccionar Turno
-                  </option>
-                  <option value="MAÑANA">Mañana</option>
-                  <option value="TARDE">Tarde</option>
-                </SelectInput>
-                <InputError message={errors.shift?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="parallel">Paralelo</InputLabel>
-                <TextInput
-                  type="text"
-                  name="parallel"
-                  placeholder="Paralelo"
-                  value={formData.parallel}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                />
-                <InputError message={errors.parallel?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="dateofbirth">
-                  Fecha de Nacimiento
-                </InputLabel>
-                <DatePicker
-                  selected={selectedDate}
-                  onChange={(date: Date | null) => {
-                    if (date) {
-                      setSelectedDate(date);
-                    }
-                  }}
-                  locale="es"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="Ingresar fecha"
-                  maxDate={new Date()}
-                  className="w-full p-3 text-xs tracking-tighter"
-                  required
-                />
-                <InputError message={errors.dateofbirth?.[0]} />
+                <InputError message={errors.phone?.[0]} />
               </div>
 
               <div className="flex flex-col">
@@ -305,17 +174,40 @@ const Edit = () => {
               </div>
 
               <div className="flex flex-col">
-                <InputLabel htmlFor="phone">Teléfono</InputLabel>
-                <TextInput
-                  type="text"
-                  name="phone"
-                  placeholder="Teléfono"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full p-3"
+                <InputLabel htmlFor="dateofbirth">
+                  Fecha de Nacimiento
+                </InputLabel>
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={(date: Date | null) => {
+                    if (date) {
+                      setSelectedDate(date);
+                    }
+                  }}
+                  locale="es"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="Ingresar fecha"
+                  maxDate={new Date()}
+                  className="w-full p-3 text-xs tracking-tighter"
                   required
                 />
-                <InputError message={errors.phone?.[0]} />
+                <InputError message={errors.dateofbirth?.[0]} />
+              </div>
+
+              <div className="flex flex-col">
+                <InputLabel htmlFor="specialty">Especialidad</InputLabel>
+                <TextInput
+                  type="text"
+                  name="specialty"
+                  placeholder="Especialidad"
+                  value={formData.specialty}
+                  onChange={handleChange}
+                  className="w-full p-3"
+                />
+                <InputError message={errors.specialty?.[0]} />
               </div>
 
               <div className="flex flex-col">
@@ -339,7 +231,7 @@ const Edit = () => {
             </div>
 
             <div className="flex justify-end mt-4">
-              <SubmitButton type="submit">Actualizar</SubmitButton>
+              <SubmitButton type="submit">Guardar</SubmitButton>
             </div>
           </form>
         </div>
@@ -348,4 +240,4 @@ const Edit = () => {
   );
 };
 
-export default Edit;
+export default CreateTeacher;

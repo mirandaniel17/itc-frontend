@@ -47,10 +47,12 @@ const Navbar: React.FC = () => {
   const breadcrumbMap: { [key: string]: string } = {
     "/": "Inicio",
     "/students": "Estudiantes",
-    "/students/create": "Crear Estudiante",
-    "/students/edit": "Editar Estudiante",
+    "/students/create": "Registrar Estudiante",
+    "/students/edit": "Actualizar Estudiante",
     "/users": "Usuarios",
     "/users/permissions": "Permisos",
+    "/teachers": "Docentes",
+    "/teachers/create": "Registrar Docente",
   };
 
   const generateBreadcrumb = () => {

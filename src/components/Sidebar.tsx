@@ -53,6 +53,16 @@ const Sidebar: React.FC = () => {
               icon="mdi-account-school"
               label="Estudiantes"
             />
+            <SidebarLink
+              to="/teachers"
+              icon="mdi-human-male-board"
+              label="Docentes"
+            />
+            <SidebarLink
+              to="/courses"
+              icon="mdi-google-classroom"
+              label="Cursos"
+            />
             <DropdownLink
               label="Gestión de Usuarios"
               icon="mdi-security"

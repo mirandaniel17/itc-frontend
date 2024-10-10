@@ -12,11 +12,14 @@ import InactivityHandler from "./components/InactivityHandler";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
 import Users from "./pages/users/Users";
 import Students from "./pages/students/Students";
-import Create from "./pages/students/Create";
-import Edit from "./pages/students/Edit";
+import CreateStudent from "./pages/students/CreateStudent";
+import EditStudent from "./pages/students/EditStudent";
 import Permissions from "./pages/users/Permissions";
 import Roles from "./pages/users/Roles";
 import UserDetail from "./pages/users/UserDetail";
+import Teachers from "./pages/teachers/Teachers";
+import CreateTeacher from "./pages/teachers/CreateTeacher";
+import Courses from "./pages/courses/Courses";
 
 function App() {
   const logout = () => {
@@ -95,7 +98,7 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           path="/students/create"
           element={
             <ProtectedRoute>
-              <Create />
+              <CreateStudent />
             </ProtectedRoute>
           }
         />
@@ -103,15 +106,31 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           path="/students/edit/:id"
           element={
             <ProtectedRoute>
-              <Edit />
+              <EditStudent />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/users/create"
+          path="/teachers"
           element={
             <ProtectedRoute>
-              <Create />
+              <Teachers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teachers/create"
+          element={
+            <ProtectedRoute>
+              <CreateTeacher />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/courses"
+          element={
+            <ProtectedRoute>
+              <Courses />
             </ProtectedRoute>
           }
         />

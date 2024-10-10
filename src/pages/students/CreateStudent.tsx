@@ -13,7 +13,7 @@ import { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale";
 registerLocale("es", es);
 
-const Create = () => {
+const CreateStudent = () => {
   const [formData, setFormData] = useState({
     name: "",
     last_name: "",
@@ -347,4 +347,4 @@ const Create = () => {
   );
 };
 
-export default Create;
+export default CreateStudent;
