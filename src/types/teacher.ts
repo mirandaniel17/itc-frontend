@@ -3,6 +3,7 @@ export interface Teacher {
   last_name: string;
   second_last_name: string;
   name: string;
+  ci: string;
   dateofbirth: string;
   placeofbirth?: string;
   phone: string;

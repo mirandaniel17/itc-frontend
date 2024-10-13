@@ -5,10 +5,6 @@ export interface Student {
   name: string;
   ci: string;
   image: string;
-  program_type: string;
-  school_cycle: string;
-  shift: string;
-  parallel: string;
   dateofbirth: string;
   placeofbirth: string;
   phone: string;

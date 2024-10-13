@@ -18,6 +18,7 @@ const CreateTeacher = () => {
     name: "",
     last_name: "",
     second_last_name: "",
+    ci: "",
     phone: "",
     gender: "",
     specialty: "",
@@ -130,6 +131,20 @@ const CreateTeacher = () => {
                   required
                 />
                 <InputError message={errors.second_last_name?.[0]} />
+              </div>
+
+              <div className="flex flex-col">
+                <InputLabel htmlFor="ci">Cédula de Identidad (CI)</InputLabel>
+                <TextInput
+                  type="text"
+                  name="ci"
+                  placeholder="Cédula de Identidad"
+                  value={formData.ci}
+                  onChange={handleChange}
+                  className="w-full p-3"
+                  required
+                />
+                <InputError message={errors.ci?.[0]} />
               </div>
 
               <div className="flex flex-col">

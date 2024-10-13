@@ -8,15 +8,21 @@ import { Link } from "react-router-dom";
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isCoursesDropdownOpen, setIsCoursesDropdownOpen] = useState(false);
+  const [isUsersDropdownOpen, setIsUsersDropdownOpen] = useState(false);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
+
   useEffect(() => {
-    const isDropdownRoute =
-      location.pathname === "/users/roles" || location.pathname === "/users";
-    setIsDropdownOpen(isDropdownRoute);
+    const isCoursesDropdownRoute =
+      location.pathname === "/courses" || location.pathname === "/modalities";
+    setIsCoursesDropdownOpen(isCoursesDropdownRoute);
+
+    const isUsersDropdownRoute =
+      location.pathname === "/users" || location.pathname === "/users/roles";
+    setIsUsersDropdownOpen(isUsersDropdownRoute);
   }, [location.pathname]);
 
   return (
@@ -41,8 +47,8 @@ const Sidebar: React.FC = () => {
           </button>
           <ul className="space-y-2 font-medium">
             <Link to="/" className="flex items-center ps-2.5 mb-5">
-              <img src="/itc_logo.png" className="h-6 me-3 sm:h-7" alt="Logo" />
-              <span className="self-center tracking-tighter font-light whitespace-nowrap dark:text-white">
+              <img src="/itc_logo.png" className="h-6 me-3 sm:h-8" alt="Logo" />
+              <span className="self-center font-light dark:text-white">
                 Instituto Técnico Columbia
               </span>
             </Link>
@@ -58,22 +64,38 @@ const Sidebar: React.FC = () => {
               icon="mdi-human-male-board"
               label="Docentes"
             />
-            <SidebarLink
-              to="/courses"
-              icon="mdi-google-classroom"
-              label="Cursos"
-            />
+
+            <DropdownLink
+              label="Gestión de Cursos"
+              icon="mdi mdi-cast-education"
+              isOpen={isCoursesDropdownOpen}
+              setIsOpen={setIsCoursesDropdownOpen}
+            >
+              <SidebarLink
+                to="/courses"
+                icon="mdi-google-classroom"
+                label="Cursos"
+                onClick={() => setIsCoursesDropdownOpen(true)}
+              />
+              <SidebarLink
+                to="/modalities"
+                icon="mdi mdi-human-capacity-decrease"
+                label="Modalidades"
+                onClick={() => setIsCoursesDropdownOpen(true)}
+              />
+            </DropdownLink>
+
             <DropdownLink
               label="Gestión de Usuarios"
               icon="mdi-security"
-              isOpen={isDropdownOpen}
-              setIsOpen={setIsDropdownOpen}
+              isOpen={isUsersDropdownOpen}
+              setIsOpen={setIsUsersDropdownOpen}
             >
               <SidebarLink
                 to="/users"
                 icon="mdi-account-multiple-outline"
                 label="Usuarios"
-                onClick={() => setIsDropdownOpen(true)}
+                onClick={() => setIsUsersDropdownOpen(true)}
               />
             </DropdownLink>
           </ul>

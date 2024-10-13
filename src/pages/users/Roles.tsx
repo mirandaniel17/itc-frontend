@@ -98,9 +98,7 @@ const Roles = () => {
         <Navbar />
         <div className="p-6 border-2 border-gray-200 rounded-lg bg-white text-black m-4">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">
-              Roles de {userId}
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-800">Roles</h1>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-lg">

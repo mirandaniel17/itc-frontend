@@ -21,10 +21,6 @@ const EditStudent = () => {
     last_name: "",
     second_last_name: "",
     ci: "",
-    program_type: "",
-    school_cycle: "",
-    shift: "",
-    parallel: "",
     dateofbirth: "",
     placeofbirth: "",
     phone: "",
@@ -60,10 +56,6 @@ const EditStudent = () => {
           last_name: data.last_name || "",
           second_last_name: data.second_last_name || "",
           ci: data.ci || "",
-          program_type: data.program_type || "",
-          school_cycle: data.school_cycle || "",
-          shift: data.shift || "",
-          parallel: data.parallel || "",
           dateofbirth: data.dateofbirth
             ? new Date(data.dateofbirth).toISOString().split("T")[0]
             : "",
@@ -189,68 +181,6 @@ const EditStudent = () => {
                   className="w-full p-3"
                 />
                 <InputError message={errors.ci?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="program_type">Tipo de Programa</InputLabel>
-                <SelectInput
-                  name="program_type"
-                  value={formData.program_type}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                  required
-                >
-                  <option value="" disabled>
-                    Seleccionar Tipo de Programa
-                  </option>
-                  <option value="MODULAR">Modular</option>
-                  <option value="CARRERA">Carrera</option>
-                </SelectInput>
-                <InputError message={errors.program_type?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="school_cycle">Ciclo Escolar</InputLabel>
-                <TextInput
-                  type="text"
-                  name="school_cycle"
-                  placeholder="Ciclo Escolar"
-                  value={formData.school_cycle}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                />
-                <InputError message={errors.school_cycle?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="shift">Turno</InputLabel>
-                <SelectInput
-                  name="shift"
-                  value={formData.shift}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                  required
-                >
-                  <option value="" disabled>
-                    Seleccionar Turno
-                  </option>
-                  <option value="MAÑANA">Mañana</option>
-                  <option value="TARDE">Tarde</option>
-                </SelectInput>
-                <InputError message={errors.shift?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="parallel">Paralelo</InputLabel>
-                <TextInput
-                  type="text"
-                  name="parallel"
-                  placeholder="Paralelo"
-                  value={formData.parallel}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                />
-                <InputError message={errors.parallel?.[0]} />
               </div>
 
               <div className="flex flex-col">

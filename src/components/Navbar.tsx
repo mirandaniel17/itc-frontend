@@ -8,6 +8,8 @@ const Navbar: React.FC = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [userName, setUserName] = useState("Cargando...");
   const [userEmail, setUserEmail] = useState("Cargando...");
+  const [notifications, setNotifications] = useState(3);
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,6 +46,16 @@ const Navbar: React.FC = () => {
     }
   };
 
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullScreen(true);
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+      setIsFullScreen(false);
+    }
+  };
+
   const breadcrumbMap: { [key: string]: string } = {
     "/": "Inicio",
     "/students": "Estudiantes",
@@ -53,6 +65,12 @@ const Navbar: React.FC = () => {
     "/users/permissions": "Permisos",
     "/teachers": "Docentes",
     "/teachers/create": "Registrar Docente",
+    "/teachers/edit": "Actualizar Docente",
+    "/modalities": "Modalidades",
+    "/modalities/create": "Registrar Modalidad",
+    "/modalities/edit": "Actualizar Modalidad",
+    "/courses": "Cursos",
+    "/courses/create": "Registrar Curso",
   };
 
   const generateBreadcrumb = () => {
@@ -70,8 +88,8 @@ const Navbar: React.FC = () => {
         return breadcrumbMap[route];
       }
 
-      if (route.startsWith("/users/") && userId) {
-        return "Detalles del Usuario";
+      if (route === `/users/${userId}/roles`) {
+        return "Roles";
       }
 
       return null;
@@ -96,13 +114,29 @@ const Navbar: React.FC = () => {
           <div className="flex">
             <div className="flex shrink-0 items-center"></div>
             <div className="hidden sm:ml-10 sm:flex p-5">
-              <span className="text-gray-900 dark:text-gray-300 tracking-medium text-sm font-extralight">
+              <span className="text-gray-900 dark:text-gray-300 tracking-medium text-sm">
                 {generateBreadcrumb()}
               </span>
             </div>
           </div>
 
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+          <div className="hidden sm:flex items-center space-x-4">
+            <div className="relative">
+              <span className="mdi mdi-bell-outline text-2xl text-gray-500 cursor-pointer"></span>
+              {notifications > 0 && (
+                <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-600 text-white text-xs leading-tight text-center">
+                  {notifications}
+                </span>
+              )}
+            </div>
+
+            <div
+              onClick={toggleFullScreen}
+              className="hidden sm:block cursor-pointer"
+            >
+              <span className="mdi mdi-fullscreen text-2xl text-gray-500"></span>
+            </div>
+
             <div className="relative ml-3">
               <UserMenuButton
                 onClick={handleToggleDropdown}
@@ -116,7 +150,7 @@ const Navbar: React.FC = () => {
             </div>
           </div>
 
-          <div className="-mr-2 flex items-center sm:hidden">
+          <div className="flex items-center sm:hidden">
             <button
               onClick={handleToggleNav}
               className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400"
@@ -148,7 +182,14 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className={(isNavOpen ? "block" : "hidden") + " sm:hidden"}>
-        <div className="space-y-1 pb-3 pt-2"></div>
+        <div className="space-y-1 pb-3 pt-2">
+          <div className="flex items-center px-4">
+            <span className="mdi mdi-bell-outline text-xl text-gray-500 mr-2"></span>
+            <span className="text-sm font-medium text-gray-500">
+              Notificaciones: {notifications}
+            </span>
+          </div>
+        </div>
 
         <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">
           <div className="px-4">
