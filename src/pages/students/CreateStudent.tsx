@@ -30,6 +30,9 @@ const CreateStudent = () => {
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageName, setImageName] = useState<string>("");
   const navigate = useNavigate();
 
   const handleChange = (
@@ -42,8 +45,28 @@ const CreateStudent = () => {
     const file = e.target.files?.[0];
     if (file) {
       setImage(file);
+      setImageName(file.name);
       setPreviewImage(URL.createObjectURL(file));
+      setIsUploading(true);
+      const interval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setIsUploading(false);
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 200);
     }
+  };
+
+  const handleRemoveImage = () => {
+    setImage(null);
+    setImageName("");
+    setPreviewImage(null);
+    setUploadProgress(0);
+    setIsUploading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -244,23 +267,49 @@ const CreateStudent = () => {
                 <InputLabel htmlFor="image">
                   Fotografía del Estudiante
                 </InputLabel>
-                <TextInput
+                <input
                   type="file"
+                  id="image-upload"
                   name="image"
                   accept="image/*"
                   onChange={handleFileChange}
-                  className="w-full p-3"
                 />
                 {previewImage && (
-                  <div className="flex flex-col">
-                    <InputLabel>Vista Previa</InputLabel>
-                    <img
-                      src={previewImage}
-                      alt="Vista previa"
-                      className="w-52 h-auto border rounded-lg"
-                    />
+                  <div className="relative mt-3">
+                    <div className="relative">
+                      <img
+                        src={previewImage}
+                        alt="Vista previa"
+                        className="w-full h-auto object-cover rounded-lg shadow-md"
+                        style={{ maxHeight: "300px" }}
+                      />
+                      {isUploading && (
+                        <div
+                          className="absolute bottom-0 left-0 h-2 bg-green-500"
+                          style={{
+                            width: `${uploadProgress}%`,
+                            transition: "width 0.3s ease",
+                          }}
+                        ></div>
+                      )}
+                      {uploadProgress === 100 && (
+                        <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
+                          <p className="text-lg font-bold shadow-lg">
+                            Imagen subida exitosamente
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1 hover:bg-gray-600 transition-all duration-200"
+                      onClick={handleRemoveImage}
+                    >
+                      <i className="mdi mdi-close"></i>
+                    </button>
                   </div>
                 )}
+                {imageName && <p className="mt-2">{imageName}</p>}
                 <InputError message={errors.image?.[0]} />
               </div>
             </div>
