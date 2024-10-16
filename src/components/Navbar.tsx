@@ -16,12 +16,19 @@ const Navbar: React.FC = () => {
     const fetchUser = async () => {
       try {
         const response = await fetch("http://localhost:8000/api/user", {
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Si usas JWT
+          },
         });
+
+        if (!response.ok) {
+          throw new Error("Error al obtener los datos del usuario");
+        }
+
         const data = await response.json();
-        setUserName(data.name);
-        setUserEmail(data.email);
+        setUserName(data.user.name);
+        setUserEmail(data.user.email);
       } catch (error) {
         console.error("Error al obtener el usuario:", error);
       }
@@ -58,6 +65,7 @@ const Navbar: React.FC = () => {
 
   const breadcrumbMap: { [key: string]: string } = {
     "/": "Inicio",
+    "/profile": "Perfil",
     "/students": "Estudiantes",
     "/students/create": "Registrar Estudiante",
     "/students/edit": "Actualizar Estudiante",
@@ -71,6 +79,7 @@ const Navbar: React.FC = () => {
     "/modalities/edit": "Actualizar Modalidad",
     "/courses": "Cursos",
     "/courses/create": "Registrar Curso",
+    "/courses/edit": "Actualizar Curso",
   };
 
   const generateBreadcrumb = () => {

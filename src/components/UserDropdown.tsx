@@ -27,7 +27,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
           credentials: "include",
         });
         const data = await response.json();
-        setUser(data);
+        setUser({
+          name: data.user.name,
+          email: data.user.email,
+        });
       } catch (error) {
         console.error("Error al obtener los datos del usuario:", error);
       }
