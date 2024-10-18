@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import Layout from "../../components/Layout";
 
 const EditModality = () => {
   const { id } = useParams();
@@ -14,6 +15,7 @@ const EditModality = () => {
     duration_in_months: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,8 +41,10 @@ const EditModality = () => {
           name: data.name || "",
           duration_in_months: data.duration_in_months || "",
         });
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching modality:", error);
+        setLoading(false);
       }
     };
     fetchModality();
@@ -84,27 +88,28 @@ const EditModality = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
+      <Layout>
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
             Editar Modalidad
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              {/* Campo de nombre de la modalidad */}
               <div className="flex flex-col">
                 <InputLabel htmlFor="name">Nombre de la Modalidad</InputLabel>
-                <TextInput
-                  type="text"
-                  name="name"
-                  placeholder="Nombre de la Modalidad"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                  required
-                />
+                {loading ? (
+                  <Skeleton height={40} />
+                ) : (
+                  <TextInput
+                    type="text"
+                    name="name"
+                    placeholder="Nombre de la Modalidad"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full p-3"
+                    required
+                  />
+                )}
                 <InputError message={errors.name?.[0]} />
               </div>
 
@@ -113,15 +118,19 @@ const EditModality = () => {
                 <InputLabel htmlFor="duration_in_months">
                   Duración (Meses)
                 </InputLabel>
-                <TextInput
-                  type="number"
-                  name="duration_in_months"
-                  placeholder="Duración en Meses"
-                  value={formData.duration_in_months}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                  required
-                />
+                {loading ? (
+                  <Skeleton height={40} />
+                ) : (
+                  <TextInput
+                    type="number"
+                    name="duration_in_months"
+                    placeholder="Duración en Meses"
+                    value={formData.duration_in_months}
+                    onChange={handleChange}
+                    className="w-full p-3"
+                    required
+                  />
+                )}
                 <InputError message={errors.duration_in_months?.[0]} />
               </div>
             </div>
@@ -131,7 +140,7 @@ const EditModality = () => {
             </div>
           </form>
         </div>
-      </div>
+      </Layout>
     </div>
   );
 };

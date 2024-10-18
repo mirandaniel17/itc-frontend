@@ -27,6 +27,7 @@ import EditModality from "./pages/modalities/EditModality";
 import CreateCourse from "./pages/courses/CreateCourse";
 import EditCourse from "./pages/courses/EditCourse";
 import Profile from "./pages/profile/Profile";
+import StudentProfile from "./pages/students/StudentProfile";
 
 function App() {
   const logout = () => {
@@ -114,6 +115,14 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           element={
             <ProtectedRoute>
               <EditStudent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/students/profile/:id"
+          element={
+            <ProtectedRoute>
+              <StudentProfile />
             </ProtectedRoute>
           }
         />

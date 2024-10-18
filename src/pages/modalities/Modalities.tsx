@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import Table from "../../components/Table";
 import TableHead from "../../components/TableHead";
 import TableBody from "../../components/TableBody";
@@ -14,6 +12,9 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import Alert from "../../components/Alert";
 import { Modality } from "../../types/modality";
 import { debounce } from "lodash";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import Layout from "../../components/Layout";
 
 const Modalities = () => {
   const [modalities, setModalities] = useState<Modality[]>([]);
@@ -25,6 +26,7 @@ const Modalities = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColor, setAlertColor] = useState("blue");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -49,8 +51,10 @@ const Modalities = () => {
       setModalities(data.data);
       setCurrentPage(data.current_page);
       setTotalPages(data.last_page);
+      setLoading(false);
     } catch (error) {
       console.log("Error fetching modalities:", error);
+      setLoading(false);
     }
   };
 
@@ -141,74 +145,88 @@ const Modalities = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
-        <div className="p-4 border-2 border-gray-200 rounded-lg dark:border-gray-700 bg-white dark:bg-gray-800 text-black dark:text-white m-4">
-          {showAlert && <Alert message={alertMessage} color={alertColor} />}
-          <div className="flex justify-between items-center mb-4">
-            <form>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none">
-                  <span className="mdi mdi-magnify"></span>
-                </div>
-                <input
-                  type="search"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="block max-w-2xl p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500"
-                  placeholder="Texto a buscar"
-                />
+      <Layout>
+        {showAlert && <Alert message={alertMessage} color={alertColor} />}
+        <div className="flex justify-between items-center mb-4">
+          <form>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none">
+                <span className="mdi mdi-magnify"></span>
               </div>
-            </form>
-            <AddButton label="Nuevo" onClick={handleNew} />
-          </div>
-          <Table>
-            <TableHead headers={["Nombre", "Duración", "Acciones"]} />
-            <TableBody>
-              {modalities.map((modality) => (
-                <TableRow key={modality.id}>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {modality.name}
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="block max-w-2xl p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500"
+                placeholder="Texto a buscar"
+              />
+            </div>
+          </form>
+          <AddButton label="Nuevo" onClick={handleNew} />
+        </div>
+        <Table>
+          <TableHead headers={["Nombre", "Duración", "Acciones"]} />
+          <TableBody>
+            {loading
+              ? [...Array(10)].map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Skeleton width={100} height={20} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton width={100} height={20} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton width={150} height={20} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              : modalities.map((modality) => (
+                  <TableRow key={modality.id}>
+                    <TableCell>
+                      <div className="pl-3">
+                        <div className="font-semibold text-xs">
+                          {modality.name}
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {modality.duration_in_months} meses
+                    </TableCell>
+                    <TableCell>
+                      <div className="pl-3">
+                        <div className="font-semibold text-xs">
+                          {modality.duration_in_months} meses
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableActionButtons
-                    actions={[
-                      {
-                        label: "Editar",
-                        onClick: () => handleEdit(modality),
-                        className:
-                          "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                      },
-                      {
-                        label: "Eliminar",
-                        onClick: () => handleDeleteClick(modality.id),
-                        className:
-                          "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                      },
-                    ]}
-                  />
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    </TableCell>
+                    <TableActionButtons
+                      actions={[
+                        {
+                          label: "Editar",
+                          onClick: () => handleEdit(modality),
+                          className:
+                            "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                        },
+                        {
+                          label: "Eliminar",
+                          onClick: () => handleDeleteClick(modality.id),
+                          className:
+                            "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                        },
+                      ]}
+                    />
+                  </TableRow>
+                ))}
+          </TableBody>
+        </Table>
+        {loading ? (
+          <Skeleton width={300} height={30} />
+        ) : (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
           />
-        </div>
-      </div>
+        )}
+      </Layout>
 
       <ConfirmationModal
         message="¿Estás seguro de que quieres eliminar esta modalidad?"

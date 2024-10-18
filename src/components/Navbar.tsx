@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
         const response = await fetch("http://localhost:8000/api/user", {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Si usas JWT
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
 
@@ -69,6 +69,7 @@ const Navbar: React.FC = () => {
     "/students": "Estudiantes",
     "/students/create": "Registrar Estudiante",
     "/students/edit": "Actualizar Estudiante",
+    "/students/profile": "Perfil del Estudiante",
     "/users": "Usuarios",
     "/users/permissions": "Permisos",
     "/teachers": "Docentes",
@@ -91,6 +92,10 @@ const Navbar: React.FC = () => {
 
       if (route === `/users/${userId}/permissions`) {
         return "Permisos";
+      }
+
+      if (route === `/users/${userId}`) {
+        return "Detalles del Usuario";
       }
 
       if (breadcrumbMap[route]) {

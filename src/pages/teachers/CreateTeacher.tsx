@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
@@ -11,6 +9,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale";
+import Layout from "../../components/Layout";
 registerLocale("es", es);
 
 const CreateTeacher = () => {
@@ -80,9 +79,7 @@ const CreateTeacher = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
+      <Layout>
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
             FORMULARIO DE REGISTRO DE DOCENTE
@@ -250,7 +247,7 @@ const CreateTeacher = () => {
             </div>
           </form>
         </div>
-      </div>
+      </Layout>
     </div>
   );
 };

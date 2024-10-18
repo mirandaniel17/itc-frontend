@@ -1,21 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { User } from "../../types/user";
+import Layout from "../../components/Layout";
 
 const UserDetail = () => {
   const { userId } = useParams<{ userId: string }>();
 
-  const [user, setUser] = useState<User>({
-    id: 0,
-    name: "Cargando...",
-    email: "Cargando...",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    roles: [],
-    permissions: [],
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchUserDetails = async () => {
     try {
@@ -40,8 +34,10 @@ const UserDetail = () => {
       }
       const data: User = await response.json();
       setUser(data);
+      setLoading(false);
     } catch (error) {
       console.log("Error fetching user details:", error);
+      setLoading(false);
     }
   };
 
@@ -51,29 +47,41 @@ const UserDetail = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
-        <div className="p-4 border-2 border-gray-200 rounded-lg dark:border-gray-700 bg-white dark:bg-gray-800 text-black dark:text-white m-4">
-          <h1 className="text-xl font-semibold">Detalles del Usuario</h1>
+      <Layout>
+        <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
+          <h1 className="text-2xl font-bold text-gray-800 my-4">
+            Detalles del Usuario
+          </h1>
+
           <div className="mt-4">
             <p>
-              <strong>Nombre:</strong> {user.name}
+              <strong>Nombre:</strong>{" "}
+              {loading ? <Skeleton width={150} /> : user?.name}
             </p>
           </div>
+
           <div className="mt-4">
             <p>
-              <strong>Correo Electrónico:</strong> {user.email}
+              <strong>Correo Electrónico:</strong>{" "}
+              {loading ? <Skeleton width={200} /> : user?.email}
             </p>
           </div>
+
           <div className="mt-4">
             <p>
               <strong>Fecha de Creación:</strong>{" "}
-              {new Date(user.created_at).toLocaleDateString()}
+              {loading ? (
+                <Skeleton width={100} />
+              ) : (
+                new Date(user?.created_at || "").toLocaleDateString()
+              )}
             </p>
           </div>
+
           <h2 className="text-lg font-semibold mt-4">Rol</h2>
-          {user.roles.length > 0 ? (
+          {loading ? (
+            <Skeleton count={1} width={200} />
+          ) : user && user.roles && user.roles.length > 0 ? (
             <ul>
               {user.roles.map((role) => (
                 <li key={role.id}>{role.name}</li>
@@ -82,8 +90,11 @@ const UserDetail = () => {
           ) : (
             <p>No hay roles asignados.</p>
           )}
+
           <h2 className="text-lg font-semibold mt-4">Permisos</h2>
-          {user.permissions.length > 0 ? (
+          {loading ? (
+            <Skeleton count={2} width={250} />
+          ) : user && user.permissions && user.permissions.length > 0 ? (
             <ul>
               {user.permissions.map((permission) => (
                 <li key={permission.id}>{permission.name}</li>
@@ -93,7 +104,7 @@ const UserDetail = () => {
             <p>No hay permisos asignados.</p>
           )}
         </div>
-      </div>
+      </Layout>
     </div>
   );
 };

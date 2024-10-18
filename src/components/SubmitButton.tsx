@@ -14,7 +14,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
   return (
     <button
       {...props}
-      className={`inline-flex items-center rounded-md border border-transparent bg-sky-800 px-4 py-2 text-xs font-semibold uppercase tracking-tight text-white transition duration-150 ease-in-out hover:bg-sky-700 focus:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 ${
+      className={`text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ${
         disabled ? "opacity-25" : ""
       } ${className}`}
       disabled={disabled}

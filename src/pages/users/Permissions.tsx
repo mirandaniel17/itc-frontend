@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { User } from "../../types/user";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import Alert from "../../components/Alert";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import Layout from "../../components/Layout";
 
 const Permissions = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -21,6 +22,7 @@ const Permissions = () => {
   const [assignedPermissions, setAssignedPermissions] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchUserDetails = async () => {
     try {
@@ -44,6 +46,7 @@ const Permissions = () => {
       setUser(data.user);
       setAllPermissions(data.all_permissions);
       setAssignedPermissions(data.assigned_permissions);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching user permissions:", error);
     }
@@ -114,21 +117,18 @@ const Permissions = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
-        <div className="p-6 border-2 border-gray-200 rounded-lg bg-white text-black m-4">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">
-              Permisos de {user.name}
-            </h1>
-          </div>
+      <Layout>
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold text-gray-800 my-4">
+            Permisos de {loading ? <Skeleton width={150} /> : user.name}
+          </h1>
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+            Seleccionar Permisos
+          </h2>
 
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">
-              Seleccionar Permisos
-            </h2>
-
+          {loading ? (
+            <Skeleton count={6} height={30} />
+          ) : (
             <ul className="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg">
               <li className="w-full border-b border-gray-200 rounded-t-lg">
                 <div className="flex items-center ps-3">
@@ -170,9 +170,8 @@ const Permissions = () => {
                 </li>
               ))}
             </ul>
-          </div>
-
-          <div className="mt-4 flex gap-2">
+          )}
+          <div className="mt-4 flex gap-2 justify-end">
             <button
               onClick={savePermissions}
               className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
@@ -186,12 +185,12 @@ const Permissions = () => {
               Volver
             </button>
           </div>
-
-          {showAlert && (
-            <Alert message="Permisos guardados con éxito." color="green" />
-          )}
         </div>
-      </div>
+
+        {showAlert && (
+          <Alert message="Permisos guardados con éxito." color="green" />
+        )}
+      </Layout>
     </div>
   );
 };

@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
@@ -14,7 +12,9 @@ import { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale";
 import { Teacher } from "../../types/teacher";
 import { Modality } from "../../types/modality";
-
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import Layout from "../../components/Layout";
 registerLocale("es", es);
 
 const EditCourse = () => {
@@ -35,6 +35,7 @@ const EditCourse = () => {
   const [alertColor, setAlertColor] = useState("blue");
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,8 +65,10 @@ const EditCourse = () => {
         if (data.end_date) {
           setSelectedEndDate(new Date(data.end_date));
         }
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching course:", error);
+        setLoading(false);
       }
     };
 
@@ -184,113 +187,115 @@ const EditCourse = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
+      <Layout>
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
             Editar Curso
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {showAlert && <Alert message={alertMessage} color={alertColor} />}
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              <div className="flex flex-col">
-                <InputLabel htmlFor="name">Nombre del Curso</InputLabel>
-                <TextInput
-                  type="text"
-                  name="name"
-                  placeholder="Nombre del Curso"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-                <InputError message={errors.name?.[0]} />
+          {showAlert && <Alert message={alertMessage} color={alertColor} />}
+          {loading ? (
+            <Skeleton height={40} count={8} />
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="name">Nombre del Curso</InputLabel>
+                  <TextInput
+                    type="text"
+                    name="name"
+                    placeholder="Nombre del Curso"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                  <InputError message={errors.name?.[0]} />
+                </div>
+
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="description">Descripción</InputLabel>
+                  <TextInput
+                    type="text"
+                    name="description"
+                    placeholder="Descripción"
+                    value={formData.description}
+                    onChange={handleChange}
+                  />
+                  <InputError message={errors.description?.[0]} />
+                </div>
+
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="start_date">Fecha de Inicio</InputLabel>
+                  <DatePicker
+                    selected={selectedStartDate}
+                    onChange={(date: Date | null) => setSelectedStartDate(date)}
+                    locale="es"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Seleccionar fecha de inicio"
+                    className="w-full p-3 text-xs tracking-tighter"
+                    required
+                  />
+                  <InputError message={errors.start_date?.[0]} />
+                </div>
+
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="end_date">
+                    Fecha de Finalización
+                  </InputLabel>
+                  <DatePicker
+                    selected={selectedEndDate}
+                    onChange={(date: Date | null) => setSelectedEndDate(date)}
+                    locale="es"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Seleccionar fecha de finalización"
+                    className="w-full p-3 text-xs tracking-tighter"
+                    required
+                  />
+                  <InputError message={errors.end_date?.[0]} />
+                </div>
+
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="teacher_id">Docente</InputLabel>
+                  <Select
+                    options={teacherOptions}
+                    onChange={handleTeacherChange}
+                    value={teacherOptions.find(
+                      (option) => option.value === Number(formData.teacher_id)
+                    )}
+                    isSearchable
+                    placeholder="Buscar docente"
+                    className="w-full text-xs tracking-tighter"
+                  />
+                  <InputError message={errors.teacher_id?.[0]} />
+                </div>
+
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="modality_id">Modalidad</InputLabel>
+                  <Select
+                    options={modalityOptions}
+                    onChange={handleModalityChange}
+                    value={modalityOptions.find(
+                      (option) => option.value === Number(formData.modality_id)
+                    )}
+                    placeholder="Seleccionar Modalidad"
+                    className="w-full text-xs tracking-tighter"
+                  />
+                  <InputError message={errors.modality_id?.[0]} />
+                </div>
               </div>
 
-              <div className="flex flex-col">
-                <InputLabel htmlFor="description">Descripción</InputLabel>
-                <TextInput
-                  type="text"
-                  name="description"
-                  placeholder="Descripción"
-                  value={formData.description}
-                  onChange={handleChange}
-                />
-                <InputError message={errors.description?.[0]} />
+              <div className="flex justify-end mt-4">
+                <SubmitButton type="submit">Actualizar</SubmitButton>
               </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="start_date">Fecha de Inicio</InputLabel>
-                <DatePicker
-                  selected={selectedStartDate}
-                  onChange={(date: Date | null) => setSelectedStartDate(date)}
-                  locale="es"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="Seleccionar fecha de inicio"
-                  className="w-full p-3 text-xs tracking-tighter"
-                  required
-                />
-                <InputError message={errors.start_date?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="end_date">
-                  Fecha de Finalización
-                </InputLabel>
-                <DatePicker
-                  selected={selectedEndDate}
-                  onChange={(date: Date | null) => setSelectedEndDate(date)}
-                  locale="es"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="Seleccionar fecha de finalización"
-                  className="w-full p-3 text-xs tracking-tighter"
-                  required
-                />
-                <InputError message={errors.end_date?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="teacher_id">Docente</InputLabel>
-                <Select
-                  options={teacherOptions}
-                  onChange={handleTeacherChange}
-                  value={teacherOptions.find(
-                    (option) => option.value === Number(formData.teacher_id)
-                  )}
-                  isSearchable
-                  placeholder="Buscar docente"
-                  className="w-full text-xs tracking-tighter"
-                />
-                <InputError message={errors.teacher_id?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="modality_id">Modalidad</InputLabel>
-                <Select
-                  options={modalityOptions}
-                  onChange={handleModalityChange}
-                  value={modalityOptions.find(
-                    (option) => option.value === Number(formData.modality_id)
-                  )}
-                  placeholder="Seleccionar Modalidad"
-                  className="w-full text-xs tracking-tighter"
-                />
-                <InputError message={errors.modality_id?.[0]} />
-              </div>
-            </div>
-
-            <div className="flex justify-end mt-4">
-              <SubmitButton type="submit">Actualizar</SubmitButton>
-            </div>
-          </form>
+            </form>
+          )}
         </div>
-      </div>
+      </Layout>
     </div>
   );
 };

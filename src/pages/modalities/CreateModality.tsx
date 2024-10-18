@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
+import Layout from "../../components/Layout";
 
 const CreateModality = () => {
   const [formData, setFormData] = useState({
@@ -48,9 +47,7 @@ const CreateModality = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
+      <Layout>
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
             Formulario de Registro de Modalidad
@@ -93,7 +90,7 @@ const CreateModality = () => {
             </div>
           </form>
         </div>
-      </div>
+      </Layout>
     </div>
   );
 };

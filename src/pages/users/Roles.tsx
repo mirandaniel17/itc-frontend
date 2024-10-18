@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import Alert from "../../components/Alert";
 import SelectInput from "../../components/SelectInput";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import Layout from "../../components/Layout";
 
 const Roles = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -12,6 +13,7 @@ const Roles = () => {
   const [allRoles, setAllRoles] = useState<string[]>([]);
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchUserRoles = async () => {
     try {
@@ -49,6 +51,7 @@ const Roles = () => {
 
       const rolesData = await rolesResponse.json();
       setAllRoles(rolesData.roles);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching roles or user role:", error);
     }
@@ -93,22 +96,22 @@ const Roles = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
-        <div className="p-6 border-2 border-gray-200 rounded-lg bg-white text-black m-4">
+      <Layout>
+        <div className="bg-white p-6 rounded-lg shadow-lg">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-gray-800">Roles</h1>
           </div>
+          <h2 className="text-md font-semibold text-gray-700 mb-4">
+            {loading ? <Skeleton width={150} /> : `Rol Actual: ${userRole}`}
+          </h2>
 
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-md font-semibold text-gray-700 mb-4">
-              Rol Actual: {userRole}
-            </h2>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Cambiar Rol:
-              </label>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Cambiar Rol:
+            </label>
+            {loading ? (
+              <Skeleton width={300} height={40} />
+            ) : (
               <SelectInput
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
@@ -121,29 +124,29 @@ const Roles = () => {
                   </option>
                 ))}
               </SelectInput>
-            </div>
-
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={saveRole}
-                className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-              >
-                Guardar Cambios
-              </button>
-              <button
-                onClick={goBackToUsers}
-                className="text-white bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-gray-300 dark:focus:ring-gray-800 shadow-lg shadow-gray-500/50 dark:shadow-lg dark:shadow-gray-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-              >
-                Volver
-              </button>
-            </div>
-
-            {showAlert && (
-              <Alert message="Rol actualizado con éxito." color="green" />
             )}
           </div>
+
+          <div className="mt-4 flex gap-2 justify-end">
+            <button
+              onClick={saveRole}
+              className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+            >
+              Guardar Cambios
+            </button>
+            <button
+              onClick={goBackToUsers}
+              className="text-white bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-gray-300 dark:focus:ring-gray-800 shadow-lg shadow-gray-500/50 dark:shadow-lg dark:shadow-gray-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+            >
+              Volver
+            </button>
+          </div>
+
+          {showAlert && (
+            <Alert message="Rol actualizado con éxito." color="green" />
+          )}
         </div>
-      </div>
+      </Layout>
     </div>
   );
 };

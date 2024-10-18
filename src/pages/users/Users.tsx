@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { User } from "../../types/user";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import Table from "../../components/Table";
 import TableHead from "../../components/TableHead";
 import TableBody from "../../components/TableBody";
@@ -12,7 +10,10 @@ import TableActionButtons from "../../components/TableActionButtons";
 import Pagination from "../../components/Pagination";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import Alert from "../../components/Alert";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { debounce } from "lodash";
+import Layout from "../../components/Layout";
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -24,10 +25,12 @@ const Users = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColor, setAlertColor] = useState("blue");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
   const fetchUsers = async (page: number, query = "") => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -50,8 +53,10 @@ const Users = () => {
       setUsers(data.data);
       setCurrentPage(data.current_page);
       setTotalPages(data.last_page);
+      setLoading(false);
     } catch (error) {
       console.log("Error fetching users:", error);
+      setLoading(false);
     }
   };
 
@@ -136,82 +141,102 @@ const Users = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
-        <div className="p-4 border-2 border-gray-200 rounded-lg dark:border-gray-700 bg-white dark:bg-gray-800 text-black dark:text-white m-4">
-          {showAlert && <Alert message={alertMessage} color={alertColor} />}
-          <div className="flex justify-between items-center mb-4">
-            <form className="max-w-lg">
-              <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
-                Search
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <span className="mdi mdi-magnify"></span>
-                </div>
-                <input
-                  type="search"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="block w-full px-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500"
-                  placeholder="Texto a buscar"
-                />
+      <Layout>
+        {showAlert && <Alert message={alertMessage} color={alertColor} />}
+        <div className="flex justify-between items-center mb-4">
+          <form className="max-w-lg">
+            <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
+              Search
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <span className="mdi mdi-magnify"></span>
               </div>
-            </form>
-          </div>
-          <Table>
-            <TableHead
-              headers={[
-                "Nombre",
-                "Correo Electrónico",
-                "Rol",
-                "Fecha de Creación",
-                "Acciones",
-              ]}
-            />
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.roles[0]?.name || "Sin rol"}</TableCell>
-                  <TableCell>
-                    {new Date(user.created_at).toLocaleDateString()}
-                  </TableCell>
-                  <TableActionButtons
-                    actions={[
-                      {
-                        label: "Ver",
-                        onClick: () => handleViewDetails(user.id),
-                        className:
-                          "text-white text-xs bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                      },
-                      {
-                        label: "Permisos",
-                        onClick: () => handleViewPermissions(user.id),
-                        className:
-                          "text-white text-xs bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                      },
-                      {
-                        label: "Roles",
-                        onClick: () => handleViewRoles(user.id),
-                        className:
-                          "text-white text-xs bg-gradient-to-r from-sky-400 via-sky-500 to-sky-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-sky-300 dark:focus:ring-sky-800 shadow-lg shadow-sky-500/50 dark:shadow-lg dark:shadow-sky-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                      },
-                    ]}
-                  />
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="block w-full px-3 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500"
+                placeholder="Texto a buscar"
+              />
+            </div>
+          </form>
         </div>
-      </div>
+        <Table>
+          <TableHead
+            headers={[
+              "Nombre",
+              "Correo Electrónico",
+              "Rol",
+              "Fecha de Creación",
+              "Acciones",
+            ]}
+          />
+          <TableBody>
+            {loading
+              ? Array.from({ length: 10 }).map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Skeleton height={30} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton height={30} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton height={30} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton height={30} />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Skeleton width={80} height={30} />
+                        <Skeleton width={80} height={30} />
+                        <Skeleton width={80} height={30} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              : users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.roles[0]?.name || "Sin rol"}</TableCell>
+                    <TableCell>
+                      {new Date(user.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableActionButtons
+                      actions={[
+                        {
+                          label: "Ver",
+                          onClick: () => handleViewDetails(user.id),
+                          className:
+                            "text-white text-xs bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                        },
+                        {
+                          label: "Permisos",
+                          onClick: () => handleViewPermissions(user.id),
+                          className:
+                            "text-white text-xs bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                        },
+                        {
+                          label: "Roles",
+                          onClick: () => handleViewRoles(user.id),
+                          className:
+                            "text-white text-xs bg-gradient-to-r from-sky-400 via-sky-500 to-sky-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-sky-300 dark:focus:ring-sky-800 shadow-lg shadow-sky-500/50 dark:shadow-lg dark:shadow-sky-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                        },
+                      ]}
+                    />
+                  </TableRow>
+                ))}
+          </TableBody>
+        </Table>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </Layout>
 
       <ConfirmationModal
         message="¿Estás seguro de que quieres eliminar a este usuario?"

@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
@@ -14,7 +12,7 @@ import { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale";
 import { Teacher } from "../../types/teacher";
 import { Modality } from "../../types/modality";
-
+import Layout from "../../components/Layout";
 registerLocale("es", es);
 
 const CreateCourse = () => {
@@ -151,9 +149,7 @@ const CreateCourse = () => {
 
   return (
     <div>
-      <Sidebar />
-      <div className="p-2 sm:ml-64">
-        <Navbar />
+      <Layout>
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
             Registrar Curso
@@ -251,7 +247,7 @@ const CreateCourse = () => {
             </div>
           </form>
         </div>
-      </div>
+      </Layout>
     </div>
   );
 };
