@@ -7,6 +7,8 @@ import {
 } from "react-router-dom";
 import Login from "../src/pages/auth/Login";
 import Register from "./pages/auth/Register";
+import VerifyEmail from "./pages/auth/VerifyEmail";
+import EmailRedirect from "./pages/auth/EmailRedirect";
 import Home from "./pages/Home";
 import InactivityHandler from "./components/InactivityHandler";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
@@ -208,6 +210,8 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/email/verify/:id/:hash" element={<VerifyEmail />} />
+        <Route path="/api/email/verify/:id/:hash" element={<EmailRedirect />} />
       </Routes>
     </>
   );

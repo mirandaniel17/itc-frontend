@@ -1,21 +1,36 @@
-import { SyntheticEvent, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { SyntheticEvent, useState, useEffect } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import AuthFormContainer from "../../components/AuthFormContainer";
 import PrimaryInput from "../../components/PrimaryInput";
 import PrimaryButton from "../../components/PrimaryButton";
 import FormLabel from "../../components/FormLabel";
 import InputError from "../../components/InputError";
+import Alert from "../../components/Alert";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [verifiedMessage, setVerifiedMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const verified = searchParams.get("verified");
+    if (verified === "1") {
+      setVerifiedMessage(
+        "Correo verificado exitosamente. Ahora puedes iniciar sesión."
+      );
+    }
+  }, [searchParams]);
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
     setErrorMessage("");
+    setAlertMessage("");
+
     try {
       const response = await fetch("http://localhost:8000/api/login", {
         method: "POST",
@@ -27,22 +42,30 @@ const Login = () => {
           remember,
         }),
       });
+
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("token", data.token);
         navigate("/home", { replace: true });
       } else {
         const data = await response.json();
-        setErrorMessage(data.message || "Error de autenticación.");
+        setAlertMessage(data.message || "Error de autenticación.");
+        setTimeout(() => {
+          setAlertMessage("");
+        }, 3000);
       }
     } catch (error) {
-      setErrorMessage("Error de conexión con el servidor.");
-      console.error("Error:", error);
+      setAlertMessage("Error de conexión con el servidor.");
+      setTimeout(() => {
+        setAlertMessage("");
+      }, 3000);
     }
   };
 
   return (
     <AuthFormContainer title="Iniciar Sesión">
+      {verifiedMessage && <Alert message={verifiedMessage} color="green" />}{" "}
+      {alertMessage && <Alert message={alertMessage} color="red" />}{" "}
       <form onSubmit={submit} className="space-y-4 md:space-y-6">
         <PrimaryInput
           label="Correo Electrónico"
@@ -56,9 +79,7 @@ const Login = () => {
           placeholder="Ingresar Contraseña"
           onChange={(e) => setPassword(e.target.value)}
         />
-
         <InputError message={errorMessage} />
-
         <div className="flex items-center justify-between">
           <div className="flex items-start">
             <div className="flex items-center h-5">
