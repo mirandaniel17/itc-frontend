@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import UserMenuButton from "./UserMenuButton";
 import UserDropdown from "./UserDropdown";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Navbar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
-  const [userName, setUserName] = useState("Cargando...");
-  const [userEmail, setUserEmail] = useState("Cargando...");
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [notifications, setNotifications] = useState(3);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const navigate = useNavigate();
@@ -63,30 +65,34 @@ const Navbar: React.FC = () => {
     }
   };
 
-  const breadcrumbMap: { [key: string]: string } = {
-    "/": "Inicio",
-    "/profile": "Perfil",
-    "/students": "Estudiantes",
-    "/students/create": "Registrar Estudiante",
-    "/students/edit": "Actualizar Estudiante",
-    "/students/profile": "Perfil del Estudiante",
-    "/users": "Usuarios",
-    "/users/permissions": "Permisos",
-    "/teachers": "Docentes",
-    "/teachers/create": "Registrar Docente",
-    "/teachers/edit": "Actualizar Docente",
-    "/modalities": "Modalidades",
-    "/modalities/create": "Registrar Modalidad",
-    "/modalities/edit": "Actualizar Modalidad",
-    "/courses": "Cursos",
-    "/courses/create": "Registrar Curso",
-    "/courses/edit": "Actualizar Curso",
-  };
-
   const generateBreadcrumb = () => {
     const location = useLocation();
     const { userId } = useParams<{ userId: string }>();
     const pathnames = location.pathname.split("/").filter((x) => x);
+    const breadcrumbMap: { [key: string]: string } = {
+      "/": "Inicio",
+      "/profile": "Perfil",
+      "/students": "Estudiantes",
+      "/students/create": "Registrar Estudiante",
+      "/students/edit": "Actualizar Estudiante",
+      "/students/profile": "Perfil del Estudiante",
+      "/users": "Usuarios",
+      "/users/permissions": "Permisos",
+      "/teachers": "Docentes",
+      "/teachers/create": "Registrar Docente",
+      "/teachers/edit": "Actualizar Docente",
+      "/modalities": "Modalidades",
+      "/modalities/create": "Registrar Modalidad",
+      "/modalities/edit": "Actualizar Modalidad",
+      "/courses": "Cursos",
+      "/courses/create": "Registrar Curso",
+      "/courses/edit": "Actualizar Curso",
+      "/shifts": "Turnos",
+      "/shifts/create": "Registrar Turno",
+      "/discounts": "Descuentos",
+      "/discounts/create": "Registrar Descuento",
+    };
+
     let breadcrumb = pathnames.map((part, index) => {
       const route = `/${pathnames.slice(0, index + 1).join("/")}`;
 
@@ -154,7 +160,7 @@ const Navbar: React.FC = () => {
             <div className="relative ml-3">
               <UserMenuButton
                 onClick={handleToggleDropdown}
-                userName={userName}
+                userName={userName || <Skeleton width={100} />}
               />
               <UserDropdown
                 isOpen={isDropdownOpen}
@@ -208,10 +214,10 @@ const Navbar: React.FC = () => {
         <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">
           <div className="px-4">
             <div className="text-base font-medium text-gray-800 dark:text-gray-200">
-              {userName}
+              {userName || <Skeleton width={150} />}
             </div>
             <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              {userEmail}
+              {userEmail || <Skeleton width={200} />}
             </div>
           </div>
 

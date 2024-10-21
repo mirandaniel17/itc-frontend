@@ -32,6 +32,12 @@ import CreateCourse from "./pages/courses/CreateCourse";
 import EditCourse from "./pages/courses/EditCourse";
 import Profile from "./pages/profile/Profile";
 import StudentProfile from "./pages/students/StudentProfile";
+import Shifts from "./pages/shifts/Shifts";
+import Discounts from "./pages/discounts/Discounts";
+import CreateShift from "./pages/shifts/CreateShift";
+import CreateDiscount from "./pages/discounts/CreateDiscount";
+import EditShift from "./pages/shifts/EditShift";
+import EditDiscount from "./pages/discounts/EditDiscount";
 
 function App() {
   const logout = () => {
@@ -207,6 +213,54 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shifts"
+          element={
+            <ProtectedRoute>
+              <Shifts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shifts/create"
+          element={
+            <ProtectedRoute>
+              <CreateShift />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shifts/edit/:id"
+          element={
+            <ProtectedRoute>
+              <EditShift />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/discounts"
+          element={
+            <ProtectedRoute>
+              <Discounts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/discounts/create"
+          element={
+            <ProtectedRoute>
+              <CreateDiscount />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/discounts/edit/:id"
+          element={
+            <ProtectedRoute>
+              <EditDiscount />
             </ProtectedRoute>
           }
         />

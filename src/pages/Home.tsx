@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Layout from "../components/Layout";
 
 const Home = () => {
   const [counts, setCounts] = useState({
@@ -39,54 +38,50 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
-      <Sidebar />
-      <div className="p-4 sm:ml-64">
-        <Navbar />
-        <div className="p-4 border-2 border-gray-200 rounded-lg bg-white dark:bg-gray-800 text-black dark:text-white m-2">
-          <div className="flex flex-col md:flex-row md:justify-between md:space-x-2 space-y-4 md:space-y-0">
-            <div className="relative bg-white block p-6 border border-gray-100 rounded-lg w-full md:w-1/3">
-              <span className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span>
-              <div className="flex items-center my-4">
-                <i className="mdi mdi-account text-4xl text-blue-500 mr-4"></i>
-                <div>
-                  <h2 className="text-black text-md font-bold pb-2">
-                    Total de Usuarios
-                  </h2>
-                  <p className="text-black py-1">{counts.totalUsers}</p>
-                </div>
+    <Layout>
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="flex flex-col md:flex-row md:justify-between md:space-x-2 space-y-4 md:space-y-0">
+          <div className="relative bg-white block p-6 border border-gray-100 rounded-lg w-full md:w-1/3">
+            <span className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span>
+            <div className="flex items-center my-4">
+              <i className="mdi mdi-account text-4xl text-blue-500 mr-4"></i>
+              <div>
+                <h2 className="text-black text-md font-bold pb-2">
+                  Total de Usuarios
+                </h2>
+                <p className="text-black py-1">{counts.totalUsers}</p>
               </div>
             </div>
+          </div>
 
-            <div className="relative bg-white block p-6 border border-gray-100 rounded-lg w-full md:w-1/3">
-              <span className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span>
-              <div className="flex items-center my-4">
-                <i className="mdi mdi-school text-4xl text-green-500 mr-4"></i>
-                <div>
-                  <h2 className="text-black text-md font-bold pb-2">
-                    Total de Estudiantes
-                  </h2>
-                  <p className="text-black py-1">{counts.totalStudents}</p>
-                </div>
+          <div className="relative bg-white block p-6 border border-gray-100 rounded-lg w-full md:w-1/3">
+            <span className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span>
+            <div className="flex items-center my-4">
+              <i className="mdi mdi-school text-4xl text-green-500 mr-4"></i>
+              <div>
+                <h2 className="text-black text-md font-bold pb-2">
+                  Total de Estudiantes
+                </h2>
+                <p className="text-black py-1">{counts.totalStudents}</p>
               </div>
             </div>
+          </div>
 
-            <div className="relative bg-white block p-6 border border-gray-100 rounded-lg w-full md:w-1/3">
-              <span className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span>
-              <div className="flex items-center my-4">
-                <i className="mdi mdi-human-male-board text-4xl text-purple-500 mr-4"></i>
-                <div>
-                  <h2 className="text-black text-md font-bold pb-2">
-                    Total de Profesores
-                  </h2>
-                  <p className="text-black py-1">{counts.totalTeachers}</p>
-                </div>
+          <div className="relative bg-white block p-6 border border-gray-100 rounded-lg w-full md:w-1/3">
+            <span className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span>
+            <div className="flex items-center my-4">
+              <i className="mdi mdi-human-male-board text-4xl text-purple-500 mr-4"></i>
+              <div>
+                <h2 className="text-black text-md font-bold pb-2">
+                  Total de Profesores
+                </h2>
+                <p className="text-black py-1">{counts.totalTeachers}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

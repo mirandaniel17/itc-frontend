@@ -98,6 +98,16 @@ const Sidebar: React.FC = () => {
                 onClick={() => setIsUsersDropdownOpen(true)}
               />
             </DropdownLink>
+            <SidebarLink
+              to="/shifts"
+              icon="mdi-calendar-arrow-right"
+              label="Turnos"
+            />
+            <SidebarLink
+              to="/discounts"
+              icon="mdi-brightness-percent"
+              label="Descuentos"
+            />
           </ul>
         </div>
       </aside>
