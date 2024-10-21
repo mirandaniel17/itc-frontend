@@ -49,7 +49,7 @@ const Register = () => {
     <div>
       <AuthFormContainer title="Registrarse">
         {successMessage && <Alert message={successMessage} color="green" />}
-        <form onSubmit={submit} className="space-y-4 md:space-y-6">
+        <form onSubmit={submit} className="space-y-4 md:space-y-6 mt-2">
           <PrimaryInput
             label="Usuario"
             type="text"

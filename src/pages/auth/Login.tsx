@@ -94,12 +94,12 @@ const Login = () => {
               <FormLabel text="Recuérdame" />
             </div>
           </div>
-          <a
-            href="#"
+          <Link
+            to="/forgot-password"
             className="text-sm font-medium text-gray-900 hover:underline"
           >
             ¿Olvidaste tu contraseña?
-          </a>
+          </Link>
         </div>
         <PrimaryButton text="Ingresar" type="submit" />
         <p className="text-sm font-light text-gray-500">

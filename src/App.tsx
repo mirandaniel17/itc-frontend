@@ -9,6 +9,8 @@ import Login from "../src/pages/auth/Login";
 import Register from "./pages/auth/Register";
 import VerifyEmail from "./pages/auth/VerifyEmail";
 import EmailRedirect from "./pages/auth/EmailRedirect";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import Home from "./pages/Home";
 import InactivityHandler from "./components/InactivityHandler";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
@@ -212,6 +214,8 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         <Route path="/register" element={<Register />} />
         <Route path="/email/verify/:id/:hash" element={<VerifyEmail />} />
         <Route path="/api/email/verify/:id/:hash" element={<EmailRedirect />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </>
   );
