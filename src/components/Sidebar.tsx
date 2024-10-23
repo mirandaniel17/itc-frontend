@@ -4,16 +4,34 @@ import SidebarLink from "./SidebarLink";
 import DropdownLink from "./DropdownLink";
 import SidebarToggle from "./SidebarToggle";
 import { Link } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [isCoursesDropdownOpen, setIsCoursesDropdownOpen] = useState(false);
   const [isUsersDropdownOpen, setIsUsersDropdownOpen] = useState(false);
+  const [permissions, setPermissions] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true); // Estado para controlar el loading
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
-  };
+  useEffect(() => {
+    const fetchUserPermissions = async () => {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8000/api/user", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setPermissions(data.permissions);
+      setIsLoading(false); // Termina la carga
+    };
+
+    fetchUserPermissions();
+  }, []);
 
   useEffect(() => {
     const isCoursesDropdownRoute =
@@ -24,6 +42,18 @@ const Sidebar: React.FC = () => {
       location.pathname === "/users" || location.pathname === "/users/roles";
     setIsUsersDropdownOpen(isUsersDropdownRoute);
   }, [location.pathname]);
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const hasPermission = (permission: string) => {
+    return permissions.includes(permission);
+  };
+
+  if (!isLoading && permissions.length === 0) {
+    return null;
+  }
 
   return (
     <div>
@@ -54,60 +84,78 @@ const Sidebar: React.FC = () => {
             </Link>
             <hr />
             <SidebarLink to="/home" icon="mdi-apps" label="Inicio" />
-            <SidebarLink
-              to="/students"
-              icon="mdi-account-school"
-              label="Estudiantes"
-            />
-            <SidebarLink
-              to="/teachers"
-              icon="mdi-human-male-board"
-              label="Docentes"
-            />
 
-            <DropdownLink
-              label="Gestión de Cursos"
-              icon="mdi mdi-cast-education"
-              isOpen={isCoursesDropdownOpen}
-              setIsOpen={setIsCoursesDropdownOpen}
-            >
-              <SidebarLink
-                to="/courses"
-                icon="mdi-google-classroom"
-                label="Cursos"
-                onClick={() => setIsCoursesDropdownOpen(true)}
-              />
-              <SidebarLink
-                to="/modalities"
-                icon="mdi mdi-human-capacity-decrease"
-                label="Modalidades"
-                onClick={() => setIsCoursesDropdownOpen(true)}
-              />
-            </DropdownLink>
+            {isLoading ? (
+              <Skeleton count={6} height={40} />
+            ) : (
+              <>
+                {hasPermission("Consultar Estudiantes") && (
+                  <SidebarLink
+                    to="/students"
+                    icon="mdi-account-school"
+                    label="Estudiantes"
+                  />
+                )}
+                {hasPermission("Gestión de Cursos") && (
+                  <SidebarLink
+                    to="/teachers"
+                    icon="mdi-human-male-board"
+                    label="Docentes"
+                  />
+                )}
 
-            <DropdownLink
-              label="Gestión de Usuarios"
-              icon="mdi-security"
-              isOpen={isUsersDropdownOpen}
-              setIsOpen={setIsUsersDropdownOpen}
-            >
-              <SidebarLink
-                to="/users"
-                icon="mdi-account-multiple-outline"
-                label="Usuarios"
-                onClick={() => setIsUsersDropdownOpen(true)}
-              />
-            </DropdownLink>
-            <SidebarLink
-              to="/shifts"
-              icon="mdi-calendar-arrow-right"
-              label="Turnos"
-            />
-            <SidebarLink
-              to="/discounts"
-              icon="mdi-brightness-percent"
-              label="Descuentos"
-            />
+                {hasPermission("Gestión de Cursos") && (
+                  <DropdownLink
+                    label="Gestión de Cursos"
+                    icon="mdi mdi-cast-education"
+                    isOpen={isCoursesDropdownOpen}
+                    setIsOpen={setIsCoursesDropdownOpen}
+                  >
+                    <SidebarLink
+                      to="/courses"
+                      icon="mdi-google-classroom"
+                      label="Cursos"
+                    />
+                    <SidebarLink
+                      to="/modalities"
+                      icon="mdi mdi-human-capacity-decrease"
+                      label="Modalidades"
+                    />
+                  </DropdownLink>
+                )}
+
+                {hasPermission("Gestión de Usuarios") && (
+                  <DropdownLink
+                    label="Gestión de Usuarios"
+                    icon="mdi-security"
+                    isOpen={isUsersDropdownOpen}
+                    setIsOpen={setIsUsersDropdownOpen}
+                  >
+                    <SidebarLink
+                      to="/users"
+                      icon="mdi-account-multiple-outline"
+                      label="Usuarios"
+                    />
+                  </DropdownLink>
+                )}
+
+                {hasPermission("Ver Horarios") && (
+                  <SidebarLink
+                    to="/shifts"
+                    icon="mdi-calendar-arrow-right"
+                    label="Turnos"
+                  />
+                )}
+
+                {hasPermission("Ver Horarios") && (
+                  <SidebarLink
+                    to="/discounts"
+                    icon="mdi-brightness-percent"
+                    label="Descuentos"
+                  />
+                )}
+              </>
+            )}
           </ul>
         </div>
       </aside>
