@@ -158,7 +158,7 @@ const Courses = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="block max-w-2xl p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500"
-                placeholder="Texto a buscar"
+                placeholder="Buscar"
               />
             </div>
           </form>

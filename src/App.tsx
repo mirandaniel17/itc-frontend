@@ -38,6 +38,8 @@ import CreateShift from "./pages/shifts/CreateShift";
 import CreateDiscount from "./pages/discounts/CreateDiscount";
 import EditShift from "./pages/shifts/EditShift";
 import EditDiscount from "./pages/discounts/EditDiscount";
+import Enrollments from "./pages/enrollments/Enrollments";
+import CreateEnrollment from "./pages/enrollments/CreateEnrollment";
 
 function App() {
   const logout = () => {
@@ -261,6 +263,22 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           element={
             <ProtectedRoute>
               <EditDiscount />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/enrollments"
+          element={
+            <ProtectedRoute>
+              <Enrollments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/enrollments/create"
+          element={
+            <ProtectedRoute>
+              <CreateEnrollment />
             </ProtectedRoute>
           }
         />

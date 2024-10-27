@@ -13,8 +13,7 @@ const Sidebar: React.FC = () => {
   const [isCoursesDropdownOpen, setIsCoursesDropdownOpen] = useState(false);
   const [isUsersDropdownOpen, setIsUsersDropdownOpen] = useState(false);
   const [permissions, setPermissions] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true); // Estado para controlar el loading
-
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchUserPermissions = async () => {
       const token = localStorage.getItem("token");
@@ -27,7 +26,7 @@ const Sidebar: React.FC = () => {
       });
       const data = await response.json();
       setPermissions(data.permissions);
-      setIsLoading(false); // Termina la carga
+      setIsLoading(false);
     };
 
     fetchUserPermissions();
@@ -152,6 +151,14 @@ const Sidebar: React.FC = () => {
                     to="/discounts"
                     icon="mdi-brightness-percent"
                     label="Descuentos"
+                  />
+                )}
+
+                {hasPermission("Inscripciones") && (
+                  <SidebarLink
+                    to="/enrollments"
+                    icon="mdi-basket-fill"
+                    label="Inscripciones"
                   />
                 )}
               </>

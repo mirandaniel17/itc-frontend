@@ -91,6 +91,8 @@ const Navbar: React.FC = () => {
       "/shifts/create": "Registrar Turno",
       "/discounts": "Descuentos",
       "/discounts/create": "Registrar Descuento",
+      "/enrollments": "Inscripciones",
+      "/enrollments/create": "Inscribir Estudiante",
     };
 
     let breadcrumb = pathnames.map((part, index) => {
