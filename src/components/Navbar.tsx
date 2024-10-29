@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useLocation, useParams } from "react-router-dom";
 import UserMenuButton from "./UserMenuButton";
 import UserDropdown from "./UserDropdown";
 import Skeleton from "react-loading-skeleton";
@@ -13,30 +13,15 @@ const Navbar: React.FC = () => {
   const [notifications, setNotifications] = useState(3);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const navigate = useNavigate();
-
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/api/user", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Error al obtener los datos del usuario");
-        }
-
-        const data = await response.json();
-        setUserName(data.user.name);
-        setUserEmail(data.user.email);
-      } catch (error) {
-        console.error("Error al obtener el usuario:", error);
-      }
-    };
-
-    fetchUser();
+    const storedUserName = localStorage.getItem("userName");
+    const storedUserEmail = localStorage.getItem("userEmail");
+    if (storedUserName && storedUserEmail) {
+      setUserName(storedUserName);
+      setUserEmail(storedUserEmail);
+    } else {
+      console.error("No se encontraron datos del usuario en localStorage");
+    }
   }, []);
 
   const logout = async () => {
@@ -46,8 +31,11 @@ const Navbar: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
-      setUserName("");
-      setUserEmail("");
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      setUserName(null);
+      setUserEmail(null);
       navigate("/login");
       setIsDropdownOpen(false);
     } catch (error) {
@@ -143,14 +131,14 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="hidden sm:flex items-center space-x-4">
-            <div className="relative">
+            {/*<div className="relative">
               <span className="mdi mdi-bell-outline text-2xl text-gray-500 cursor-pointer"></span>
               {notifications > 0 && (
                 <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-600 text-white text-xs leading-tight text-center">
                   {notifications}
                 </span>
               )}
-            </div>
+            </div>*/}
 
             <div
               onClick={toggleFullScreen}

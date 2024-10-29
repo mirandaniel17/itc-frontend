@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
-import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
 import Alert from "../../components/Alert";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import Layout from "../../components/Layout";
 import { Student } from "../../types/student";
 import { Shift } from "../../types/shift";
@@ -64,12 +65,6 @@ const CreateEnrollment = () => {
     fetchData("courses", setCourses);
     fetchData("discounts", setDiscounts);
   }, []);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSelectChange = (field: string, selectedOption: any) => {
     setFormData({
@@ -235,16 +230,29 @@ const CreateEnrollment = () => {
               <InputLabel htmlFor="enrollment_date">
                 Fecha de Inscripción
               </InputLabel>
-              <TextInput
-                type="date"
-                name="enrollment_date"
-                value={formData.enrollment_date}
-                onChange={handleChange}
+              <DatePicker
+                selected={
+                  formData.enrollment_date
+                    ? new Date(formData.enrollment_date)
+                    : null
+                }
+                onChange={(date: Date | null) =>
+                  setFormData({
+                    ...formData,
+                    enrollment_date: date
+                      ? date.toISOString().split("T")[0]
+                      : "",
+                  })
+                }
+                dateFormat="yyyy-MM-dd"
+                locale="es"
+                className="w-full p-3 text-xs tracking-tighter"
+                placeholderText="Selecciona una fecha"
               />
+
               <InputError message={errors.enrollment_date?.[0]} />
             </div>
 
-            {/* Document 1 with Preview */}
             <div className="flex flex-col">
               <InputLabel htmlFor="document1">Documento 1</InputLabel>
               <input
@@ -293,7 +301,6 @@ const CreateEnrollment = () => {
               <InputError message={errors.document_1?.[0]} />
             </div>
 
-            {/* Document 2 with Preview */}
             <div className="flex flex-col">
               <InputLabel htmlFor="document2">Documento 2</InputLabel>
               <input

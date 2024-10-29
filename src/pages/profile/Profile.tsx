@@ -3,6 +3,8 @@ import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
 import Layout from "../../components/Layout";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Profile = () => {
   const [userData, setUserData] = useState({
@@ -14,6 +16,7 @@ const Profile = () => {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [editData, setEditData] = useState({
     name: "",
     email: "",
@@ -72,6 +75,7 @@ const Profile = () => {
           currentPassword: "",
           newPassword: "",
         });
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
@@ -151,7 +155,7 @@ const Profile = () => {
                         Nombre de Usuario
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-gray-300 sm:mt-0 sm:col-span-2">
-                        {userData.name}
+                        {isLoading ? <Skeleton width={200} /> : userData.name}
                       </dd>
                     </div>
                     <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -159,7 +163,7 @@ const Profile = () => {
                         Correo Electrónico
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-gray-300 sm:mt-0 sm:col-span-2">
-                        {userData.email}
+                        {isLoading ? <Skeleton width={250} /> : userData.email}
                       </dd>
                     </div>
                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -167,7 +171,11 @@ const Profile = () => {
                         Roles
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-gray-300 sm:mt-0 sm:col-span-2">
-                        {userData.roles.join(", ")}
+                        {isLoading ? (
+                          <Skeleton width={300} />
+                        ) : (
+                          userData.roles.join(", ")
+                        )}
                       </dd>
                     </div>
                     <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -175,7 +183,11 @@ const Profile = () => {
                         Permisos
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-gray-300 sm:mt-0 sm:col-span-2">
-                        {userData.permissions.join(", ")}
+                        {isLoading ? (
+                          <Skeleton width={300} />
+                        ) : (
+                          userData.permissions.join(", ")
+                        )}
                       </dd>
                     </div>
                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -183,8 +195,14 @@ const Profile = () => {
                         Dispositivo/Navegador
                       </dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-gray-300 sm:mt-0 sm:col-span-2">
-                        {getDeviceIcon()} {getBrowserIcon()}{" "}
-                        {userData.userAgent}
+                        {isLoading ? (
+                          <Skeleton width={200} />
+                        ) : (
+                          <>
+                            {getDeviceIcon()} {getBrowserIcon()}{" "}
+                            {userData.userAgent}
+                          </>
+                        )}
                       </dd>
                     </div>
                   </dl>

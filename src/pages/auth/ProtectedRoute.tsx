@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+interface ProtectedRouteProps {
+  children: JSX.Element;
+  requiredPermission?: string;
+}
+
+const ProtectedRoute = ({
+  children,
+  requiredPermission,
+}: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -13,19 +22,41 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
         });
 
         if (response.ok) {
-          setIsAuthenticated(true);
+          const storedPermissions = localStorage.getItem("permissions");
+          setTimeout(() => {
+            setIsAuthenticated(true);
+            if (storedPermissions) {
+              const permissions = JSON.parse(storedPermissions);
+              if (
+                requiredPermission &&
+                permissions.includes(requiredPermission)
+              ) {
+                setHasPermission(true);
+              } else if (requiredPermission) {
+                setHasPermission(false);
+              }
+            } else {
+              setHasPermission(false);
+            }
+          }, 2000);
         } else {
-          setIsAuthenticated(false);
+          setTimeout(() => {
+            setIsAuthenticated(false);
+          }, 2000);
         }
       } catch (error) {
-        setIsAuthenticated(false);
+        setTimeout(() => {
+          setIsAuthenticated(false);
+        }, 2000);
       }
     };
-
     checkAuth();
-  }, []);
+  }, [requiredPermission]);
 
-  if (isAuthenticated === null) {
+  if (
+    isAuthenticated === null ||
+    (requiredPermission && hasPermission === null)
+  ) {
     return (
       <section className="w-full min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div
@@ -34,7 +65,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
           className="flex items-center space-x-2"
         >
           <svg
-            className="h-20 w-20 animate-spin stroke-gray-500"
+            className="h-20 w-20 animate-spin stroke-sky-900"
             viewBox="0 0 256 256"
           >
             <line
@@ -110,8 +141,8 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
               strokeWidth="24"
             ></line>
           </svg>
-          <span className="text-4xl font-medium text-gray-500">
-            Cargando...
+          <span className="text-5xl font-medium text-sky-900 tracking-tighter ms-2">
+            Cargando
           </span>
         </div>
       </section>
@@ -120,6 +151,10 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (requiredPermission && !hasPermission) {
+    return <Navigate to="/403" replace />;
   }
 
   return children;

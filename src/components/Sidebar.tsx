@@ -15,21 +15,14 @@ const Sidebar: React.FC = () => {
   const [permissions, setPermissions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    const fetchUserPermissions = async () => {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8000/api/user", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      setPermissions(data.permissions);
+    const storedPermissions = localStorage.getItem("permissions");
+    if (storedPermissions) {
+      setPermissions(JSON.parse(storedPermissions));
       setIsLoading(false);
-    };
-
-    fetchUserPermissions();
+    } else {
+      setPermissions([]);
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -50,10 +43,6 @@ const Sidebar: React.FC = () => {
     return permissions.includes(permission);
   };
 
-  if (!isLoading && permissions.length === 0) {
-    return null;
-  }
-
   return (
     <div>
       <SidebarToggle
@@ -64,7 +53,7 @@ const Sidebar: React.FC = () => {
         id="sidebar-multi-level-sidebar"
         className={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } sm:translate-x-0 border-r border-gray-200 shadow-lg`}
+        } sm:translate-x-0 border-r border-gray-100 shadow-xl`}
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-white dark:bg-gray-800">
@@ -76,7 +65,7 @@ const Sidebar: React.FC = () => {
           </button>
           <ul className="space-y-2 font-medium">
             <Link to="/" className="flex items-center ps-2.5 mb-5">
-              <img src="/itc_logo.png" className="h-6 me-3 sm:h-8" alt="Logo" />
+              <img src="/itc_logo.png" className="h-6 sm:h-8 me-1" alt="Logo" />
               <span className="self-center font-light dark:text-white">
                 Instituto Técnico Columbia
               </span>

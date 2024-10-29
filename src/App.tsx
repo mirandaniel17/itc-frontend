@@ -12,6 +12,8 @@ import EmailRedirect from "./pages/auth/EmailRedirect";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
+import Forbidden from "./pages/Forbidden";
 import InactivityHandler from "./components/InactivityHandler";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
 import Users from "./pages/users/Users";
@@ -269,7 +271,7 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         <Route
           path="/enrollments"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="Inscripciones">
               <Enrollments />
             </ProtectedRoute>
           }
@@ -277,12 +279,14 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         <Route
           path="/enrollments/create"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="Inscripciones">
               <CreateEnrollment />
             </ProtectedRoute>
           }
         />
         <Route path="/login" element={<Login />} />
+        <Route path="/403" element={<Forbidden />} />
+        <Route path="*" element={<NotFound />} />
         <Route path="/register" element={<Register />} />
         <Route path="/email/verify/:id/:hash" element={<VerifyEmail />} />
         <Route path="/api/email/verify/:id/:hash" element={<EmailRedirect />} />

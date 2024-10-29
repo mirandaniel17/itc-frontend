@@ -46,6 +46,9 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("token", data.token);
+        localStorage.setItem("permissions", JSON.stringify(data.permissions));
+        localStorage.setItem("userName", data.user.name);
+        localStorage.setItem("userEmail", data.user.email);
         navigate("/home", { replace: true });
       } else {
         const data = await response.json();
