@@ -20,7 +20,7 @@ const DropdownLink: React.FC<DropdownLinkProps> = ({
   };
 
   return (
-    <li>
+    <li className="relative">
       <button
         onClick={toggleDropdown}
         className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-sky-900 hover:text-white dark:text-white dark:hover:bg-gray-700"
@@ -33,7 +33,11 @@ const DropdownLink: React.FC<DropdownLinkProps> = ({
           className={`mdi ${isOpen ? "mdi-chevron-up" : "mdi-chevron-down"}`}
         ></span>
       </button>
-      {isOpen && <ul className="py-2 space-y-2">{children}</ul>}
+      {isOpen && (
+        <ul className="py-2 space-y-2 ms-4"> {/* Margen a la izquierda para submenús */}
+          {children}
+        </ul>
+      )}
     </li>
   );
 };

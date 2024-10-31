@@ -5,6 +5,7 @@ interface SidebarLinkProps {
   icon: string;
   label: string;
   onClick?: () => void;
+  className?: string; // Agregar className como una prop opcional
 }
 
 const SidebarLink: React.FC<SidebarLinkProps> = ({
@@ -12,6 +13,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({
   icon,
   label,
   onClick,
+  className = "",
 }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
@@ -25,7 +27,7 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({
           isActive
             ? "bg-sky-900 text-white"
             : "text-gray-900 dark:text-white hover:bg-sky-900 hover:text-white dark:hover:bg-gray-700"
-        } group`}
+        } ${className} group`}
       >
         <i className={`mdi ${icon}`}></i>
         <span className="ms-3 text-xs">{label}</span>

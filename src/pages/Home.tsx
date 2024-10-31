@@ -52,7 +52,7 @@ const Home = () => {
               <i className="mdi mdi-account text-4xl text-blue-500 mr-4"></i>
               <div>
                 <h2 className="text-black text-md font-bold pb-2">
-                  Total de Usuarios
+                  Total de Usuarios Administrativos
                 </h2>
                 <p className="text-black py-1">{counts.totalUsers}</p>
               </div>

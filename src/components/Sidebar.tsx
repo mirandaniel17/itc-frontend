@@ -100,15 +100,18 @@ const Sidebar: React.FC = () => {
                     setIsOpen={setIsCoursesDropdownOpen}
                   >
                     <SidebarLink
-                      to="/modalities"
-                      icon="mdi mdi-human-capacity-decrease"
-                      label="Modalidades"
-                    />
-                    <SidebarLink
-                      to="/courses"
-                      icon="mdi-google-classroom"
-                      label="Cursos"
-                    />
+                    to="/modalities"
+                    icon="mdi mdi-human-capacity-decrease"
+                    label="Modalidades"
+                    className="ms-0"
+                  />
+                  <SidebarLink
+                    to="/courses"
+                    icon="mdi-google-classroom"
+                    label="Cursos"
+                    className="ms-0"
+                  />
+
                   </DropdownLink>
                 )}
 
@@ -132,6 +135,7 @@ const Sidebar: React.FC = () => {
                     to="/shifts"
                     icon="mdi-calendar-arrow-right"
                     label="Turnos"
+                    className="ms-0"
                   />
                 )}
 

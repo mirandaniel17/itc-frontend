@@ -1,8 +1,8 @@
+import { SyntheticEvent, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import AuthFormContainer from "../../components/AuthFormContainer";
 import PrimaryInput from "../../components/PrimaryInput";
 import PrimaryButton from "../../components/PrimaryButton";
-import { Link, useNavigate } from "react-router-dom";
-import { SyntheticEvent, useState } from "react";
 import InputError from "../../components/InputError";
 import Alert from "../../components/Alert";
 
@@ -20,28 +20,33 @@ const Register = () => {
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    setErrors({});
+    setErrors({}); // Limpiar errores antes de enviar
 
-    const response = await fetch("http://localhost:8000/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-      }),
-    });
+    try {
+      const response = await fetch("http://localhost:8000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
 
-    if (response.ok) {
-      setSuccessMessage(
-        "Registro exitoso. Por favor, verifica tu correo electrónico."
-      );
-      setTimeout(() => {
-        navigate("/login");
-      }, 3000);
-    } else {
-      const data = await response.json();
-      setErrors(data.errors);
+      if (response.ok) {
+        setSuccessMessage("Registro exitoso. Por favor, verifica tu correo electrónico.");
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
+      } else {
+        const data = await response.json();
+        // Verificar si hay errores de validación
+        if (data.errors) {
+          setErrors(data.errors);
+        }
+      }
+    } catch (error) {
+      console.error("Error de conexión:", error);
     }
   };
 
@@ -70,6 +75,7 @@ const Register = () => {
             placeholder="Ingresar Contraseña"
             onChange={(e) => setPassword(e.target.value)}
           />
+          <p className="tracking-tighter font-light text-sm">La contraseña debe tener al menos 8 carácteres, debe empezar por mayúscula y tener 1 carácter especial.</p>
           <InputError message={errors?.password?.[0] || ""} />
           <PrimaryButton text="Registrar" type="submit" />
           <p className="text-sm font-light text-gray-500 dark:text-gray-400">
