@@ -42,6 +42,7 @@ import EditShift from "./pages/shifts/EditShift";
 import EditDiscount from "./pages/discounts/EditDiscount";
 import Enrollments from "./pages/enrollments/Enrollments";
 import CreateEnrollment from "./pages/enrollments/CreateEnrollment";
+import SetSchedule from "./pages/schedules/SetSchedule";
 
 function App() {
   const logout = () => {
@@ -281,6 +282,14 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           element={
             <ProtectedRoute requiredPermission="Inscripciones">
               <CreateEnrollment />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/schedules/set-schedule"
+          element={
+            <ProtectedRoute>
+              <SetSchedule />
             </ProtectedRoute>
           }
         />

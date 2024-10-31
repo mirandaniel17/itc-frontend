@@ -100,14 +100,14 @@ const Sidebar: React.FC = () => {
                     setIsOpen={setIsCoursesDropdownOpen}
                   >
                     <SidebarLink
-                      to="/courses"
-                      icon="mdi-google-classroom"
-                      label="Cursos"
-                    />
-                    <SidebarLink
                       to="/modalities"
                       icon="mdi mdi-human-capacity-decrease"
                       label="Modalidades"
+                    />
+                    <SidebarLink
+                      to="/courses"
+                      icon="mdi-google-classroom"
+                      label="Cursos"
                     />
                   </DropdownLink>
                 )}
@@ -140,6 +140,14 @@ const Sidebar: React.FC = () => {
                     to="/discounts"
                     icon="mdi-brightness-percent"
                     label="Descuentos"
+                  />
+                )}
+
+                {hasPermission("Ver Horarios") && (
+                  <SidebarLink
+                    to="/schedules/set-schedule"
+                    icon="mdi mdi-calendar-clock"
+                    label="Horarios"
                   />
                 )}
 

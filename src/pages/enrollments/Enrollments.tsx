@@ -174,7 +174,6 @@ const Enrollments = () => {
             headers={[
               "Estudiante",
               "Curso",
-              "Turno",
               "Fecha de Inscripción",
               "Acciones",
             ]}
@@ -204,7 +203,6 @@ const Enrollments = () => {
                   <TableRow key={enrollment.id}>
                     <TableCell>{`${enrollment.student.last_name} ${enrollment.student.second_last_name}`}</TableCell>
                     <TableCell>{enrollment.course.name}</TableCell>
-                    <TableCell>{enrollment.shift.name}</TableCell>
                     <TableCell>{enrollment.enrollment_date}</TableCell>
                     <TableActionButtons
                       actions={[

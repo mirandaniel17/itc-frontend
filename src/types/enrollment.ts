@@ -10,12 +10,7 @@ export interface Enrollment {
     id: number;
     name: string;
   };
-  shift: {
-    id: number;
-    name: string;
-  };
   enrollment_date: string;
   document_1: string;
   document_2: string;
 }
-

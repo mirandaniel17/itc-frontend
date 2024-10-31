@@ -103,6 +103,27 @@ const CreateShift = () => {
               </div>
 
               <div className="flex flex-col">
+                <InputLabel htmlFor="room_id">Sala</InputLabel>
+                <SelectInput
+                  name="room_id"
+                  value={formData.room_id}
+                  onChange={handleChange}
+                  className="w-full p-3"
+                  required
+                >
+                  <option value="" disabled>
+                    Seleccionar Sala
+                  </option>
+                  {rooms.map((room) => (
+                    <option key={room.id} value={room.id}>
+                      {room.name}
+                    </option>
+                  ))}
+                </SelectInput>
+                <InputError message={errors.room_id?.[0]} />
+              </div>
+
+              <div className="flex flex-col">
                 <InputLabel htmlFor="start_time">Hora de Inicio</InputLabel>
                 <TextInput
                   type="time"
@@ -126,27 +147,6 @@ const CreateShift = () => {
                   required
                 />
                 <InputError message={errors.end_time?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="room_id">Sala</InputLabel>
-                <SelectInput
-                  name="room_id"
-                  value={formData.room_id}
-                  onChange={handleChange}
-                  className="w-full p-3"
-                  required
-                >
-                  <option value="" disabled>
-                    Seleccionar Sala
-                  </option>
-                  {rooms.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      {room.name}
-                    </option>
-                  ))}
-                </SelectInput>
-                <InputError message={errors.room_id?.[0]} />
               </div>
             </div>
 

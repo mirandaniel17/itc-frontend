@@ -12,6 +12,7 @@ import { es } from "date-fns/locale";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
+
 registerLocale("es", es);
 
 const EditStudent = () => {
@@ -30,7 +31,9 @@ const EditStudent = () => {
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const [loading, setLoading] = useState(true);
+  const [image, setImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,6 +69,9 @@ const EditStudent = () => {
           status: data.status !== undefined ? data.status : true,
         });
         setSelectedDate(data.dateofbirth ? new Date(data.dateofbirth) : null);
+        setPreviewImage(
+          data.image ? `http://127.0.0.1:8000/storage/${data.image}` : null
+        );
         setLoading(false);
       } catch (error) {
         console.error("Error fetching student:", error);
@@ -81,38 +87,59 @@ const EditStudent = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImage(null);
+    setPreviewImage(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!selectedDate) {
-      setErrors({ dateofbirth: ["La fecha de nacimiento es obligatoria"] });
-      return;
+    const data = new FormData();
+    data.append("_method", "PUT"); // Esto simula la solicitud PUT
+    data.append("name", formData.name);
+    data.append("last_name", formData.last_name);
+    data.append("second_last_name", formData.second_last_name);
+    data.append("ci", formData.ci);
+    data.append(
+      "dateofbirth",
+      selectedDate ? selectedDate.toISOString().split("T")[0] : ""
+    );
+    data.append("placeofbirth", formData.placeofbirth);
+    data.append("phone", formData.phone);
+    data.append("gender", formData.gender);
+    data.append("status", formData.status ? "true" : "false");
+
+    if (image) {
+      data.append("image", image);
     }
 
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`http://127.0.0.1:8000/api/students/${id}`, {
-        method: "PUT",
-        credentials: "include",
+        method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          ...formData,
-          dateofbirth: selectedDate.toISOString(),
-        }),
+        body: data,
       });
+
       if (!response.ok) {
         const result = await response.json();
-        setErrors(result.errors || {});
-        throw new Error(`HTTP error! status: ${response.status}`);
+        setErrors(result.errors);
+        return;
       }
+
       navigate("/students", {
-        state: {
-          message: "Datos del estudiante actualizado con éxito",
-          color: "green",
-        },
+        state: { message: "Estudiante actualizado con éxito", color: "green" },
       });
     } catch (error) {
       console.error("Error updating student:", error);
@@ -269,6 +296,31 @@ const EditStudent = () => {
                     <option value="OTRO">Otro</option>
                   </SelectInput>
                   <InputError message={errors.gender?.[0]} />
+                </div>
+
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="image">
+                    Fotografía del Estudiante
+                  </InputLabel>
+                  <input type="file" onChange={handleFileChange} />
+                  {previewImage && (
+                    <div className="relative mt-3">
+                      <img
+                        src={previewImage}
+                        alt="Vista previa"
+                        className="w-full h-auto object-cover rounded-lg shadow-md"
+                        style={{ maxHeight: "300px" }}
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1 hover:bg-gray-600"
+                        onClick={handleRemoveImage}
+                      >
+                        <i className="mdi mdi-close"></i> Quitar imagen
+                      </button>
+                    </div>
+                  )}
+                  <InputError message={errors.image?.[0]} />
                 </div>
               </div>
 
