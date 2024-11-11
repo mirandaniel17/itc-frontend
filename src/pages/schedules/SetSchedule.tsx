@@ -1,217 +1,257 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout";
-import Alert from "../../components/Alert";
+import Table from "../../components/Table";
+import TableHead from "../../components/TableHead";
+import TableBody from "../../components/TableBody";
+import TableRow from "../../components/TableRow";
+import TableCell from "../../components/TableCell";
+import AddButton from "../../components/AddButton";
 import SelectInput from "../../components/SelectInput";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import Alert from "../../components/Alert";
 
 type Schedule = {
+  id: number;
+  course_name: string;
+  parallel: string;
+  shift_name: string; // Nuevo campo para el nombre del turno
   day: string;
-  shiftId: string;
+  start_time: string;
+  end_time: string;
+  start_date: string;
+  end_date: string;
 };
 
 const SetSchedule: React.FC = () => {
-  const [courseId, setCourseId] = useState("");
-  const [shiftOptions, setShiftOptions] = useState<
-    { id: string; name: string; start_time: string; end_time: string }[]
-  >([]);
-  const [classOptions, setClassOptions] = useState<
-    { id: string; name: string }[]
-  >([]);
-  const [schedules, setSchedules] = useState<Schedule[]>([
-    { day: "LUNES", shiftId: "" },
-    { day: "MARTES", shiftId: "" },
-    { day: "MIERCOLES", shiftId: "" },
-    { day: "JUEVES", shiftId: "" },
-    { day: "VIERNES", shiftId: "" },
-    { day: "SABADO", shiftId: "" },
-  ]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
+  const [availableParallels, setAvailableParallels] = useState<
+    Record<string, string[]>
+  >({});
+  const [selectedParallels, setSelectedParallels] = useState<
+    Record<string, string>
+  >({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColor, setAlertColor] = useState("green");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchSchedules = async () => {
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/courses?per_page=1000",
-        {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/schedules", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          credentials: "include",
-        }
-      );
-      const data = await response.json();
-      setClassOptions(
-        data.data.map((course: any) => ({ id: course.id, name: course.name }))
-      );
-    };
+        });
 
-    const fetchShifts = async () => {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/shifts?per_page=1000",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+        if (!response.ok) throw new Error("Error al cargar los horarios");
+
+        const data = await response.json();
+        setSchedules(data.schedules);
+
+        const parallelsByCourse = data.schedules.reduce(
+          (acc: any, schedule: Schedule) => {
+            const key = schedule.course_name;
+            if (!acc[key]) {
+              acc[key] = new Set();
+            }
+            acc[key].add(schedule.parallel);
+            return acc;
           },
-          credentials: "include",
-        }
-      );
-      const data = await response.json();
-      setShiftOptions(
-        data.data.map((shift: any) => ({
-          id: shift.id,
-          name: shift.name,
-          start_time: shift.start_time,
-          end_time: shift.end_time,
-        }))
-      );
+          {}
+        );
+
+        const parallelOptions = Object.keys(parallelsByCourse).reduce(
+          (acc, course) => {
+            acc[course] = Array.from(parallelsByCourse[course]);
+            return acc;
+          },
+          {} as Record<string, string[]>
+        );
+
+        setAvailableParallels(parallelOptions);
+      } catch (error) {
+        setAlertMessage("Error al cargar los horarios");
+        setAlertColor("red");
+        setShowAlert(true);
+      } finally {
+        setLoading(false);
+        setTimeout(() => setShowAlert(false), 3000);
+      }
     };
 
-    fetchClasses();
-    fetchShifts();
+    fetchSchedules();
   }, []);
 
-  const handleScheduleChange = (
-    index: number,
-    field: keyof Schedule,
-    value: any
-  ) => {
-    const updatedSchedules = [...schedules];
-    updatedSchedules[index][field] = value;
-    setSchedules(updatedSchedules);
+  const handleNewSchedule = () => {
+    navigate("/schedules/create");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!courseId) {
-      setAlertMessage("Debe seleccionar un curso.");
-      setAlertColor("red");
-      setShowAlert(true);
-      return;
+  const handleEditSchedule = (id: number) => {
+    navigate(`/schedules/edit/${id}`);
+  };
+
+  const handleDeleteSchedule = async (id: number) => {
+    if (confirm("¿Estás seguro de eliminar este horario?")) {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/schedules/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) throw new Error("Error al eliminar el horario");
+        setSchedules((prev) => prev.filter((schedule) => schedule.id !== id));
+        setAlertMessage("Horario eliminado correctamente");
+        setAlertColor("green");
+      } catch {
+        setAlertMessage("Error al eliminar el horario");
+        setAlertColor("red");
+      } finally {
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      }
     }
+  };
 
-    const emptyShift = schedules.some((schedule) => !schedule.shiftId);
-    if (emptyShift) {
-      setAlertMessage("Debe seleccionar un turno para cada día.");
-      setAlertColor("red");
-      setShowAlert(true);
-      return;
-    }
+  const toggleExpand = (courseKey: string) => {
+    setExpandedCourse(expandedCourse === courseKey ? null : courseKey);
+  };
 
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/schedules", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          course_id: courseId,
-          schedules: schedules.map((schedule) => ({
-            day: schedule.day,
-            shift_id: schedule.shiftId,
-          })),
-        }),
-      });
-
-      if (!response.ok) throw new Error("Error al guardar el horario");
-
-      setAlertMessage("Horario guardado correctamente");
-      setAlertColor("green");
-      setTimeout(() => {
-        navigate("/calendar");
-      }, 1000);
-    } catch (error) {
-      setAlertMessage("Error al guardar el horario");
-      setAlertColor("red");
-    } finally {
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
-    }
+  const handleParallelChange = (courseName: string, newParallel: string) => {
+    setSelectedParallels((prev) => ({ ...prev, [courseName]: newParallel }));
   };
 
   return (
     <Layout>
       {showAlert && <Alert message={alertMessage} color={alertColor} />}
-      <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
-        <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
-          CONFIGURAR HORARIO DE CLASES
-        </h2>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Curso
-              </label>
-              <SelectInput
-                value={courseId}
-                onChange={(e) => setCourseId(e.target.value)}
-                className="p-2 border border-gray-300 rounded-lg w-full focus:ring-sky-500 focus:border-sky-500"
-              >
-                <option value="">Selecciona un curso</option>
-                {classOptions.map((course) => (
-                  <option key={course.id} value={course.id}>
-                    {course.name}
-                  </option>
-                ))}
-              </SelectInput>
-            </div>
-          </div>
-
-          <table className="w-full text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-100">
-              <tr>
-                <th className="px-4 py-2">Día</th>
-                <th className="px-4 py-2">Turno</th>
-              </tr>
-            </thead>
-            <tbody>
-              {schedules.map((schedule, index) => (
-                <tr
-                  key={schedule.day}
-                  className="bg-white border-b hover:bg-gray-50"
-                >
-                  <td className="px-4 py-2 font-medium text-gray-900">
-                    {schedule.day}
-                  </td>
-                  <td className="px-4 py-2">
-                    <SelectInput
-                      value={schedule.shiftId}
-                      onChange={(e) =>
-                        handleScheduleChange(index, "shiftId", e.target.value)
-                      }
-                      className="p-2 border border-gray-300 rounded-lg w-full"
-                    >
-                      <option value="">Selecciona un turno</option>
-                      {shiftOptions.map((shift) => (
-                        <option key={shift.id} value={shift.id}>
-                          {shift.name} ({shift.start_time} - {shift.end_time})
-                        </option>
-                      ))}
-                    </SelectInput>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <button
-            type="submit"
-            className="mt-6 w-full text-white bg-gradient-to-r from-sky-400 to-sky-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-sky-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-          >
-            Guardar Horario
-          </button>
-        </form>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Horarios de Clases</h2>
+        <AddButton label="Nuevo Horario" onClick={handleNewSchedule} />
       </div>
+
+      <Table>
+        <TableHead headers={["Curso", "Paralelo", "Acción"]} />
+        <TableBody>
+          {loading
+            ? [...Array(5)].map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton width={200} height={20} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={100} height={20} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={100} height={20} />
+                  </TableCell>
+                </TableRow>
+              ))
+            : Object.keys(availableParallels).map((courseKey, index) => {
+                const parallels = availableParallels[courseKey] || [];
+
+                return (
+                  <React.Fragment key={index}>
+                    <TableRow>
+                      <TableCell>{courseKey}</TableCell>
+                      <TableCell>
+                        <SelectInput
+                          value={selectedParallels[courseKey] || parallels[0]}
+                          onChange={(e) =>
+                            handleParallelChange(courseKey, e.target.value)
+                          }
+                        >
+                          {parallels.map((parallel, idx) => (
+                            <option key={idx} value={parallel}>
+                              Paralelo {parallel}
+                            </option>
+                          ))}
+                        </SelectInput>
+                      </TableCell>
+                      <TableCell>
+                        <button
+                          className="text-blue-500 underline mr-2"
+                          onClick={() => toggleExpand(courseKey)}
+                        >
+                          {expandedCourse === courseKey
+                            ? "Ocultar Detalles"
+                            : "Ver Detalles"}
+                        </button>
+                        
+                        <button
+                          className="text-red-500 underline"
+                          onClick={() =>
+                            handleDeleteSchedule(
+                              schedules.find(
+                                (schedule) =>
+                                  schedule.course_name === courseKey &&
+                                  schedule.parallel ===
+                                    (selectedParallels[courseKey] ||
+                                      parallels[0])
+                              )?.id || 0
+                            )
+                          }
+                        >
+                          Eliminar
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                    {expandedCourse === courseKey && (
+                      <TableRow>
+                        <TableCell colSpan={3}>
+                          <Table>
+                            <TableHead
+                              headers={[
+                                "Día",
+                                "Turno",
+                                "Fecha inicio/fin",
+                                "Hora inicio/fin",
+                              ]}
+                            />
+                            <TableBody>
+                              {schedules
+                                .filter(
+                                  (schedule) =>
+                                    schedule.course_name === courseKey &&
+                                    schedule.parallel ===
+                                      (selectedParallels[courseKey] ||
+                                        parallels[0])
+                                )
+                                .map((schedule, idx) => (
+                                  <TableRow key={idx}>
+                                    <TableCell>{schedule.day}</TableCell>
+                                    <TableCell>{schedule.shift_name}</TableCell>
+                                    <TableCell>
+                                      {schedule.start_date} -{" "}
+                                      {schedule.end_date}
+                                    </TableCell>
+                                    <TableCell>
+                                      {schedule.start_time} -{" "}
+                                      {schedule.end_time}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+        </TableBody>
+      </Table>
     </Layout>
   );
 };

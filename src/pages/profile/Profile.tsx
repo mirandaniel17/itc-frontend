@@ -3,6 +3,7 @@ import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
 import Layout from "../../components/Layout";
+import Alert from "../../components/Alert";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -23,6 +24,10 @@ const Profile = () => {
     currentPassword: "",
     newPassword: "",
   });
+
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertColor, setAlertColor] = useState("red");
+  const [showAlert, setShowAlert] = useState(false);
 
   const getDeviceIcon = () => {
     if (/Mobi|Android/i.test(userData.userAgent)) {
@@ -78,7 +83,11 @@ const Profile = () => {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching user data:", error);
+        setAlertMessage("Error al cargar los datos del usuario.");
+        setAlertColor("red");
+        setShowAlert(true);
+        setIsLoading(false);
+        console.log(error);
       });
   }, []);
 
@@ -116,7 +125,9 @@ const Profile = () => {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Error al actualizar el perfil");
+          return response.json().then((err) => {
+            throw new Error(err.error || "Error al actualizar el perfil");
+          });
         }
         return response.json();
       })
@@ -126,16 +137,22 @@ const Profile = () => {
           name: data.user.name,
           email: data.user.email,
         }));
+        setAlertMessage("Perfil actualizado con éxito.");
+        setAlertColor("green");
+        setShowAlert(true);
         setIsEditing(false);
       })
       .catch((error) => {
-        console.error("Error updating profile:", error);
+        setAlertMessage(error.message);
+        setAlertColor("red");
+        setShowAlert(true);
       });
   };
 
   return (
     <div>
       <Layout>
+        {showAlert && <Alert message={alertMessage} color={alertColor} />}
         <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
           <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
             {!isEditing ? (
@@ -217,7 +234,7 @@ const Profile = () => {
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSave} className="mt-6 space-y-6">
+              <form onSubmit={handleSave}>
                 <InputLabel htmlFor="name" value="Nombre de Usuario" />
                 <TextInput
                   name="name"
@@ -226,7 +243,7 @@ const Profile = () => {
                   onChange={handleInputChange}
                   required
                 />
-                <InputError className="mt-2" />
+                <InputError />
 
                 <InputLabel htmlFor="email" value="Correo Electrónico" />
                 <TextInput
@@ -236,7 +253,7 @@ const Profile = () => {
                   onChange={handleInputChange}
                   required
                 />
-                <InputError className="mt-2" />
+                <InputError />
 
                 <InputLabel
                   htmlFor="currentPassword"
@@ -250,7 +267,7 @@ const Profile = () => {
                   onChange={handleInputChange}
                   required
                 />
-                <InputError className="mt-2" />
+                <InputError />
 
                 <InputLabel htmlFor="newPassword" value="Nueva Contraseña" />
                 <TextInput
@@ -260,19 +277,19 @@ const Profile = () => {
                   value={editData.newPassword}
                   onChange={handleInputChange}
                 />
-                <InputError className="mt-2" />
+                <InputError />
 
                 <div className="flex space-x-4">
                   <button
                     type="submit"
-                    className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-300 mt-4"
                   >
                     Guardar Cambios
                   </button>
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                    className="bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-300 mt-4"
                   >
                     Cancelar
                   </button>

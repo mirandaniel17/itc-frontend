@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Alert from "../../components/Alert";
+import SubmitButton from "../../components/SubmitButton";
 import SelectInput from "../../components/SelectInput";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -14,13 +15,13 @@ const RolesPermissions = () => {
   const [selectedRole, setSelectedRole] = useState<string>("Sin rol");
   const [allPermissions, setAllPermissions] = useState<string[]>([]);
   const [assignedPermissions, setAssignedPermissions] = useState<string[]>([]);
-  const [selectAll, setSelectAll] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchUserDetails = async () => {
     try {
       const token = localStorage.getItem("token");
+
       const roleResponse = await fetch(
         `http://127.0.0.1:8000/api/user/${userId}/role`,
         {
@@ -92,15 +93,6 @@ const RolesPermissions = () => {
     );
   };
 
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setAssignedPermissions([]);
-    } else {
-      setAssignedPermissions([...allPermissions]);
-    }
-    setSelectAll(!selectAll);
-  };
-
   const saveChanges = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -143,13 +135,6 @@ const RolesPermissions = () => {
     fetchUserDetails();
   }, [userId]);
 
-  useEffect(() => {
-    setSelectAll(
-      assignedPermissions.length === allPermissions.length &&
-        allPermissions.length > 0
-    );
-  }, [assignedPermissions, allPermissions]);
-
   return (
     <Layout>
       <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -158,7 +143,7 @@ const RolesPermissions = () => {
         </h1>
 
         <div className="mb-6">
-          <label className="block text-sm font-bold mb-2">Rol</label>
+          <label className="block text-2xl font-bold mb-2">Rol</label>
           {loading ? (
             <Skeleton width={300} height={40} />
           ) : (
@@ -178,26 +163,9 @@ const RolesPermissions = () => {
 
         <h2 className="text-xl font-bold mb-2">Permisos</h2>
         {loading ? (
-          <Skeleton count={6} height={30} />
+          <Skeleton count={6} />
         ) : (
           <ul className="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg">
-            <li className="w-full border-b border-gray-200 rounded-t-lg">
-              <div className="flex items-center ps-3">
-                <input
-                  type="checkbox"
-                  checked={selectAll}
-                  onChange={handleSelectAll}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label
-                  htmlFor="select-all"
-                  className="w-full py-3 ms-2 text-sm font-medium text-gray-900"
-                >
-                  Todos
-                </label>
-              </div>
-            </li>
-
             {allPermissions.map((permission) => (
               <li
                 key={permission}
@@ -224,15 +192,12 @@ const RolesPermissions = () => {
         )}
 
         <div className="mt-4 flex justify-end gap-2">
-          <button
-            onClick={saveChanges}
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
+          <SubmitButton type="submit" onClick={saveChanges}>
             Guardar Cambios
-          </button>
+          </SubmitButton>
           <button
             onClick={goBackToUsers}
-            className="bg-gray-500 text-white px-4 py-2 rounded"
+            className="text-white bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-gray-300 dark:focus:ring-gray-800 shadow-lg shadow-gray-500/50 dark:shadow-lg dark:shadow-gray-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
           >
             Volver
           </button>

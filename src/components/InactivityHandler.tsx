@@ -1,54 +1,50 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const InactivityHandler = ({ logout }: { logout: () => void }) => {
-  const [isInactive, setIsInactive] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
-  const [isWarningActive, setIsWarningActive] = useState(false);
   const navigate = useNavigate();
 
+  const warningTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const logoutTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const logoutUser = () => {
-    setIsInactive(true);
     logout();
     navigate("/login");
   };
 
   const resetTimer = () => {
-    if (!isWarningActive) {
-      clearTimeout(warningTimer);
-      clearTimeout(logoutTimer);
-      startInactivityTimer();
-    } else {
-      setShowWarning(false);
-      setIsWarningActive(false);
-    }
+    if (warningTimer.current) clearTimeout(warningTimer.current);
+    if (logoutTimer.current) clearTimeout(logoutTimer.current);
+
+    setShowWarning(false);
+    startInactivityTimer();
   };
 
-  let warningTimer: ReturnType<typeof setTimeout>;
-  let logoutTimer: ReturnType<typeof setTimeout>;
-
   const startInactivityTimer = () => {
-    // 5 minutos de inactividad
-    warningTimer = setTimeout(() => {
+    warningTimer.current = setTimeout(() => {
       setShowWarning(true);
-      setIsWarningActive(true);
-      // 45 segundos para responder antes de cerrar sesión
-      logoutTimer = setTimeout(logoutUser, 45000);
-    }, 300000); // 5 minutos
+      logoutTimer.current = setTimeout(logoutUser, 45000); // 45 segundos para cerrar sesión
+    }, 300000); // 5 minutos de inactividad
   };
 
   useEffect(() => {
     startInactivityTimer();
 
-    const activityEvents = ["mousemove", "keydown", "click"];
+    const activityEvents = ["click", "keypress", "scroll", "mousemove"];
+    const handleActivity = resetTimer;
+
     activityEvents.forEach((event) => {
-      window.addEventListener(event, resetTimer);
+      window.addEventListener(event, handleActivity);
     });
 
     return () => {
       activityEvents.forEach((event) => {
-        window.removeEventListener(event, resetTimer);
+        window.removeEventListener(event, handleActivity);
       });
+
+      if (warningTimer.current) clearTimeout(warningTimer.current);
+      if (logoutTimer.current) clearTimeout(logoutTimer.current);
     };
   }, []);
 

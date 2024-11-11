@@ -84,7 +84,10 @@ const Login = () => {
         />
         <InputError message={errorMessage} />
         <div className="flex items-center justify-between">
-          <div className="flex items-start">
+          {/**
+           * PENDIENTE
+           * 
+           * <div className="flex items-start">
             <div className="flex items-center h-5">
               <input
                 type="checkbox"
@@ -97,6 +100,8 @@ const Login = () => {
               <FormLabel text="Recuérdame" />
             </div>
           </div>
+           * 
+           */}
           <Link
             to="/forgot-password"
             className="text-sm font-medium text-gray-900 hover:underline"

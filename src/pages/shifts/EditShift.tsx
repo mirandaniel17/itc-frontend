@@ -64,7 +64,7 @@ const EditShift = () => {
           room_id: shiftData.room_id || "",
         });
 
-        setRooms(roomData);
+        setRooms(roomData.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching shift and rooms:", error);

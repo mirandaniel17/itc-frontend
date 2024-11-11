@@ -32,7 +32,24 @@ const CreateTeacher = () => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "phone") {
+      const phoneRegex = /^[0-9]*$/;
+      if (!phoneRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          phone: ["El teléfono solo debe contener números."],
+        }));
+        return;
+      } else {
+        setErrors((prevErrors) => {
+          const { phone, ...rest } = prevErrors;
+          return rest;
+        });
+      }
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

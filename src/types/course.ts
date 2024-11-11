@@ -1,6 +1,7 @@
 export interface Course {
   id: number;
   name: string;
+  parallel: string;
   description: string;
   start_date: string;
   end_date: string | null;
@@ -18,5 +19,6 @@ export interface Course {
   modality: {
     id: number;
     name: string;
+    duration_in_months: number;
   };
 }

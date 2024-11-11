@@ -27,7 +27,9 @@ const Sidebar: React.FC = () => {
 
   useEffect(() => {
     const isCoursesDropdownRoute =
-      location.pathname === "/courses" || location.pathname === "/modalities";
+      location.pathname === "/courses" ||
+      location.pathname === "/modalities" ||
+      location.pathname === "/rooms";
     setIsCoursesDropdownOpen(isCoursesDropdownRoute);
 
     const isUsersDropdownRoute =
@@ -100,18 +102,23 @@ const Sidebar: React.FC = () => {
                     setIsOpen={setIsCoursesDropdownOpen}
                   >
                     <SidebarLink
-                    to="/modalities"
-                    icon="mdi mdi-human-capacity-decrease"
-                    label="Modalidades"
-                    className="ms-0"
-                  />
-                  <SidebarLink
-                    to="/courses"
-                    icon="mdi-google-classroom"
-                    label="Cursos"
-                    className="ms-0"
-                  />
-
+                      to="/modalities"
+                      icon="mdi mdi-human-capacity-decrease"
+                      label="Modalidades"
+                      className="ms-0"
+                    />
+                    <SidebarLink
+                      to="/courses"
+                      icon="mdi-google-classroom"
+                      label="Cursos"
+                      className="ms-0"
+                    />
+                    <SidebarLink
+                      to="/rooms"
+                      icon="mdi mdi-door-sliding"
+                      label="Aulas"
+                      className="ms-0"
+                    />
                   </DropdownLink>
                 )}
 
@@ -149,7 +156,7 @@ const Sidebar: React.FC = () => {
 
                 {hasPermission("Ver Horarios") && (
                   <SidebarLink
-                    to="/schedules/set-schedule"
+                    to="/schedules"
                     icon="mdi mdi-calendar-clock"
                     label="Horarios"
                   />
@@ -160,6 +167,14 @@ const Sidebar: React.FC = () => {
                     to="/enrollments"
                     icon="mdi-basket-fill"
                     label="Inscripciones"
+                  />
+                )}
+
+                {hasPermission("Gestión de Cursos") && (
+                  <SidebarLink
+                    to="/attendances"
+                    icon="mdi-badge-account-horizontal-outline"
+                    label="Asistencias"
                   />
                 )}
               </>

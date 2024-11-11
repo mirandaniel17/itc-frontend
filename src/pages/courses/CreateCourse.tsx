@@ -6,6 +6,7 @@ import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
 import Alert from "../../components/Alert";
 import Select from "react-select";
+import SelectInput from "../../components/SelectInput";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
@@ -23,6 +24,7 @@ const CreateCourse = () => {
     end_date: "",
     teacher_id: "",
     modality_id: "",
+    parallel: "A",
   });
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [modalities, setModalities] = useState<Modality[]>([]);
@@ -168,6 +170,24 @@ const CreateCourse = () => {
                   required
                 />
                 <InputError message={errors.name?.[0]} />
+              </div>
+
+              <div className="flex flex-col">
+                <InputLabel htmlFor="parallel">Paralelo</InputLabel>
+                <SelectInput
+                  name="parallel"
+                  value={formData.parallel}
+                  onChange={handleChange}
+                  className="block w-full p-3 text-xs tracking-tighter border rounded-md"
+                >
+                  <option value="" disabled>
+                    Seleccionar Paralelo
+                  </option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                </SelectInput>
+                <InputError message={errors.parallel?.[0]} />
               </div>
 
               <div className="flex flex-col">

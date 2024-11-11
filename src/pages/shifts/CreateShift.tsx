@@ -36,7 +36,7 @@ const CreateShift = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setRooms(data);
+        setRooms(data.data || []);
       } catch (error) {
         console.error("Error fetching rooms:", error);
       }

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
+import SelectInput from "../../components/SelectInput";
 import InputError from "../../components/InputError";
 import Alert from "../../components/Alert";
 import Select from "react-select";
@@ -15,6 +16,7 @@ import { Modality } from "../../types/modality";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
+
 registerLocale("es", es);
 
 const EditCourse = () => {
@@ -26,7 +28,9 @@ const EditCourse = () => {
     end_date: "",
     teacher_id: "",
     modality_id: "",
+    parallel: "", // Campo paralelo
   });
+
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [modalities, setModalities] = useState<Modality[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
@@ -60,6 +64,7 @@ const EditCourse = () => {
           end_date: data.end_date,
           teacher_id: data.teacher_id,
           modality_id: data.modality_id,
+          parallel: data.parallel || "", // Paralelo se carga desde el backend
         });
         setSelectedStartDate(new Date(data.start_date));
         if (data.end_date) {
@@ -171,19 +176,15 @@ const EditCourse = () => {
     }
   };
 
-  const teacherOptions = Array.isArray(teachers)
-    ? teachers.map((teacher) => ({
-        value: teacher.id,
-        label: `${teacher.last_name} ${teacher.second_last_name} ${teacher.name} - ${teacher.ci}`,
-      }))
-    : [];
+  const teacherOptions = teachers.map((teacher) => ({
+    value: teacher.id,
+    label: `${teacher.last_name} ${teacher.second_last_name} ${teacher.name} - ${teacher.ci}`,
+  }));
 
-  const modalityOptions = Array.isArray(modalities)
-    ? modalities.map((modality) => ({
-        value: modality.id,
-        label: modality.name,
-      }))
-    : [];
+  const modalityOptions = modalities.map((modality) => ({
+    value: modality.id,
+    label: modality.name,
+  }));
 
   return (
     <div>
@@ -209,6 +210,24 @@ const EditCourse = () => {
                     required
                   />
                   <InputError message={errors.name?.[0]} />
+                </div>
+
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="parallel">Paralelo</InputLabel>
+                  <SelectInput
+                    name="parallel"
+                    value={formData.parallel}
+                    onChange={handleChange}
+                    className="block w-full p-3 text-xs tracking-tighter border rounded-md"
+                  >
+                    <option value="" disabled>
+                      Seleccionar Paralelo
+                    </option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                  </SelectInput>
+                  <InputError message={errors.parallel?.[0]} />
                 </div>
 
                 <div className="flex flex-col">
