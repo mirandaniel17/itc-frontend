@@ -15,6 +15,12 @@ const ProtectedRoute = ({
 
   useEffect(() => {
     const checkAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
+
       try {
         const response = await fetch("http://localhost:8000/api/user", {
           method: "GET",
@@ -23,35 +29,28 @@ const ProtectedRoute = ({
 
         if (response.ok) {
           const storedPermissions = localStorage.getItem("permissions");
-          setTimeout(() => {
-            setIsAuthenticated(true);
-            if (storedPermissions) {
-              const permissions = JSON.parse(storedPermissions);
-              if (
-                requiredPermission &&
-                permissions.includes(requiredPermission)
-              ) {
-                setHasPermission(true);
-              } else if (requiredPermission) {
-                setHasPermission(false);
-              }
-            } else {
-              setHasPermission(false);
-            }
-          }, 2000);
+          setIsAuthenticated(true);
+
+          if (requiredPermission && storedPermissions) {
+            const permissions = JSON.parse(storedPermissions);
+            setHasPermission(permissions.includes(requiredPermission));
+          } else if (requiredPermission) {
+            setHasPermission(false);
+          }
         } else {
-          setTimeout(() => {
-            setIsAuthenticated(false);
-          }, 2000);
+          setIsAuthenticated(false);
         }
       } catch (error) {
-        setTimeout(() => {
-          setIsAuthenticated(false);
-        }, 2000);
+        setIsAuthenticated(false);
       }
     };
+
     checkAuth();
   }, [requiredPermission]);
+
+  if (isAuthenticated === false) {
+    return <Navigate to="/login" replace />;
+  }
 
   if (
     isAuthenticated === null ||
@@ -147,10 +146,6 @@ const ProtectedRoute = ({
         </div>
       </section>
     );
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
   }
 
   if (requiredPermission && !hasPermission) {

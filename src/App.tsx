@@ -5,6 +5,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Login from "../src/pages/auth/Login";
 import Register from "./pages/auth/Register";
 import VerifyEmail from "./pages/auth/VerifyEmail";
@@ -50,8 +51,14 @@ import Attendances from "./pages/attendances/Attendances";
 import Rooms from "./pages/rooms/Rooms";
 import CreateRoom from "./pages/rooms/CreateRoom";
 import EditRoom from "./pages/rooms/EditRoom";
-
+import Notifications from "./pages/notifications/Notifications";
+import NotificationAlert from "./components/NotificationAlert";
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, []);
   const logout = () => {
     document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     window.location.href = "/login";
@@ -60,6 +67,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
+        {isAuthenticated && <NotificationAlert />}
         <AppContent logout={logout} />
       </BrowserRouter>
     </div>
@@ -81,6 +89,14 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
             </ProtectedRoute>
           }
         />
@@ -336,7 +352,7 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           path="/schedules/create"
           element={
             <ProtectedRoute>
-              <CreateSetSchedule/>
+              <CreateSetSchedule />
             </ProtectedRoute>
           }
         />
@@ -344,7 +360,7 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           path="/schedules/edit/:id"
           element={
             <ProtectedRoute>
-              <EditSetSchedule/>
+              <EditSetSchedule />
             </ProtectedRoute>
           }
         />

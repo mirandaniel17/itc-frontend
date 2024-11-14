@@ -210,8 +210,8 @@ const Attendances = () => {
 
   return (
     <Layout>
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Módulo de Asistencia</h1>
+      <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
+        <h1 className="text-2xl font-bold mb-4">Registro de Asistencias</h1>
 
         {alertMessage && (
           <Alert message={alertMessage.message} color={alertMessage.color} />

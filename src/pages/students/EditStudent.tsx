@@ -84,7 +84,44 @@ const EditStudent = () => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+  
+    const textFields = ["name", "last_name", "second_last_name"]; // Solo letras y espacios con tildes
+    const numericFields = ["ci", "phone"]; // Solo números
+  
+    if (textFields.includes(name)) {
+      const textRegex = /^[a-zA-ZÁáÉéÍíÓóÚúÜüÑñ\s]*$/;
+      if (!textRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: ["Este campo solo debe contener letras y espacios."],
+        }));
+        return;
+      } else {
+        setErrors((prevErrors) => {
+          const { [name]: _, ...rest } = prevErrors;
+          return rest;
+        });
+      }
+    }
+  
+    if (numericFields.includes(name)) {
+      const numericRegex = /^[0-9]*$/;
+      if (!numericRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: ["Este campo solo debe contener números."],
+        }));
+        return;
+      } else {
+        setErrors((prevErrors) => {
+          const { [name]: _, ...rest } = prevErrors;
+          return rest;
+        });
+      }
+    }
+  
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

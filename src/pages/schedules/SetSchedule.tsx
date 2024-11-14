@@ -16,7 +16,7 @@ type Schedule = {
   id: number;
   course_name: string;
   parallel: string;
-  shift_name: string; // Nuevo campo para el nombre del turno
+  shift_name: string;
   day: string;
   start_time: string;
   end_time: string;
@@ -94,10 +94,6 @@ const SetSchedule: React.FC = () => {
     navigate("/schedules/create");
   };
 
-  const handleEditSchedule = (id: number) => {
-    navigate(`/schedules/edit/${id}`);
-  };
-
   const handleDeleteSchedule = async (id: number) => {
     if (confirm("¿Estás seguro de eliminar este horario?")) {
       const token = localStorage.getItem("token");
@@ -138,7 +134,7 @@ const SetSchedule: React.FC = () => {
       {showAlert && <Alert message={alertMessage} color={alertColor} />}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Horarios de Clases</h2>
-        <AddButton label="Nuevo Horario" onClick={handleNewSchedule} />
+        <AddButton label="Nuevo" onClick={handleNewSchedule} />
       </div>
 
       <Table>
@@ -188,7 +184,7 @@ const SetSchedule: React.FC = () => {
                             ? "Ocultar Detalles"
                             : "Ver Detalles"}
                         </button>
-                        
+
                         <button
                           className="text-red-500 underline"
                           onClick={() =>

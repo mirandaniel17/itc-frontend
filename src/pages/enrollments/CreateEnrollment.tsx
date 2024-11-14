@@ -66,12 +66,15 @@ const CreateEnrollment = () => {
   }, []);
 
   const fetchCourseSchedules = async (courseIds: string[]) => {
+    if (courseIds.length === 0) {
+      setEvents([]);
+      return;
+    }
+
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/course-schedules?course_ids=${courseIds.join(
-          ","
-        )}`,
+        `http://127.0.0.1:8000/api/schedules?course_ids=${courseIds.join(",")}`,
         {
           method: "GET",
           headers: {
@@ -82,22 +85,45 @@ const CreateEnrollment = () => {
       );
       const data = await response.json();
 
-      const newEvents = data.schedules
-        .map((schedule: any) => {
-          const dayNumber = convertDayToNumber(schedule.day);
-          return {
-            title: schedule.course_name,
-            daysOfWeek: dayNumber !== null ? [dayNumber] : [],
-            startTime: schedule.start_time,
-            endTime: schedule.end_time,
-          };
-        })
-        .filter((event: any) => event.daysOfWeek.length > 0);
+      const newEvents = data.schedules.map((schedule: any) => {
+        const dayNumber = convertDayToNumber(schedule.day);
+        return {
+          title: `${schedule.course_name} (${schedule.parallel})`,
+          daysOfWeek: dayNumber !== null ? [dayNumber] : [],
+          startTime: schedule.start_time,
+          endTime: schedule.end_time,
+        };
+      });
 
-      setEvents(newEvents);
+      if (detectScheduleConflicts(newEvents)) {
+        setAlertMessage(
+          "Conflicto de horarios detectado entre los cursos seleccionados."
+        );
+        setAlertColor("red");
+        setShowAlert(true);
+        setEvents([]); // No mostrar eventos en el calendario
+      } else {
+        setEvents(newEvents);
+        setShowAlert(false); // Ocultar alerta si no hay conflictos
+      }
     } catch (error) {
       console.error("Error fetching course schedules:", error);
     }
+  };
+
+  const detectScheduleConflicts = (events: CalendarEvent[]) => {
+    for (let i = 0; i < events.length; i++) {
+      for (let j = i + 1; j < events.length; j++) {
+        if (
+          events[i].daysOfWeek[0] === events[j].daysOfWeek[0] &&
+          events[i].startTime < events[j].endTime &&
+          events[i].endTime > events[j].startTime
+        ) {
+          return true; // Hay conflicto
+        }
+      }
+    }
+    return false; // No hay conflicto
   };
 
   const convertDayToNumber = (day: string) => {
@@ -159,6 +185,15 @@ const CreateEnrollment = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (showAlert) {
+      setAlertMessage(
+        "No puedes registrar una inscripción con conflicto de horarios."
+      );
+      setAlertColor("red");
+      setShowAlert(true);
+      return; // Bloquea el registro
+    }
+
     if (!formData.enrollment_date) {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -190,14 +225,6 @@ const CreateEnrollment = () => {
       });
 
       if (!response.ok) {
-        if (response.status === 409) {
-          setAlertMessage(
-            "Conflicto de horario detectado. Revise su selección."
-          );
-          setAlertColor("red");
-          setShowAlert(true);
-          return;
-        }
         const result = await response.json();
         setErrors(result.errors || {});
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -251,7 +278,29 @@ const CreateEnrollment = () => {
               />
               <InputError message={errors.courses?.[0]} />
             </div>
-
+            <div className="flex flex-col py-14">
+              <FullCalendar
+                plugins={[timeGridPlugin]}
+                initialView="timeGridWeek"
+                events={events}
+                locale={esLocale}
+                height="auto"
+                contentHeight="300px"
+                slotMinTime="06:00:00"
+                slotMaxTime="20:00:00"
+                allDaySlot={false}
+                headerToolbar={{
+                  left: "",
+                  center: "",
+                  right: "",
+                }}
+                dayHeaderFormat={{ weekday: "short" }}
+                eventColor="#3788d8"
+                eventTextColor="#fff"
+                slotLabelClassNames="text-xs"
+                dayHeaderClassNames="bg-gray-100 text-xs"
+              />
+            </div>
             <div className="flex flex-col">
               <InputLabel htmlFor="discount_id">Descuento</InputLabel>
               <Select
@@ -293,34 +342,16 @@ const CreateEnrollment = () => {
               <InputError message={errors.enrollment_date?.[0]} />
             </div>
 
-            <FullCalendar
-              plugins={[timeGridPlugin]}
-              initialView="timeGridWeek"
-              events={events}
-              locale={esLocale}
-              height="auto"
-              contentHeight="300px"
-              slotMinTime="08:00:00"
-              slotMaxTime="20:00:00"
-              headerToolbar={{
-                left: "",
-                center: "title",
-                right: "",
-              }}
-              dayHeaderFormat={{ weekday: "short" }}
-              eventColor="#3788d8"
-              eventTextColor="#fff"
-              slotLabelClassNames="text-xs"
-              dayHeaderClassNames="bg-gray-100 text-xs"
-            />
-
             <div className="flex flex-col">
-              <InputLabel htmlFor="document1">Documento 1</InputLabel>
+              <InputLabel htmlFor="document1">
+                Certificado de Nacimiento
+              </InputLabel>
               <div className="relative w-full h-64 border-2 border-gray-300 border-dashed rounded-lg">
                 <input
                   type="file"
                   name="document1"
                   accept="image/*"
+                  required
                   className="absolute w-full h-full opacity-0 cursor-pointer"
                   onChange={(e) =>
                     handleFileChange(e, setDocument1, setPreviewDocument1)
@@ -358,7 +389,7 @@ const CreateEnrollment = () => {
             </div>
 
             <div className="flex flex-col">
-              <InputLabel htmlFor="document2">Documento 2</InputLabel>
+              <InputLabel htmlFor="document2">Título de Bachiller</InputLabel>
               <div className="relative w-full h-64 border-2 border-gray-300 border-dashed rounded-lg">
                 <input
                   type="file"

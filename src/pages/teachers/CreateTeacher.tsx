@@ -33,17 +33,38 @@ const CreateTeacher = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    if (name === "phone") {
-      const phoneRegex = /^[0-9]*$/;
-      if (!phoneRegex.test(value)) {
+    const numericFields = ["phone", "ci"]; // Campos que solo aceptan números
+    const textFields = ["name", "last_name", "second_last_name"]; // Campos que no aceptan números
+
+    if (numericFields.includes(name)) {
+      const numericRegex = /^[0-9]*$/;
+      if (!numericRegex.test(value)) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          phone: ["El teléfono solo debe contener números."],
+          [name]: ["Este campo solo debe contener números."],
         }));
         return;
       } else {
         setErrors((prevErrors) => {
-          const { phone, ...rest } = prevErrors;
+          const { [name]: _, ...rest } = prevErrors;
+          return rest;
+        });
+      }
+    }
+
+    if (textFields.includes(name)) {
+      const textRegex = /^[a-zA-ZÀ-ÿ\s]*$/; // Permite letras, tildes y espacios
+      if (!textRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: [
+            "Este campo no debe contener números ni caracteres especiales, excepto tildes.",
+          ],
+        }));
+        return;
+      } else {
+        setErrors((prevErrors) => {
+          const { [name]: _, ...rest } = prevErrors;
           return rest;
         });
       }

@@ -38,21 +38,42 @@ const CreateStudent = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    if (name === "phone") {
-      const phoneRegex = /^[0-9]*$/;
-      if (!phoneRegex.test(value)) {
+  
+    const textFields = ["name", "last_name", "second_last_name"]; // Solo letras y espacios con tildes
+    const numericFields = ["ci", "phone"]; // Solo números
+  
+    if (textFields.includes(name)) {
+      const textRegex = /^[a-zA-ZÁáÉéÍíÓóÚúÜüÑñ\s]*$/;
+      if (!textRegex.test(value)) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          phone: ["El teléfono solo debe contener números."],
+          [name]: ["Este campo solo debe contener letras y espacios."],
         }));
         return;
       } else {
         setErrors((prevErrors) => {
-          const { phone, ...rest } = prevErrors;
+          const { [name]: _, ...rest } = prevErrors;
           return rest;
         });
       }
     }
+  
+    if (numericFields.includes(name)) {
+      const numericRegex = /^[0-9]*$/;
+      if (!numericRegex.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: ["Este campo solo debe contener números."],
+        }));
+        return;
+      } else {
+        setErrors((prevErrors) => {
+          const { [name]: _, ...rest } = prevErrors;
+          return rest;
+        });
+      }
+    }
+  
     setFormData({ ...formData, [name]: value });
   };
 

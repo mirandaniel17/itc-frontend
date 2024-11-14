@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useNavigate, useLocation, useParams } from "react-router-dom";
+import {
+  NavLink,
+  useNavigate,
+  useLocation,
+  useParams,
+  Link,
+} from "react-router-dom";
 import UserMenuButton from "./UserMenuButton";
 import UserDropdown from "./UserDropdown";
 import Skeleton from "react-loading-skeleton";
@@ -12,6 +18,7 @@ const Navbar: React.FC = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [notifications, setNotifications] = useState(3);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState<number>(0);
   const navigate = useNavigate();
   useEffect(() => {
     const storedUserName = localStorage.getItem("userName");
@@ -23,6 +30,43 @@ const Navbar: React.FC = () => {
       console.error("No se encontraron datos del usuario en localStorage");
     }
   }, []);
+
+  const fetchUnreadNotifications = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/notifications/unread",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          navigate("/login");
+        }
+        throw new Error("Error fetching notifications");
+      }
+
+      const data = await response.json();
+      setUnreadNotifications(data.unread_count);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUnreadNotifications();
+
+    const interval = setInterval(() => {
+      fetchUnreadNotifications();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [navigate]);
 
   const logout = async () => {
     try {
@@ -60,6 +104,7 @@ const Navbar: React.FC = () => {
     const breadcrumbMap: { [key: string]: string } = {
       "/": "Inicio",
       "/profile": "Perfil",
+      "/notifications": "Notificaciones",
       "/students": "Estudiantes",
       "/students/create": "Registrar Estudiante",
       "/students/edit": "Actualizar Estudiante",
@@ -135,14 +180,16 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="hidden sm:flex items-center space-x-4">
-            {/*<div className="relative">
-              <span className="mdi mdi-bell-outline text-2xl text-gray-500 cursor-pointer"></span>
-              {notifications > 0 && (
-                <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-600 text-white text-xs leading-tight text-center">
-                  {notifications}
-                </span>
-              )}
-            </div>*/}
+            <div className="relative">
+              <Link to="/notifications">
+                <span className="mdi mdi-bell-outline text-2xl text-gray-500 cursor-pointer"></span>
+                {unreadNotifications > 0 && (
+                  <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-600 text-white text-xs leading-tight text-center">
+                    {unreadNotifications}
+                  </span>
+                )}
+              </Link>
+            </div>
 
             <div
               onClick={toggleFullScreen}
@@ -150,7 +197,6 @@ const Navbar: React.FC = () => {
             >
               <span className="mdi mdi-fullscreen text-2xl text-gray-500"></span>
             </div>
-
             <div className="relative ml-3">
               <UserMenuButton
                 onClick={handleToggleDropdown}

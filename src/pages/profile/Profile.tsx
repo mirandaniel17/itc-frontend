@@ -241,44 +241,8 @@ const Profile = () => {
                   className="block w-full"
                   value={editData.name}
                   onChange={handleInputChange}
-                  required
                 />
                 <InputError />
-
-                <InputLabel htmlFor="email" value="Correo Electrónico" />
-                <TextInput
-                  name="email"
-                  className="block w-full"
-                  value={editData.email}
-                  onChange={handleInputChange}
-                  required
-                />
-                <InputError />
-
-                <InputLabel
-                  htmlFor="currentPassword"
-                  value="Contraseña Actual"
-                />
-                <TextInput
-                  name="currentPassword"
-                  type="password"
-                  className="block w-full"
-                  value={editData.currentPassword}
-                  onChange={handleInputChange}
-                  required
-                />
-                <InputError />
-
-                <InputLabel htmlFor="newPassword" value="Nueva Contraseña" />
-                <TextInput
-                  name="newPassword"
-                  type="password"
-                  className="block w-full"
-                  value={editData.newPassword}
-                  onChange={handleInputChange}
-                />
-                <InputError />
-
                 <div className="flex space-x-4">
                   <button
                     type="submit"

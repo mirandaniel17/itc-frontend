@@ -66,7 +66,7 @@ const Sidebar: React.FC = () => {
             <span className="mdi mdi-close"></span>
           </button>
           <ul className="space-y-2 font-medium">
-            <Link to="/" className="flex items-center ps-2.5 mb-5">
+            <Link to="/home" className="flex items-center ps-2.5 mb-5">
               <img src="/itc_logo.png" className="h-6 sm:h-8 me-1" alt="Logo" />
               <span className="self-center font-light dark:text-white">
                 Instituto Técnico Columbia
@@ -122,21 +122,6 @@ const Sidebar: React.FC = () => {
                   </DropdownLink>
                 )}
 
-                {hasPermission("Gestión de Usuarios") && (
-                  <DropdownLink
-                    label="Gestión de Usuarios"
-                    icon="mdi-security"
-                    isOpen={isUsersDropdownOpen}
-                    setIsOpen={setIsUsersDropdownOpen}
-                  >
-                    <SidebarLink
-                      to="/users"
-                      icon="mdi-account-multiple-outline"
-                      label="Usuarios"
-                    />
-                  </DropdownLink>
-                )}
-
                 {hasPermission("Ver Horarios") && (
                   <SidebarLink
                     to="/shifts"
@@ -176,6 +161,21 @@ const Sidebar: React.FC = () => {
                     icon="mdi-badge-account-horizontal-outline"
                     label="Asistencias"
                   />
+                )}
+
+                {hasPermission("Gestión de Usuarios") && (
+                  <DropdownLink
+                    label="Gestión de Usuarios"
+                    icon="mdi-security"
+                    isOpen={isUsersDropdownOpen}
+                    setIsOpen={setIsUsersDropdownOpen}
+                  >
+                    <SidebarLink
+                      to="/users"
+                      icon="mdi-account-multiple-outline"
+                      label="Usuarios"
+                    />
+                  </DropdownLink>
                 )}
               </>
             )}

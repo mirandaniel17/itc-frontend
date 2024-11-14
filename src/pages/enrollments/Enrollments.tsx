@@ -15,6 +15,8 @@ import { debounce } from "lodash";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 const Enrollments = () => {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
@@ -203,17 +205,20 @@ const Enrollments = () => {
                   <TableRow key={enrollment.id}>
                     <TableCell>{`${enrollment.student.last_name} ${enrollment.student.second_last_name}`}</TableCell>
                     <TableCell>{enrollment.course.name}</TableCell>
-                    <TableCell>{enrollment.enrollment_date}</TableCell>
+                    <TableCell>
+                      {format(
+                        new Date(enrollment.enrollment_date),
+                        "dd 'de' MMMM 'de' yyyy",
+                        {
+                          locale: es,
+                        }
+                      )}
+                    </TableCell>
+
                     <TableActionButtons
                       actions={[
                         {
-                          label: "Editar",
-                          onClick: () => handleEdit(enrollment),
-                          className:
-                            "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 shadow-lg font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                        },
-                        {
-                          label: "Eliminar",
+                          label: "Anular",
                           onClick: () => handleDeleteClick(enrollment.id),
                           className:
                             "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 shadow-lg font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
