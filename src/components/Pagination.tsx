@@ -6,17 +6,16 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
+const Pagination: React.FC<PaginationProps> = ( {
   currentPage,
   totalPages,
   onPageChange,
 }) => {
-  const handlePrevious = () => {
-    if (currentPage > 1) onPageChange(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) onPageChange(currentPage + 1);
+  const handlePageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedPage = parseInt(event.target.value, 10);
+    if (selectedPage !== currentPage) {
+      onPageChange(selectedPage);
+    }
   };
 
   return (
@@ -27,45 +26,35 @@ const Pagination: React.FC<PaginationProps> = ({
       <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
         Mostrando{" "}
         <span className="font-semibold text-gray-900 dark:text-white">
-          {(currentPage - 1) * 10 + 1}-{currentPage * 10}
+          {(currentPage - 1) * 10 + 1}-{Math.min(currentPage * 10, totalPages * 10)}
         </span>{" "}
         de{" "}
         <span className="font-semibold text-gray-900 dark:text-white">
           {totalPages * 10}
         </span>
       </span>
-      <ul className="inline-flex -space-x-px text-sm">
-        <li>
-          <button
-            onClick={handlePrevious}
-            className="flex items-center justify-center px-3 h-8 text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+      <div className="relative">
+        <select
+          value={currentPage}
+          onChange={handlePageChange}
+          className="block appearance-none w-full bg-white border border-gray-300 text-gray-500 py-2 px-4 pr-8 rounded-lg shadow leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-blue-500"
+        >
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <option key={page} value={page}>
+              Página {page}
+            </option>
+          ))}
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+          <svg
+            className="fill-current h-4 w-4"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
           >
-            Anterior
-          </button>
-        </li>
-        {[...Array(totalPages)].map((_, index) => (
-          <li key={index}>
-            <button
-              onClick={() => onPageChange(index + 1)}
-              className={`flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white ${
-                currentPage === index + 1
-                  ? "text-blue-600 bg-blue-50 dark:bg-gray-700 dark:text-white"
-                  : "text-gray-500 bg-white"
-              }`}
-            >
-              {index + 1}
-            </button>
-          </li>
-        ))}
-        <li>
-          <button
-            onClick={handleNext}
-            className="flex items-center justify-center px-3 h-8 text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-          >
-            Siguiente
-          </button>
-        </li>
-      </ul>
+            <path d="M10 12l-5-5h10l-5 5z" />
+          </svg>
+        </div>
+      </div>
     </nav>
   );
 };
