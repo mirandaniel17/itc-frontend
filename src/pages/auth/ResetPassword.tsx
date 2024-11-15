@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AuthFormContainer from "../../components/AuthFormContainer";
+import AuthContainer from "../../components/AuthContainer";
 import PrimaryInput from "../../components/PrimaryInput";
 import PrimaryButton from "../../components/PrimaryButton";
 import InputError from "../../components/InputError";
@@ -70,7 +70,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <AuthFormContainer title="Restablecer Contraseña">
+    <AuthContainer title="Restablecer Contraseña">
       {alertMessage && <Alert message={alertMessage} color={alertColor} />}
       <form onSubmit={submit}>
         <PrimaryInput
@@ -102,7 +102,7 @@ const ResetPassword = () => {
 
         <PrimaryButton text="Restablecer Contraseña" type="submit" />
       </form>
-    </AuthFormContainer>
+    </AuthContainer>
   );
 };
 

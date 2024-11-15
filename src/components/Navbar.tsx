@@ -44,17 +44,21 @@ const Navbar: React.FC = () => {
         }
       );
 
-      if (!response.ok) {
+      if (response.ok) {
+        const data = await response.json();
+        setUnreadNotifications(data.unread_count);
+      } else if (response.status === 404 || response.status === 500) {
+        console.warn("No se encontraron notificaciones o hubo un error.");
+        setUnreadNotifications(0);
+      } else {
         if (response.status === 401) {
           navigate("/login");
         }
         throw new Error("Error fetching notifications");
       }
-
-      const data = await response.json();
-      setUnreadNotifications(data.unread_count);
     } catch (error) {
       console.error("Error fetching notifications:", error);
+      setUnreadNotifications(0);
     }
   };
 

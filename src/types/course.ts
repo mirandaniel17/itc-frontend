@@ -9,6 +9,7 @@ export interface Course {
   modality_id: number;
   created_at: string;
   updated_at: string;
+  cost: number;
   teacher: {
     id: number;
     last_name: string;

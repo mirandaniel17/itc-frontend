@@ -28,11 +28,14 @@ const CreateEnrollment = () => {
     courses: [] as string[],
     discount_id: "",
     enrollment_date: "",
+    payment_type: "CONTADO",
   });
   const [students, setStudents] = useState<Student[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [discounts, setDiscounts] = useState<Discount[]>([]);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [courseCost, setCourseCost] = useState(0);
+  const [finalCost, setFinalCost] = useState(0);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -41,6 +44,9 @@ const CreateEnrollment = () => {
   const [document2, setDocument2] = useState<File | null>(null);
   const [previewDocument1, setPreviewDocument1] = useState<string | null>(null);
   const [previewDocument2, setPreviewDocument2] = useState<string | null>(null);
+  const [initialAmount, setInitialAmount] = useState<number | null>(null);
+  const [remainingBalance, setRemainingBalance] = useState<number>(0);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,6 +71,29 @@ const CreateEnrollment = () => {
     fetchData("discounts", setDiscounts);
   }, []);
 
+  useEffect(() => {
+    if (formData.payment_type === "MENSUAL") {
+      const discount = discounts.find(
+        (discount) => discount.id === Number(formData.discount_id)
+      );
+      const discountAmount = discount
+        ? (courseCost * discount.percentage) / 100
+        : 0;
+
+      const totalWithDiscount = courseCost - discountAmount;
+      const remaining = totalWithDiscount - (initialAmount || 0);
+
+      setFinalCost(totalWithDiscount);
+      setRemainingBalance(Math.max(remaining, 0));
+    }
+  }, [
+    initialAmount,
+    formData.payment_type,
+    courseCost,
+    discounts,
+    formData.discount_id,
+  ]);
+
   const fetchCourseSchedules = async (courseIds: string[]) => {
     if (courseIds.length === 0) {
       setEvents([]);
@@ -85,15 +114,19 @@ const CreateEnrollment = () => {
       );
       const data = await response.json();
 
-      const newEvents = data.schedules.map((schedule: any) => {
-        const dayNumber = convertDayToNumber(schedule.day);
-        return {
-          title: `${schedule.course_name} (${schedule.parallel})`,
-          daysOfWeek: dayNumber !== null ? [dayNumber] : [],
-          startTime: schedule.start_time,
-          endTime: schedule.end_time,
-        };
-      });
+      if (!data.schedules || !Array.isArray(data.schedules)) {
+        console.error("La respuesta de la API no contiene horarios válidos.");
+        return;
+      }
+
+      const newEvents = data.schedules.map((schedule: any) => ({
+        title: `${schedule.course_name} (${schedule.parallel})`,
+        daysOfWeek: [convertDayToNumber(schedule.day)],
+        startTime: schedule.start_time,
+        endTime: schedule.end_time,
+      }));
+
+      setEvents(newEvents);
 
       if (detectScheduleConflicts(newEvents)) {
         setAlertMessage(
@@ -101,32 +134,50 @@ const CreateEnrollment = () => {
         );
         setAlertColor("red");
         setShowAlert(true);
-        setEvents([]); // No mostrar eventos en el calendario
       } else {
-        setEvents(newEvents);
-        setShowAlert(false); // Ocultar alerta si no hay conflictos
+        setShowAlert(false);
       }
     } catch (error) {
-      console.error("Error fetching course schedules:", error);
+      console.error("Error al obtener los horarios:", error);
+      setAlertMessage("Error al obtener los horarios de los cursos.");
+      setAlertColor("red");
+      setShowAlert(true);
     }
   };
 
   const detectScheduleConflicts = (events: CalendarEvent[]) => {
-    for (let i = 0; i < events.length; i++) {
-      for (let j = i + 1; j < events.length; j++) {
-        if (
-          events[i].daysOfWeek[0] === events[j].daysOfWeek[0] &&
-          events[i].startTime < events[j].endTime &&
-          events[i].endTime > events[j].startTime
-        ) {
-          return true; // Hay conflicto
+    const eventsGroupedByDay: { [key: number]: CalendarEvent[] } = {};
+
+    events.forEach((event) => {
+      event.daysOfWeek.forEach((day) => {
+        if (!eventsGroupedByDay[day]) {
+          eventsGroupedByDay[day] = [];
+        }
+        eventsGroupedByDay[day].push(event);
+      });
+    });
+
+    for (const day in eventsGroupedByDay) {
+      const dayEvents = eventsGroupedByDay[day];
+      for (let i = 0; i < dayEvents.length; i++) {
+        for (let j = i + 1; j < dayEvents.length; j++) {
+          const event1 = dayEvents[i];
+          const event2 = dayEvents[j];
+
+          if (
+            event1.startTime < event2.endTime &&
+            event1.endTime > event2.startTime
+          ) {
+            return true;
+          }
         }
       }
     }
-    return false; // No hay conflicto
+
+    return false;
   };
 
-  const convertDayToNumber = (day: string) => {
+  const convertDayToNumber = (day: string): number => {
     switch (day.toUpperCase()) {
       case "LUNES":
         return 1;
@@ -143,17 +194,50 @@ const CreateEnrollment = () => {
       case "DOMINGO":
         return 0;
       default:
-        return null;
+        console.warn(`Día inválido recibido: ${day}`);
+        return -1;
     }
   };
 
   const handleSelectChange = (field: string, selectedOption: any) => {
     if (field === "courses") {
-      const selectedCourses = selectedOption
-        ? selectedOption.map((opt: any) => opt.value)
-        : [];
-      setFormData({ ...formData, courses: selectedCourses });
-      fetchCourseSchedules(selectedCourses);
+      const selectedCourseIds =
+        selectedOption?.map((option: any) => option.value) || [];
+
+      setFormData({ ...formData, courses: selectedCourseIds });
+      const totalCost = selectedCourseIds.reduce(
+        (sum: number, courseId: string) => {
+          const course = courses.find((c) => c.id === Number(courseId));
+          return sum + (course ? course.cost : 0);
+        },
+        0
+      );
+      setCourseCost(totalCost);
+      const discount = discounts.find(
+        (discount) => discount.id === Number(formData.discount_id)
+      );
+      const discountAmount = discount
+        ? (totalCost * discount.percentage) / 100
+        : 0;
+
+      setFinalCost(totalCost - discountAmount);
+
+      if (selectedCourseIds.length === 0) {
+        setEvents([]);
+        return;
+      }
+
+      fetchCourseSchedules(selectedCourseIds);
+    } else if (field === "discount_id") {
+      const discountId = selectedOption?.value || "";
+      const discount = discounts.find((discount) => discount.id === discountId);
+
+      const discountAmount = discount
+        ? (courseCost * discount.percentage) / 100
+        : 0;
+
+      setFinalCost(courseCost - discountAmount);
+      setFormData({ ...formData, discount_id: discountId });
     } else {
       setFormData({
         ...formData,
@@ -184,32 +268,29 @@ const CreateEnrollment = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (showAlert) {
       setAlertMessage(
         "No puedes registrar una inscripción con conflicto de horarios."
       );
       setAlertColor("red");
       setShowAlert(true);
-      return; // Bloquea el registro
-    }
-
-    if (!formData.enrollment_date) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        enrollment_date: ["La fecha de inscripción es obligatoria."],
-      }));
       return;
     }
-
     const enrollmentData = new FormData();
     enrollmentData.append("student_id", formData.student_id);
     enrollmentData.append("discount_id", formData.discount_id);
     enrollmentData.append("enrollment_date", formData.enrollment_date);
+    enrollmentData.append("payment_type", formData.payment_type);
 
-    if (formData.courses.length > 0) {
-      enrollmentData.append("course_id", formData.courses[0]);
+    if (formData.payment_type === "MENSUAL") {
+      enrollmentData.append("amount", initialAmount?.toString() || "0");
+    } else {
+      enrollmentData.append("amount", finalCost.toString());
     }
+
+    formData.courses.forEach((courseId) =>
+      enrollmentData.append("course_ids[]", courseId)
+    );
 
     if (document1) enrollmentData.append("document_1", document1);
     if (document2) enrollmentData.append("document_2", document2);
@@ -250,42 +331,86 @@ const CreateEnrollment = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {showAlert && <Alert message={alertMessage} color={alertColor} />}
 
-            <div className="flex flex-col">
-              <InputLabel htmlFor="student_id">Estudiante</InputLabel>
-              <Select
-                options={students.map((s) => ({
-                  value: s.id,
-                  label: `${s.name} ${s.last_name} ${s.second_last_name} (C.I. ${s.ci})`,
-                }))}
-                onChange={(option) => handleSelectChange("student_id", option)}
-                placeholder="Seleccionar estudiante"
-                className="w-full text-xs tracking-tighter"
-              />
-              <InputError message={errors.student_id?.[0]} />
+            <div className="flex gap-4 pt-14">
+              <div className="flex-1 flex flex-col">
+                <InputLabel htmlFor="enrollment_date">
+                  Fecha de Inscripción
+                </InputLabel>
+                <DatePicker
+                  selected={
+                    formData.enrollment_date
+                      ? new Date(formData.enrollment_date)
+                      : null
+                  }
+                  onChange={(date: Date | null) =>
+                    setFormData({
+                      ...formData,
+                      enrollment_date: date
+                        ? date.toISOString().split("T")[0]
+                        : "",
+                    })
+                  }
+                  dateFormat="yyyy-MM-dd"
+                  locale="es"
+                  className="w-full text-xs tracking-tighter"
+                  placeholderText="Selecciona una fecha"
+                  popperPlacement="top-start"
+                  portalId="root-portal"
+                />
+                <InputError message={errors.enrollment_date?.[0]} />
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-1 flex flex-col">
+                <InputLabel htmlFor="student_id">Estudiante</InputLabel>
+                <Select
+                  options={students.map((s) => ({
+                    value: s.id,
+                    label: `${s.name} ${s.last_name} ${s.second_last_name} (C.I. ${s.ci})`,
+                  }))}
+                  onChange={(option) =>
+                    handleSelectChange("student_id", option)
+                  }
+                  placeholder="Seleccionar estudiante"
+                  className="w-full text-xs tracking-tighter"
+                  menuPortalTarget={document.body}
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                  }}
+                />
+
+                <InputError message={errors.student_id?.[0]} />
+              </div>
+
+              <div className="flex-1 flex flex-col">
+                <InputLabel htmlFor="courses">Cursos</InputLabel>
+                <Select
+                  options={courses.map((course) => ({
+                    value: course.id,
+                    label: `${course.name} (${course.parallel})`,
+                  }))}
+                  isMulti
+                  onChange={(options) => handleSelectChange("courses", options)}
+                  placeholder="Seleccionar cursos"
+                  className="w-full text-xs tracking-tighter"
+                  menuPortalTarget={document.body}
+                  required
+                  styles={{
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                  }}
+                />
+                <InputError message={errors.courses?.[0]} />
+              </div>
             </div>
 
             <div className="flex flex-col">
-              <InputLabel htmlFor="courses">Cursos</InputLabel>
-              <Select
-                options={courses.map((course) => ({
-                  value: course.id,
-                  label: `${course.name} (${course.parallel})`,
-                }))}
-                isMulti
-                onChange={(options) => handleSelectChange("courses", options)}
-                placeholder="Seleccionar cursos"
-                className="w-full text-xs tracking-tighter"
-              />
-              <InputError message={errors.courses?.[0]} />
-            </div>
-            <div className="flex flex-col py-14">
               <FullCalendar
                 plugins={[timeGridPlugin]}
                 initialView="timeGridWeek"
                 events={events}
                 locale={esLocale}
                 height="auto"
-                contentHeight="300px"
                 slotMinTime="06:00:00"
                 slotMaxTime="20:00:00"
                 allDaySlot={false}
@@ -296,11 +421,111 @@ const CreateEnrollment = () => {
                 }}
                 dayHeaderFormat={{ weekday: "short" }}
                 eventColor="#3788d8"
-                eventTextColor="#fff"
-                slotLabelClassNames="text-xs"
+                eventTextColor="#ffffff"
                 dayHeaderClassNames="bg-gray-100 text-xs"
               />
             </div>
+
+            <div className="flex flex-col">
+              <InputLabel>Tipo de Pago</InputLabel>
+              <div className="flex space-x-4">
+                <div className="flex items-center">
+                  <input
+                    id="payment-type-contado"
+                    type="radio"
+                    value="CONTADO"
+                    checked={formData.payment_type === "CONTADO"}
+                    onChange={() => {
+                      setFormData({ ...formData, payment_type: "CONTADO" });
+                      setInitialAmount(null);
+                      setRemainingBalance(0);
+                    }}
+                    className="hidden checked:bg-no-repeat checked:bg-center checked:border-sky-500 checked:bg-sky-100"
+                  />
+                  <label
+                    htmlFor="payment-type-contado"
+                    className="flex items-center cursor-pointer text-gray-600 text-sm font-normal whitespace-nowrap"
+                  >
+                    <span className="border border-gray-300 rounded-full mr-2 w-4 h-4 flex items-center justify-center">
+                      {formData.payment_type === "CONTADO" && (
+                        <span className="bg-sky-500 w-2 h-2 rounded-full"></span>
+                      )}
+                    </span>
+                    Pago al Contado
+                  </label>
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    id="payment-type-mensual"
+                    type="radio"
+                    value="MENSUAL"
+                    checked={formData.payment_type === "MENSUAL"}
+                    onChange={() =>
+                      setFormData({ ...formData, payment_type: "MENSUAL" })
+                    }
+                    className="hidden checked:bg-no-repeat checked:bg-center checked:border-sky-500 checked:bg-sky-100"
+                  />
+                  <label
+                    htmlFor="payment-type-mensual"
+                    className="flex items-center cursor-pointer text-gray-600 text-sm font-normal whitespace-nowrap"
+                  >
+                    <span className="border border-gray-300 rounded-full mr-2 w-4 h-4 flex items-center justify-center">
+                      {formData.payment_type === "MENSUAL" && (
+                        <span className="bg-sky-500 w-2 h-2 rounded-full"></span>
+                      )}
+                    </span>
+                    Pago Mensual
+                  </label>
+                </div>
+              </div>
+
+              {formData.payment_type === "MENSUAL" && (
+                <div className="mt-4">
+                  <InputLabel>Monto Inicial</InputLabel>
+                  <input
+                    type="text"
+                    value={initialAmount ?? ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (!/^\d*$/.test(value)) {
+                        setErrors((prevErrors) => ({
+                          ...prevErrors,
+                          amount: [
+                            "El monto inicial debe ser un número válido",
+                          ],
+                        }));
+                        return;
+                      }
+                      const numericValue = Number(value);
+                      if (numericValue > finalCost) {
+                        setErrors((prevErrors) => ({
+                          ...prevErrors,
+                          amount: [
+                            "El monto inicial no puede ser mayor que el costo total",
+                          ],
+                        }));
+                      } else if (numericValue < 20) {
+                        setErrors((prevErrors) => ({
+                          ...prevErrors,
+                          amount: ["El monto inicial debe ser mayor a 20 Bs"],
+                        }));
+                      } else {
+                        setErrors((prevErrors) => {
+                          const { amount, ...rest } = prevErrors;
+                          return rest;
+                        });
+                      }
+                      setInitialAmount(numericValue);
+                    }}
+                    placeholder="Ingrese el monto inicial"
+                    className="w-full py-2 text-xs tracking-tighter border border-gray-300 rounded"
+                  />
+                  <InputError message={errors.amount?.[0]} />
+                </div>
+              )}
+            </div>
+
             <div className="flex flex-col">
               <InputLabel htmlFor="discount_id">Descuento</InputLabel>
               <Select
@@ -317,30 +542,92 @@ const CreateEnrollment = () => {
             </div>
 
             <div className="flex flex-col">
-              <InputLabel htmlFor="enrollment_date">
-                Fecha de Inscripción
-              </InputLabel>
-              <DatePicker
-                selected={
-                  formData.enrollment_date
-                    ? new Date(formData.enrollment_date)
-                    : null
-                }
-                onChange={(date: Date | null) =>
-                  setFormData({
-                    ...formData,
-                    enrollment_date: date
-                      ? date.toISOString().split("T")[0]
-                      : "",
-                  })
-                }
-                dateFormat="yyyy-MM-dd"
-                locale="es"
-                className="w-full p-3 text-xs tracking-tighter mb-5"
-                placeholderText="Selecciona una fecha"
+              <InputLabel>Costo del Curso</InputLabel>
+              <input
+                type="text"
+                value={courseCost.toFixed(2)}
+                readOnly
+                className="w-full p-3 text-xs tracking-tighter bg-gray-100"
               />
-              <InputError message={errors.enrollment_date?.[0]} />
             </div>
+
+            <div className="flex flex-col">
+              <InputLabel>Monto Total</InputLabel>
+              <input
+                type="text"
+                value={finalCost.toFixed(2)}
+                readOnly
+                className="w-full p-3 text-xs tracking-tighter mb-5 bg-gray-100"
+              />
+            </div>
+
+            {formData.payment_type === "MENSUAL" && (
+              <div className="flex flex-col">
+                <InputLabel>Monto Inicial Pagado</InputLabel>
+                <input
+                  type="text"
+                  value={initialAmount?.toFixed(2) || "0.00"}
+                  readOnly
+                  className="w-full p-3 text-xs tracking-tighter mb-5 bg-gray-100"
+                />
+              </div>
+            )}
+
+            {formData.courses.length > 0 && (
+              <div className="flex flex-col">
+                <InputLabel>Detalle de Pago</InputLabel>
+                <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                  {formData.courses.map((courseId) => {
+                    const course = courses.find(
+                      (c) => c.id === Number(courseId)
+                    );
+                    return (
+                      <div
+                        key={courseId}
+                        className="flex justify-between text-xs mb-2"
+                      >
+                        <span>
+                          {course?.name} ({course?.parallel})
+                        </span>
+                        <span>{course?.cost?.toFixed(2)} Bs</span>
+                      </div>
+                    );
+                  })}
+                  <hr className="my-2" />
+                  <div className="flex justify-between text-sm font-bold">
+                    <span>Total Sin Descuento:</span>
+                    <span>{courseCost.toFixed(2)} Bs</span>
+                  </div>
+                  <div className="flex justify-between text-sm font-bold text-green-600">
+                    <span>Descuento Aplicado:</span>
+                    <span>
+                      {discounts.find(
+                        (d) => d.id === Number(formData.discount_id)
+                      )?.percentage || 0}
+                      %
+                    </span>
+                  </div>
+
+                  {formData.payment_type === "MENSUAL" ? (
+                    <>
+                      <div className="flex justify-between text-sm font-bold text-blue-600">
+                        <span>Monto Inicial Pagado:</span>
+                        <span>{initialAmount?.toFixed(2) || 0} Bs</span>
+                      </div>
+                      <div className="flex justify-between text-sm font-bold text-red-600">
+                        <span>Saldo Restante con Descuento:</span>
+                        <span>{remainingBalance.toFixed(2)} Bs</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex justify-between text-sm font-bold">
+                      <span>Total a Pagar:</span>
+                      <span>{finalCost.toFixed(2)} Bs</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="flex flex-col">
               <InputLabel htmlFor="document1">
@@ -430,7 +717,6 @@ const CreateEnrollment = () => {
               </div>
               <InputError message={errors.document_2?.[0]} />
             </div>
-
             <div className="flex justify-end mt-4">
               <SubmitButton type="submit">Guardar</SubmitButton>
             </div>

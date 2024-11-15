@@ -69,7 +69,7 @@ const Login = () => {
     <AuthFormContainer title="Iniciar Sesión">
       {verifiedMessage && <Alert message={verifiedMessage} color="green" />}{" "}
       {alertMessage && <Alert message={alertMessage} color="red" />}{" "}
-      <form onSubmit={submit} className="space-y-4 md:space-y-6">
+      <form onSubmit={submit} className="mt-8 space-y-4">
         <PrimaryInput
           label="Correo Electrónico"
           type="email"

@@ -14,6 +14,7 @@ import { es } from "date-fns/locale";
 import { Teacher } from "../../types/teacher";
 import { Modality } from "../../types/modality";
 import Layout from "../../components/Layout";
+
 registerLocale("es", es);
 
 const CreateCourse = () => {
@@ -25,7 +26,9 @@ const CreateCourse = () => {
     teacher_id: "",
     modality_id: "",
     parallel: "A",
+    cost: "", // Campo de costo
   });
+
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [modalities, setModalities] = useState<Modality[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
@@ -107,6 +110,7 @@ const CreateCourse = () => {
       end_date: selectedEndDate
         ? selectedEndDate.toISOString().split("T")[0]
         : null,
+      cost: parseFloat(formData.cost),
     };
 
     try {
@@ -259,6 +263,19 @@ const CreateCourse = () => {
                   className="w-full text-xs tracking-tighter"
                 />
                 <InputError message={errors.modality_id?.[0]} />
+              </div>
+
+              <div className="flex flex-col">
+                <InputLabel htmlFor="cost">Costo del Curso (Bs)</InputLabel>
+                <TextInput
+                  type="number"
+                  name="cost"
+                  placeholder="Ingrese el costo del curso"
+                  value={formData.cost}
+                  onChange={handleChange}
+                  required
+                />
+                <InputError message={errors.cost?.[0]} />
               </div>
             </div>
 

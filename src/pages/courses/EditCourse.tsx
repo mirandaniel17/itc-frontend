@@ -28,7 +28,8 @@ const EditCourse = () => {
     end_date: "",
     teacher_id: "",
     modality_id: "",
-    parallel: "", // Campo paralelo
+    parallel: "",
+    cost: "", // Agrega cost al formulario
   });
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -64,7 +65,8 @@ const EditCourse = () => {
           end_date: data.end_date,
           teacher_id: data.teacher_id,
           modality_id: data.modality_id,
-          parallel: data.parallel || "", // Paralelo se carga desde el backend
+          parallel: data.parallel || "",
+          cost: data.cost || "", // Carga el costo del curso
         });
         setSelectedStartDate(new Date(data.start_date));
         if (data.end_date) {
@@ -148,6 +150,7 @@ const EditCourse = () => {
       end_date: selectedEndDate
         ? selectedEndDate.toISOString().split("T")[0]
         : null,
+      cost: parseFloat(formData.cost), // Convierte el costo a número
     };
 
     try {
@@ -305,6 +308,18 @@ const EditCourse = () => {
                     className="w-full text-xs tracking-tighter"
                   />
                   <InputError message={errors.modality_id?.[0]} />
+                </div>
+
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="cost">Costo</InputLabel>
+                  <TextInput
+                    type="number"
+                    name="cost"
+                    placeholder="Costo del Curso"
+                    value={formData.cost}
+                    onChange={handleChange}
+                  />
+                  <InputError message={errors.cost?.[0]} />
                 </div>
               </div>
 

@@ -13,4 +13,5 @@ export interface Enrollment {
   enrollment_date: string;
   document_1: string;
   document_2: string;
+  payment_status?: string;
 }

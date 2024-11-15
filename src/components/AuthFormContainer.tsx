@@ -7,13 +7,22 @@ interface AuthFormContainerProps {
 
 const AuthFormContainer = ({ title, children }: AuthFormContainerProps) => {
   return (
-    <section className="w-full min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 mt-4">
-      <div className="w-full max-w-md p-2 rounded-md space-y-4 bg-white shadow-md dark:border dark:bg-gray-800 dark:border-gray-700">
-        <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1 className="text-xl font-bold tracking-tight text-gray-900 md:text-2xl dark:text-white">
-            {title}
-          </h1>
-          {children}
+    <section className="bg-gray-50">
+      <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
+        <div className="max-w-md w-full">
+          <a href="javascript:void(0)">
+            <img
+              src="/itc_logo.png"
+              alt="logo"
+              className="w-32 mb-4 mx-auto block"
+            />
+          </a>
+          <div className="p-8 rounded-2xl bg-white shadow">
+            <h2 className="text-gray-800 text-center text-2xl font-bold">
+              {title}
+            </h2>
+            {children}
+          </div>
         </div>
       </div>
     </section>

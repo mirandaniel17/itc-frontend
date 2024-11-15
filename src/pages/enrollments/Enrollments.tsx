@@ -52,12 +52,13 @@ const Enrollments = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setEnrollments(data.data);
+      setEnrollments(data.data || []); // Asegúrate de que sea un array
       setCurrentPage(data.current_page);
       setTotalPages(data.last_page);
-      setLoading(false);
     } catch (error) {
-      console.log("Error fetching enrollments:", error);
+      console.error("Error fetching enrollments:", error);
+      setEnrollments([]); // Siempre un array para evitar el error
+    } finally {
       setLoading(false);
     }
   };
@@ -177,56 +178,107 @@ const Enrollments = () => {
               "Estudiante",
               "Curso",
               "Fecha de Inscripción",
+              "Estado de Pago",
               "Acciones",
             ]}
           />
           <TableBody>
-            {loading
-              ? [...Array(10)].map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton width={100} height={20} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={100} height={20} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={100} height={20} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={100} height={20} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={150} height={20} />
-                    </TableCell>
-                  </TableRow>
-                ))
-              : enrollments.map((enrollment) => (
-                  <TableRow key={enrollment.id}>
-                    <TableCell>{`${enrollment.student.last_name} ${enrollment.student.second_last_name}`}</TableCell>
-                    <TableCell>{enrollment.course.name}</TableCell>
-                    <TableCell>
-                      {format(
-                        new Date(enrollment.enrollment_date),
-                        "dd 'de' MMMM 'de' yyyy",
-                        {
-                          locale: es,
-                        }
+            {loading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton width="100%" height="20px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width="100%" height="20px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width="100%" height="20px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width="50%" height="20px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width="50%" height="20px" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : enrollments && enrollments.length > 0 ? (
+              enrollments.map((enrollment) => (
+                <TableRow key={enrollment.id}>
+                  <TableCell>{`${enrollment.student.last_name} ${enrollment.student.second_last_name}`}</TableCell>
+                  <TableCell>{enrollment.course.name}</TableCell>
+                  <TableCell>
+                    {format(
+                      new Date(enrollment.enrollment_date),
+                      "dd 'de' MMMM 'de' yyyy",
+                      { locale: es }
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`py-1 px-2 inline-flex items-center gap-x-1 text-xs font-medium rounded-full ${
+                        enrollment.payment_status === "Pagado"
+                          ? "bg-green-200 text-green-800"
+                          : "bg-red-200 text-red-800"
+                      }`}
+                    >
+                      {enrollment.payment_status === "Pagado" ? (
+                        <svg
+                          className="shrink-0 size-3"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                          <path d="m9 12 2 2 4-4"></path>
+                        </svg>
+                      ) : (
+                        <svg
+                          className="shrink-0 size-3"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                          <path d="M12 9v4"></path>
+                          <path d="M12 17h.01"></path>
+                        </svg>
                       )}
-                    </TableCell>
-
-                    <TableActionButtons
-                      actions={[
-                        {
-                          label: "Anular",
-                          onClick: () => handleDeleteClick(enrollment.id),
-                          className:
-                            "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 shadow-lg font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                        },
-                      ]}
-                    />
-                  </TableRow>
-                ))}
+                      {enrollment.payment_status}
+                    </span>
+                  </TableCell>
+                  <TableActionButtons
+                    actions={[
+                      {
+                        label: "Anular",
+                        onClick: () => handleDeleteClick(enrollment.id),
+                        className:
+                          "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 shadow-lg font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                      },
+                    ]}
+                  />
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center">
+                  No se encontraron inscripciones.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
         {loading ? (

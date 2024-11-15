@@ -1,6 +1,6 @@
 import { useState, SyntheticEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthFormContainer from "../../components/AuthFormContainer";
+import AuthContainer from "../../components/AuthContainer";
 import PrimaryInput from "../../components/PrimaryInput";
 import PrimaryButton from "../../components/PrimaryButton";
 import Alert from "../../components/Alert";
@@ -43,9 +43,8 @@ const ForgotPassword = () => {
   };
 
   return (
-    <AuthFormContainer title="Enviar Correo de Verificación">
+    <AuthContainer title="Enviar Correo de Verificación">
       {alertMessage && <Alert message={alertMessage} color={alertColor} />}{" "}
-      {/* Color dinámico */}
       <form onSubmit={submit}>
         <PrimaryInput
           label="Correo Electrónico"
@@ -55,7 +54,7 @@ const ForgotPassword = () => {
         />
         <PrimaryButton text="Enviar" type="submit" />
       </form>
-    </AuthFormContainer>
+    </AuthContainer>
   );
 };
 
