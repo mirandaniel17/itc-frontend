@@ -34,7 +34,9 @@ const Register = () => {
       });
 
       if (response.ok) {
-        setSuccessMessage("Registro exitoso. Por favor, verifica tu correo electrónico.");
+        setSuccessMessage(
+          "Registro exitoso. Por favor, verifica tu correo electrónico."
+        );
         setTimeout(() => {
           navigate("/login");
         }, 3000);
@@ -75,9 +77,12 @@ const Register = () => {
             placeholder="Ingresar Contraseña"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <p className="tracking-tighter font-light text-sm">La contraseña debe tener al menos 8 carácteres, debe empezar por mayúscula y tener 1 carácter especial.</p>
+          <p className="tracking-tighter font-light text-sm">
+            La contraseña debe tener al menos 8 carácteres, debe empezar por
+            mayúscula y tener 1 carácter especial.
+          </p>
           <InputError message={errors?.password?.[0] || ""} />
-          <PrimaryButton text="Registrar" type="submit" />
+          <PrimaryButton text="REGISTRAR" type="submit" />
           <p className="text-sm font-light text-gray-500 dark:text-gray-400">
             ¿Tienes acceso?{" "}
             <Link

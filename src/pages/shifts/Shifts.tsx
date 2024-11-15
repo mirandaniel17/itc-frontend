@@ -174,50 +174,58 @@ const Shifts = () => {
             headers={["Nombre", "Hora Inicio", "Hora Fin", "Sala", "Acciones"]}
           />
           <TableBody>
-            {loading
-              ? [...Array(10)].map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <Skeleton width={100} height={20} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={100} height={20} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={80} height={20} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={80} height={20} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={150} height={20} />
-                    </TableCell>
-                  </TableRow>
-                ))
-              : shifts.map((shift) => (
-                  <TableRow key={shift.id}>
-                    <TableCell>{shift.name}</TableCell>
-                    <TableCell>{shift.start_time}</TableCell>
-                    <TableCell>{shift.end_time}</TableCell>
-                    <TableCell>{shift.room.name}</TableCell>
-                    <TableActionButtons
-                      actions={[
-                        {
-                          label: "Editar",
-                          onClick: () => handleEdit(shift),
-                          className:
-                            "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                        },
-                        {
-                          label: "Eliminar",
-                          onClick: () => handleDeleteClick(shift.id),
-                          className:
-                            "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                        },
-                      ]}
-                    />
-                  </TableRow>
-                ))}
+            {loading ? (
+              [...Array(10)].map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton width={100} height={20} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={100} height={20} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={80} height={20} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={80} height={20} />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton width={150} height={20} />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : shifts.length > 0 ? (
+              shifts.map((shift) => (
+                <TableRow key={shift.id}>
+                  <TableCell>{shift.name}</TableCell>
+                  <TableCell>{shift.start_time}</TableCell>
+                  <TableCell>{shift.end_time}</TableCell>
+                  <TableCell>{shift.room.name}</TableCell>
+                  <TableActionButtons
+                    actions={[
+                      {
+                        label: "Editar",
+                        onClick: () => handleEdit(shift),
+                        className:
+                          "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                      },
+                      {
+                        label: "Eliminar",
+                        onClick: () => handleDeleteClick(shift.id),
+                        className:
+                          "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                      },
+                    ]}
+                  />
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center">
+                  No se encontraron turnos.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
 

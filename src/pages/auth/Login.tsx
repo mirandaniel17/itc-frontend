@@ -109,7 +109,7 @@ const Login = () => {
             ¿Olvidaste tu contraseña?
           </Link>
         </div>
-        <PrimaryButton text="Ingresar" type="submit" />
+        <PrimaryButton text="INGRESAR" type="submit" />
         <p className="text-sm font-light text-gray-500">
           ¿No te registraste?{" "}
           <Link

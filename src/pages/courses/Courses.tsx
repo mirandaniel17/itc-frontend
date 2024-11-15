@@ -170,71 +170,79 @@ const Courses: React.FC = () => {
       <Table>
         <TableHead headers={["Curso", "Modalidad", "Acción"]} />
         <TableBody>
-          {loading
-            ? [...Array(10)].map((_, index) => (
-                <TableRow key={index}>
+          {loading ? (
+            [...Array(10)].map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Skeleton width={200} height={20} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton width={100} height={20} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton width={100} height={20} />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : Object.keys(groupedCourses).length > 0 ? (
+            Object.keys(groupedCourses).map((courseName) => (
+              <React.Fragment key={courseName}>
+                <TableRow>
+                  <TableCell>{courseName}</TableCell>
                   <TableCell>
-                    <Skeleton width={200} height={20} />
+                    {groupedCourses[courseName][0]?.modality?.name ||
+                      "Sin modalidad"}
                   </TableCell>
                   <TableCell>
-                    <Skeleton width={100} height={20} />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton width={100} height={20} />
+                    <button
+                      className="text-blue-500 underline"
+                      onClick={() => toggleExpand(courseName)}
+                    >
+                      {expandedCourse === courseName
+                        ? "Ocultar Detalles"
+                        : "Ver Detalles"}
+                    </button>
                   </TableCell>
                 </TableRow>
-              ))
-            : Object.keys(groupedCourses).map((courseName) => (
-                <React.Fragment key={courseName}>
-                  <TableRow>
-                    <TableCell>{courseName}</TableCell>
-                    <TableCell>
-                      {groupedCourses[courseName][0]?.modality?.name ||
-                        "Sin modalidad"}
-                    </TableCell>
-                    <TableCell>
-                      <button
-                        className="text-blue-500 underline"
-                        onClick={() => toggleExpand(courseName)}
-                      >
-                        {expandedCourse === courseName
-                          ? "Ocultar Detalles"
-                          : "Ver Detalles"}
-                      </button>
-                    </TableCell>
-                  </TableRow>
-                  {expandedCourse === courseName &&
-                    groupedCourses[courseName].map((course, index) => (
-                      <TableRow key={index}>
-                        <TableCell colSpan={2} className="pl-8">
-                          Paralelo: {course.parallel}, Docente:{" "}
-                          {course.teacher
-                            ? `${course.teacher.last_name} ${course.teacher.second_last_name} ${course.teacher.name}`
-                            : "Sin docente"}
-                          , Inicio: {course.start_date}, Fin: {course.end_date}
-                        </TableCell>
-                        <TableCell>
-                          <TableActionButtons
-                            actions={[
-                              {
-                                label: "Editar",
-                                onClick: () => handleEdit(course),
-                                className:
-                                  "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                              },
-                              {
-                                label: "Eliminar",
-                                onClick: () => handleDeleteClick(course.id),
-                                className:
-                                  "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                              },
-                            ]}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </React.Fragment>
-              ))}
+                {expandedCourse === courseName &&
+                  groupedCourses[courseName].map((course, index) => (
+                    <TableRow key={index}>
+                      <TableCell colSpan={2} className="pl-8">
+                        Paralelo: {course.parallel}, Docente:{" "}
+                        {course.teacher
+                          ? `${course.teacher.last_name} ${course.teacher.second_last_name} ${course.teacher.name}`
+                          : "Sin docente"}
+                        , Inicio: {course.start_date}, Fin: {course.end_date}
+                      </TableCell>
+                      <TableCell>
+                        <TableActionButtons
+                          actions={[
+                            {
+                              label: "Editar",
+                              onClick: () => handleEdit(course),
+                              className:
+                                "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                            },
+                            {
+                              label: "Eliminar",
+                              onClick: () => handleDeleteClick(course.id),
+                              className:
+                                "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                            },
+                          ]}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </React.Fragment>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={3} className="text-center">
+                No se encontraron cursos.
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
 

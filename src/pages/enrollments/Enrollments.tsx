@@ -52,12 +52,12 @@ const Enrollments = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setEnrollments(data.data || []); // Asegúrate de que sea un array
+      setEnrollments(data.data || []);
       setCurrentPage(data.current_page);
       setTotalPages(data.last_page);
     } catch (error) {
       console.error("Error fetching enrollments:", error);
-      setEnrollments([]); // Siempre un array para evitar el error
+      setEnrollments([]);
     } finally {
       setLoading(false);
     }
