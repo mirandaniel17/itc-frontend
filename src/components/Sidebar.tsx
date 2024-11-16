@@ -68,7 +68,7 @@ const Sidebar: React.FC = () => {
           <ul className="space-y-2 font-medium">
             <Link to="/home" className="flex items-center ps-2.5 mb-5">
               <img src="/itc_logo.png" className="h-6 sm:h-8 me-1" alt="Logo" />
-              <span className="self-center font-light dark:text-white">
+              <span className="self-center font-thin tracking-tighter dark:text-white">
                 Instituto Técnico Columbia
               </span>
             </Link>
@@ -160,6 +160,14 @@ const Sidebar: React.FC = () => {
                     to="/attendances"
                     icon="mdi-badge-account-horizontal-outline"
                     label="Asistencias"
+                  />
+                )}
+
+                {hasPermission("Gestión de Cursos") && (
+                  <SidebarLink
+                    to="/tasks"
+                    icon="mdi-book-open-variant-outline"
+                    label="Tareas"
                   />
                 )}
 

@@ -137,6 +137,7 @@ const Navbar: React.FC = () => {
       "/enrollments/create": "Inscribir Estudiante",
       "/schedules/set-schedule": "Configurar Horario",
       "/attendances": "Asistencias",
+      "/tasks": "Tareas",
     };
 
     let breadcrumb = pathnames.map((part, index) => {
@@ -180,7 +181,7 @@ const Navbar: React.FC = () => {
           <div className="flex">
             <div className="flex shrink-0 items-center"></div>
             <div className="hidden sm:ml-10 sm:flex p-5">
-              <span className="text-gray-900 dark:text-gray-300 tracking-medium text-sm">
+              <span className="text-gray-900 dark:text-gray-300 tracking-medium text-lg">
                 {generateBreadcrumb()}
               </span>
             </div>

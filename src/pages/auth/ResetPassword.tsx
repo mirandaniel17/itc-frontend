@@ -13,7 +13,9 @@ const ResetPassword = () => {
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const [alertMessage, setAlertMessage] = useState("");
-  const [alertColor, setAlertColor] = useState("red");
+  const [alertColor, setAlertColor] = useState<
+    "red" | "green" | "blue" | "yellow"
+  >("red");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -100,7 +102,7 @@ const ResetPassword = () => {
         />
         <InputError message={errors.password_confirmation?.[0]} />
 
-        <PrimaryButton text="Restablecer Contraseña" type="submit" />
+        <PrimaryButton text="RESTABLECER CONTRASEÑA" type="submit" />
       </form>
     </AuthContainer>
   );

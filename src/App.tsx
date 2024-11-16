@@ -53,6 +53,8 @@ import CreateRoom from "./pages/rooms/CreateRoom";
 import EditRoom from "./pages/rooms/EditRoom";
 import Notifications from "./pages/notifications/Notifications";
 import NotificationAlert from "./components/NotificationAlert";
+import Tasks from "./pages/tasks/Tasks";
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   useEffect(() => {
@@ -369,6 +371,14 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           element={
             <ProtectedRoute requiredPermission="Gestión de Cursos">
               <Attendances />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute requiredPermission="Gestión de Cursos">
+              <Tasks />
             </ProtectedRoute>
           }
         />
