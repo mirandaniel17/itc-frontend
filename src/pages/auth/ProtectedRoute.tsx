@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
   children: JSX.Element;
-  requiredPermission?: string;
+  requiredPermission?: string | string[];
 }
 
 const ProtectedRoute = ({
@@ -33,7 +33,14 @@ const ProtectedRoute = ({
 
           if (requiredPermission && storedPermissions) {
             const permissions = JSON.parse(storedPermissions);
-            setHasPermission(permissions.includes(requiredPermission));
+
+            if (Array.isArray(requiredPermission)) {
+              setHasPermission(
+                requiredPermission.some((perm) => permissions.includes(perm))
+              );
+            } else {
+              setHasPermission(permissions.includes(requiredPermission));
+            }
           } else if (requiredPermission) {
             setHasPermission(false);
           }

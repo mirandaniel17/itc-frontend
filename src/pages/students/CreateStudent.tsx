@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
@@ -39,8 +40,8 @@ const CreateStudent = () => {
   ) => {
     const { name, value } = e.target;
 
-    const textFields = ["name", "last_name", "second_last_name"]; // Solo letras y espacios con tildes
-    const numericFields = ["ci", "phone"]; // Solo números
+    const textFields = ["name", "last_name", "second_last_name"];
+    const numericFields = ["ci", "phone"];
 
     if (textFields.includes(name)) {
       const textRegex = /^[a-zA-ZÁáÉéÍíÓóÚúÜüÑñ\s]*$/;
@@ -146,6 +147,10 @@ const CreateStudent = () => {
     }
   };
 
+  const goBackToStudents = () => {
+    navigate("/students");
+  };
+
   return (
     <div>
       <Layout>
@@ -231,7 +236,7 @@ const CreateStudent = () => {
                   dateFormat="dd/MM/yyyy"
                   placeholderText="Ingresar fecha"
                   maxDate={new Date()}
-                  className="w-full p-3 text-xs tracking-tighter"
+                  className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                   required
                 />
                 <InputError message={errors.dateofbirth?.[0]} />
@@ -347,8 +352,8 @@ const CreateStudent = () => {
                 <InputError message={errors.image?.[0]} />
               </div>
             </div>
-
-            <div className="flex justify-end mt-4">
+            <div className="mt-4 flex justify-end gap-2">
+              <BackButton onClick={goBackToStudents}>Volver</BackButton>
               <SubmitButton type="submit">Guardar</SubmitButton>
             </div>
           </form>

@@ -15,6 +15,7 @@ import { debounce } from "lodash";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
+import { formatDate } from "../../utils/dateUtils";
 
 const Shifts = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -171,7 +172,14 @@ const Shifts = () => {
 
         <Table>
           <TableHead
-            headers={["Nombre", "Hora Inicio", "Hora Fin", "Sala", "Acciones"]}
+            headers={[
+              "Nombre",
+              "Hora Inicio",
+              "Hora Fin",
+              "Aula",
+              "Fecha de Registro",
+              "Acciones",
+            ]}
           />
           <TableBody>
             {loading ? (
@@ -192,6 +200,9 @@ const Shifts = () => {
                   <TableCell>
                     <Skeleton width={150} height={20} />
                   </TableCell>
+                  <TableCell>
+                    <Skeleton width={150} height={20} />
+                  </TableCell>
                 </TableRow>
               ))
             ) : shifts.length > 0 ? (
@@ -201,6 +212,11 @@ const Shifts = () => {
                   <TableCell>{shift.start_time}</TableCell>
                   <TableCell>{shift.end_time}</TableCell>
                   <TableCell>{shift.room.name}</TableCell>
+                  <TableCell>
+                    {shift.created_at
+                      ? formatDate(shift.created_at)
+                      : "Sin fecha"}
+                  </TableCell>
                   <TableActionButtons
                     actions={[
                       {

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { User } from "../../types/user";
 import Layout from "../../components/Layout";
+import BackButton from "../../components/BackButton";
 
 const UserDetail = () => {
   const { userId } = useParams<{ userId: string }>();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,6 +41,10 @@ const UserDetail = () => {
       console.log("Error fetching user details:", error);
       setLoading(false);
     }
+  };
+
+  const goBackToUsers = () => {
+    navigate("/users");
   };
 
   useEffect(() => {
@@ -103,6 +109,10 @@ const UserDetail = () => {
           ) : (
             <p>No hay permisos asignados.</p>
           )}
+
+          <div className="mt-4 flex justify-end gap-2">
+            <BackButton onClick={goBackToUsers}>Volver</BackButton>
+          </div>
         </div>
       </Layout>
     </div>

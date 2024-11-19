@@ -83,11 +83,10 @@ const Notifications = () => {
           <Skeleton count={5} height={50} />
         ) : notifications.length > 0 ? (
           notifications.map((notification) => (
-            <>
+            <div key={notification.id} className="border-b py-4">
               <h3 className="text-2xl font-bold">Alerta de Falta</h3>
               <div
-                key={notification.id}
-                className={`border-b py-4 ${
+                className={`${
                   notification.read_at ? "text-gray-500" : "font-bold"
                 }`}
               >
@@ -119,7 +118,7 @@ const Notifications = () => {
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           ))
         ) : (
           <p className="text-gray-500">No hay notificaciones.</p>

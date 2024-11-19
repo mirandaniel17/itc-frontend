@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout";
 import Alert from "../../components/Alert";
-import SelectInput from "../../components/SelectInput";
 import SubmitButton from "../../components/SubmitButton";
+import Select from "react-select";
+import { Course } from "../../types/course";
+import { Shift } from "../../types/shift";
 
 type Schedule = {
   day: string;
@@ -11,12 +13,15 @@ type Schedule = {
 };
 
 const CreateSetSchedule: React.FC = () => {
-  const [courseId, setCourseId] = useState("");
+  const [courseId, setCourseId] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
   const [shiftOptions, setShiftOptions] = useState<
-    { id: string; name: string; start_time: string; end_time: string }[]
+    { value: string; label: string }[]
   >([]);
   const [classOptions, setClassOptions] = useState<
-    { id: string; name: string; parallel: string }[]
+    { value: string; label: string }[]
   >([]);
   const [schedules, setSchedules] = useState<Schedule[]>([
     { day: "LUNES", shiftId: "" },
@@ -35,48 +40,65 @@ const CreateSetSchedule: React.FC = () => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
 
-      const fetchClasses = async () => {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/courses?per_page=1000",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
+      const fetchAllClasses = async () => {
+        let allClasses: Course[] = [];
+        let currentPage = 1;
+        let totalPages = 1;
+
+        while (currentPage <= totalPages) {
+          const response = await fetch(
+            `http://127.0.0.1:8000/api/courses?page=${currentPage}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          allClasses = [...allClasses, ...data.data];
+          totalPages = data.last_page;
+          currentPage++;
+        }
+
         setClassOptions(
-          data.data.map((course: any) => ({
-            id: course.id,
-            name: course.name,
-            parallel: course.parallel,
+          allClasses.map((course) => ({
+            value: course.id.toString(),
+            label: `${course.name} - ${course.parallel}`,
           }))
         );
       };
 
-      const fetchShifts = async () => {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/shifts?per_page=1000",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
+      const fetchAllShifts = async () => {
+        let allShifts: Shift[] = [];
+        let currentPage = 1;
+        let totalPages = 1;
+
+        while (currentPage <= totalPages) {
+          const response = await fetch(
+            `http://127.0.0.1:8000/api/shifts?page=${currentPage}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          allShifts = [...allShifts, ...data.data];
+          totalPages = data.last_page;
+          currentPage++;
+        }
+
         setShiftOptions(
-          data.data.map((shift: any) => ({
-            id: shift.id,
-            name: shift.name,
-            start_time: shift.start_time,
-            end_time: shift.end_time,
+          allShifts.map((shift) => ({
+            value: shift.id.toString(),
+            label: `${shift.name} (${shift.start_time} - ${shift.end_time})`,
           }))
         );
       };
 
-      await Promise.all([fetchClasses(), fetchShifts()]);
+      await Promise.all([fetchAllClasses(), fetchAllShifts()]);
     };
 
     fetchData();
@@ -85,7 +107,7 @@ const CreateSetSchedule: React.FC = () => {
   const handleScheduleChange = (
     index: number,
     field: keyof Schedule,
-    value: any
+    value: string
   ) => {
     const updatedSchedules = [...schedules];
     updatedSchedules[index][field] = value;
@@ -100,8 +122,22 @@ const CreateSetSchedule: React.FC = () => {
       return;
     }
 
-    if (schedules.some((schedule) => !schedule.shiftId)) {
-      showAlertWithMessage("Debe seleccionar un turno para cada día.", "red");
+    const assignedSchedules = schedules.filter((schedule) => schedule.shiftId);
+    const weekdaysAssigned = assignedSchedules.filter((schedule) =>
+      ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES"].includes(
+        schedule.day
+      )
+    ).length;
+    const saturdayAssigned = assignedSchedules.some(
+      (schedule) => schedule.day === "SABADO"
+    );
+
+    // Permitir si solo hay asignaciones para sábado o si hay al menos 3 días en la semana
+    if (weekdaysAssigned < 3 && !saturdayAssigned) {
+      showAlertWithMessage(
+        "Debe asignar turnos a al menos 3 días de lunes a viernes o al menos 1 turno para el sábado.",
+        "red"
+      );
       return;
     }
 
@@ -114,8 +150,8 @@ const CreateSetSchedule: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          course_id: courseId,
-          schedules: schedules.map((schedule) => ({
+          course_id: courseId.value,
+          schedules: assignedSchedules.map((schedule) => ({
             day: schedule.day,
             shift_id: schedule.shiftId,
           })),
@@ -150,18 +186,13 @@ const CreateSetSchedule: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <label className="block text-sm font-medium mb-1">Curso</label>
-            <SelectInput
+            <Select
               value={courseId}
-              onChange={(e) => setCourseId(e.target.value)}
-              className="w-full"
-            >
-              <option value="">Selecciona un curso</option>
-              {classOptions.map((course) => (
-                <option key={course.id} value={course.id}>
-                  {course.name} - {course.parallel}
-                </option>
-              ))}
-            </SelectInput>
+              onChange={(selected) => setCourseId(selected as any)}
+              options={classOptions}
+              placeholder="Selecciona un curso"
+              isSearchable
+            />
           </div>
           <table className="w-full text-sm">
             <thead>
@@ -175,27 +206,28 @@ const CreateSetSchedule: React.FC = () => {
                 <tr key={schedule.day}>
                   <td>{schedule.day}</td>
                   <td>
-                    <SelectInput
-                      value={schedule.shiftId}
-                      onChange={(e) =>
-                        handleScheduleChange(index, "shiftId", e.target.value)
+                    <Select
+                      value={shiftOptions.find(
+                        (option) => option.value === schedule.shiftId
+                      )}
+                      onChange={(selected) =>
+                        handleScheduleChange(
+                          index,
+                          "shiftId",
+                          selected?.value || ""
+                        )
                       }
-                      className="w-full"
-                    >
-                      <option value="">Selecciona un turno</option>
-                      {shiftOptions.map((shift) => (
-                        <option key={shift.id} value={shift.id}>
-                          {shift.name} ({shift.start_time} - {shift.end_time})
-                        </option>
-                      ))}
-                    </SelectInput>
+                      options={shiftOptions}
+                      placeholder="Selecciona un turno"
+                      isSearchable
+                    />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
           <SubmitButton type="submit" className="mt-5">
-            Guardar Horario
+            Guardar
           </SubmitButton>
         </form>
       </div>

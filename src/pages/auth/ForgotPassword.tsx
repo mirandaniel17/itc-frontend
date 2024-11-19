@@ -8,10 +8,9 @@ import Alert from "../../components/Alert";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
-  const [alertColor, setAlertColor] = useState<
-    "red" | "green" | "blue" | "yellow"
-  >("red");
+  const [alertColor, setAlertColor] = useState("red");
   const navigate = useNavigate();
+
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
     setAlertMessage("");
@@ -45,7 +44,7 @@ const ForgotPassword = () => {
 
   return (
     <AuthContainer title="Enviar Correo de Verificación">
-      {alertMessage && <Alert message={alertMessage} color={alertColor} />}
+      {alertMessage && <Alert message={alertMessage} color={alertColor} />}{" "}
       <form onSubmit={submit}>
         <PrimaryInput
           label="Correo Electrónico"
@@ -53,7 +52,7 @@ const ForgotPassword = () => {
           placeholder="Ingresa tu correo electrónico"
           onChange={(e) => setEmail(e.target.value)}
         />
-        <PrimaryButton text="ENVIAR" type="submit" />
+        <PrimaryButton text="Enviar" type="submit" />
       </form>
     </AuthContainer>
   );

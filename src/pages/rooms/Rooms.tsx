@@ -15,6 +15,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
 import { Room } from "../../types/room";
+import { formatDate } from "../../utils/dateUtils";
 
 const Rooms = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -165,17 +166,11 @@ const Rooms = () => {
         </div>
 
         <Table>
-          <TableHead headers={["Nombre", "Acciones"]} />
+          <TableHead headers={["Nombre", "Fecha de Registro", "Acciones"]} />
           <TableBody>
             {loading ? (
               [...Array(10)].map((_, index) => (
                 <TableRow key={index}>
-                  <TableCell>
-                    <Skeleton width={100} height={20} />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton width={100} height={20} />
-                  </TableCell>
                   <TableCell>
                     <Skeleton width={80} height={20} />
                   </TableCell>
@@ -194,6 +189,11 @@ const Rooms = () => {
                     <div className="pl-3">
                       <div className="font-semibold text-xs">{room.name}</div>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    {room.created_at
+                      ? formatDate(room.created_at)
+                      : "Sin fecha"}
                   </TableCell>
                   <TableActionButtons
                     actions={[

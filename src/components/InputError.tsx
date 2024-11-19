@@ -13,8 +13,9 @@ const InputError: React.FC<InputErrorProps> = ({
   return message ? (
     <p
       {...props}
-      className={`text-sm text-red-600 dark:text-red-400 ${className}`}
+      className={`text-md font-thin tracking-tight mt-2 text-red-600 dark:text-red-400 ${className}`}
     >
+      <span className="mdi mdi-alert-circle-outline me-2"></span>
       {message}
     </p>
   ) : null;

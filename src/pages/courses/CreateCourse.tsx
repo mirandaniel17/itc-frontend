@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
@@ -26,7 +27,7 @@ const CreateCourse = () => {
     teacher_id: "",
     modality_id: "",
     parallel: "A",
-    cost: "", // Campo de costo
+    cost: "",
   });
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -40,42 +41,42 @@ const CreateCourse = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchTeachers = async () => {
+    const fetchAllData = async (
+      endpoint: string,
+      setState: React.Dispatch<React.SetStateAction<any[]>>
+    ) => {
+      const token = localStorage.getItem("token");
+      let allData: any[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
       try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://127.0.0.1:8000/api/teachers", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        setTeachers(data.data);
+        while (currentPage <= totalPages) {
+          const response = await fetch(
+            `http://127.0.0.1:8000/api/${endpoint}?page=${currentPage}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          const data = await response.json();
+          allData = [...allData, ...data.data];
+          totalPages = data.last_page;
+          currentPage++;
+        }
+
+        setState(allData);
       } catch (error) {
-        console.error("Error fetching teachers:", error);
+        console.error(`Error fetching ${endpoint}:`, error);
       }
     };
 
-    const fetchModalities = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://127.0.0.1:8000/api/modalities", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        setModalities(data.data);
-      } catch (error) {
-        console.error("Error fetching modalities:", error);
-      }
-    };
-
-    fetchTeachers();
-    fetchModalities();
+    fetchAllData("teachers", setTeachers);
+    fetchAllData("modalities", setModalities);
   }, []);
 
   const handleChange = (
@@ -132,26 +133,25 @@ const CreateCourse = () => {
         state: { message: "Curso registrado con éxito", color: "green" },
       });
     } catch (error) {
-      console.error("Error creating course:", error);
       setAlertMessage("Error al registrar el curso");
       setAlertColor("red");
       setShowAlert(true);
     }
   };
 
-  const teacherOptions = Array.isArray(teachers)
-    ? teachers.map((teacher) => ({
-        value: teacher.id,
-        label: `${teacher.last_name} ${teacher.second_last_name} ${teacher.name} - ${teacher.ci}`,
-      }))
-    : [];
+  const teacherOptions = teachers.map((teacher) => ({
+    value: teacher.id,
+    label: `${teacher.last_name} ${teacher.second_last_name} ${teacher.name} - ${teacher.ci}`,
+  }));
 
-  const modalityOptions = Array.isArray(modalities)
-    ? modalities.map((modality) => ({
-        value: modality.id,
-        label: modality.name,
-      }))
-    : [];
+  const modalityOptions = modalities.map((modality) => ({
+    value: modality.id,
+    label: modality.name,
+  }));
+
+  const goBackToCourses = () => {
+    navigate("/courses");
+  };
 
   return (
     <div>
@@ -217,7 +217,7 @@ const CreateCourse = () => {
                   dropdownMode="select"
                   dateFormat="dd/MM/yyyy"
                   placeholderText="Seleccionar fecha de inicio"
-                  className="w-full p-3 text-xs tracking-tighter"
+                  className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                   required
                 />
                 <InputError message={errors.start_date?.[0]} />
@@ -236,7 +236,7 @@ const CreateCourse = () => {
                   dropdownMode="select"
                   dateFormat="dd/MM/yyyy"
                   placeholderText="Seleccionar fecha de finalización"
-                  className="w-full p-3 text-xs tracking-tighter"
+                  className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                   required
                 />
                 <InputError message={errors.end_date?.[0]} />
@@ -279,7 +279,8 @@ const CreateCourse = () => {
               </div>
             </div>
 
-            <div className="flex justify-end mt-4">
+            <div className="mt-4 flex justify-end gap-2">
+              <BackButton onClick={goBackToCourses}>Volver</BackButton>
               <SubmitButton type="submit">Guardar</SubmitButton>
             </div>
           </form>

@@ -50,25 +50,47 @@ const CreateEnrollment = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async (
+    const fetchAllData = async (
       endpoint: string,
       setState: React.Dispatch<React.SetStateAction<any[]>>
     ) => {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://127.0.0.1:8000/api/${endpoint}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      setState(data.data);
+      let allData: any[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      try {
+        while (currentPage <= totalPages) {
+          const response = await fetch(
+            `http://127.0.0.1:8000/api/${endpoint}?page=${currentPage}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`Error al obtener datos de ${endpoint}`);
+          }
+
+          const data = await response.json();
+          allData = [...allData, ...data.data];
+          totalPages = data.last_page;
+          currentPage++;
+        }
+
+        setState(allData);
+      } catch (error) {
+        console.error(`Error al cargar ${endpoint}:`, error);
+      }
     };
 
-    fetchData("students", setStudents);
-    fetchData("courses", setCourses);
-    fetchData("discounts", setDiscounts);
+    fetchAllData("students", setStudents);
+    fetchAllData("courses", setCourses);
+    fetchAllData("discounts", setDiscounts);
   }, []);
 
   useEffect(() => {
@@ -352,7 +374,7 @@ const CreateEnrollment = () => {
                   }
                   dateFormat="yyyy-MM-dd"
                   locale="es"
-                  className="w-full text-xs tracking-tighter"
+                  className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                   placeholderText="Selecciona una fecha"
                   popperPlacement="top-start"
                   portalId="root-portal"

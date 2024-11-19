@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
@@ -85,10 +86,10 @@ const EditStudent = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-  
-    const textFields = ["name", "last_name", "second_last_name"]; // Solo letras y espacios con tildes
-    const numericFields = ["ci", "phone"]; // Solo números
-  
+
+    const textFields = ["name", "last_name", "second_last_name"];
+    const numericFields = ["ci", "phone"];
+
     if (textFields.includes(name)) {
       const textRegex = /^[a-zA-ZÁáÉéÍíÓóÚúÜüÑñ\s]*$/;
       if (!textRegex.test(value)) {
@@ -104,7 +105,7 @@ const EditStudent = () => {
         });
       }
     }
-  
+
     if (numericFields.includes(name)) {
       const numericRegex = /^[0-9]*$/;
       if (!numericRegex.test(value)) {
@@ -120,7 +121,7 @@ const EditStudent = () => {
         });
       }
     }
-  
+
     setFormData({ ...formData, [name]: value });
   };
 
@@ -141,7 +142,7 @@ const EditStudent = () => {
     e.preventDefault();
 
     const data = new FormData();
-    data.append("_method", "PUT"); // Esto simula la solicitud PUT
+    data.append("_method", "PUT");
     data.append("name", formData.name);
     data.append("last_name", formData.last_name);
     data.append("second_last_name", formData.second_last_name);
@@ -183,15 +184,21 @@ const EditStudent = () => {
     }
   };
 
+  const goBackToStudents = () => {
+    navigate("/students");
+  };
+
   return (
     <div>
       <Layout>
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
-            Editar Estudiante
+            Actualizar datos del Estudiante
           </h2>
           {loading ? (
-            <Skeleton height={40} count={8} />
+            <div className="flex flex-col">
+              <Skeleton height={30} count={8} />
+            </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -269,7 +276,7 @@ const EditStudent = () => {
                     dateFormat="dd/MM/yyyy"
                     placeholderText="Ingresar fecha"
                     maxDate={new Date()}
-                    className="w-full p-3 text-xs tracking-tighter"
+                    className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                     required
                   />
                   <InputError message={errors.dateofbirth?.[0]} />
@@ -350,7 +357,7 @@ const EditStudent = () => {
                       />
                       <button
                         type="button"
-                        className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1 hover:bg-gray-600"
+                        className="absolute p-2 top-2 right-2 bg-gray-800 text-white rounded-full hover:bg-gray-600"
                         onClick={handleRemoveImage}
                       >
                         <i className="mdi mdi-close"></i> Quitar imagen
@@ -361,7 +368,8 @@ const EditStudent = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end mt-4">
+              <div className="mt-4 flex justify-end gap-2">
+                <BackButton onClick={goBackToStudents}>Volver</BackButton>
                 <SubmitButton type="submit">Actualizar</SubmitButton>
               </div>
             </form>

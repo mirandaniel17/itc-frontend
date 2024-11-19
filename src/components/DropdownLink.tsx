@@ -33,11 +33,7 @@ const DropdownLink: React.FC<DropdownLinkProps> = ({
           className={`mdi ${isOpen ? "mdi-chevron-up" : "mdi-chevron-down"}`}
         ></span>
       </button>
-      {isOpen && (
-        <ul className="py-2 space-y-2 ms-4"> {/* Margen a la izquierda para submenús */}
-          {children}
-        </ul>
-      )}
+      {isOpen && <ul className="py-2 space-y-2 ms-4">{children}</ul>}
     </li>
   );
 };

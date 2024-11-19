@@ -130,7 +130,7 @@ const Home = () => {
               <i className="mdi mdi-office-building text-4xl text-cyan-500 mr-4"></i>
               <div>
                 <h2 className="text-black text-md font-bold pb-2">
-                  Total de Salas
+                  Total de Aulas
                 </h2>
                 <p className="text-black py-1">{counts.totalRooms}</p>
               </div>

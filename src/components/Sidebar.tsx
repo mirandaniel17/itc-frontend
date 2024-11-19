@@ -66,13 +66,13 @@ const Sidebar: React.FC = () => {
             <span className="mdi mdi-close"></span>
           </button>
           <ul className="space-y-2 font-medium">
-            <Link to="/home" className="flex items-center ps-2.5 mb-5">
+            <Link to="/home" className="flex items-center ps-2.5 my-4">
               <img src="/itc_logo.png" className="h-6 sm:h-8 me-1" alt="Logo" />
               <span className="self-center font-thin tracking-tighter dark:text-white">
                 Instituto Técnico Columbia
               </span>
             </Link>
-            <hr />
+            <hr className="pb-2" />
             <SidebarLink to="/home" icon="mdi-apps" label="Inicio" />
 
             {isLoading ? (
@@ -122,7 +122,7 @@ const Sidebar: React.FC = () => {
                   </DropdownLink>
                 )}
 
-                {hasPermission("Ver Horarios") && (
+                {hasPermission("Gestión de Cursos") && (
                   <SidebarLink
                     to="/shifts"
                     icon="mdi-calendar-arrow-right"
@@ -131,7 +131,7 @@ const Sidebar: React.FC = () => {
                   />
                 )}
 
-                {hasPermission("Ver Horarios") && (
+                {hasPermission("Gestión de Cursos") && (
                   <SidebarLink
                     to="/discounts"
                     icon="mdi-brightness-percent"

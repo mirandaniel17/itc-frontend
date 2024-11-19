@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
@@ -35,11 +36,15 @@ const CreateRoom = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       navigate("/rooms", {
-        state: { message: "Sala creada exitosamente", color: "green" },
+        state: { message: "Aula creada exitosamente", color: "green" },
       });
     } catch (error) {
-      console.error("Error al crear la sala:", error);
+      console.error("Error al crear el aula:", error);
     }
+  };
+
+  const goBackToRooms = () => {
+    navigate("/rooms");
   };
 
   return (
@@ -47,15 +52,15 @@ const CreateRoom = () => {
       <Layout>
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
-            FORMULARIO DE CREACIÓN DE SALA
+            FORMULARIO DE CREACIÓN DE AULA
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col">
-              <InputLabel htmlFor="name">Nombre de la Sala</InputLabel>
+              <InputLabel htmlFor="name">Nombre del Aula</InputLabel>
               <TextInput
                 type="text"
                 name="name"
-                placeholder="Nombre de la Sala"
+                placeholder="Nombre del Aula"
                 value={formData.name}
                 onChange={handleChange}
                 className="w-full p-3"
@@ -64,7 +69,8 @@ const CreateRoom = () => {
               <InputError message={errors.name?.[0]} />
             </div>
 
-            <div className="flex justify-end mt-4">
+            <div className="mt-4 flex justify-end gap-2">
+              <BackButton onClick={goBackToRooms}>Volver</BackButton>
               <SubmitButton type="submit">Guardar</SubmitButton>
             </div>
           </form>

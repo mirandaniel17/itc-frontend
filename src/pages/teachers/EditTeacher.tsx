@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
@@ -117,12 +118,15 @@ const EditTeacher = () => {
     }
   };
 
+  const goBackToTeachers = () => {
+    navigate("/teachers");
+  };
   return (
     <div>
       <Layout>
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
-            Editar Docente
+            Actualizar datos del Docente
           </h2>
           {loading ? (
             <Skeleton height={40} count={8} />
@@ -196,7 +200,7 @@ const EditTeacher = () => {
                     dateFormat="dd/MM/yyyy"
                     placeholderText="Ingresar fecha"
                     maxDate={new Date()}
-                    className="w-full p-2 text-xs tracking-tighter"
+                    className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                     required
                   />
                   <InputError message={errors.dateofbirth?.[0]} />
@@ -273,7 +277,8 @@ const EditTeacher = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end mt-4">
+              <div className="mt-4 flex justify-end gap-2">
+                <BackButton onClick={goBackToTeachers}>Volver</BackButton>
                 <SubmitButton type="submit">Actualizar</SubmitButton>
               </div>
             </form>

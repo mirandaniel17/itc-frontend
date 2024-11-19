@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Alert from "../../components/Alert";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import SelectInput from "../../components/SelectInput";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -139,17 +140,20 @@ const RolesPermissions = () => {
     <Layout>
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-4">
-          {loading ? <Skeleton width={150} /> : `Usuario: ${userRole}`}
+          {loading ? <Skeleton width={150} /> : `Rol Actual: ${userRole}`}
         </h1>
 
         <div className="mb-6">
-          <label className="block text-2xl font-bold mb-2">Rol</label>
+          <label className="block text-2xl font-bold mb-2">
+            Seleccionar Rol
+          </label>
           {loading ? (
             <Skeleton width={300} height={40} />
           ) : (
             <SelectInput
               value={selectedRole}
               onChange={(e) => handleRoleChange(e.target.value)}
+              className="text-lg tracking-wider font-bold"
             >
               <option value="Sin rol">Sin rol</option>
               {allRoles.map((role) => (
@@ -192,15 +196,10 @@ const RolesPermissions = () => {
         )}
 
         <div className="mt-4 flex justify-end gap-2">
+          <BackButton onClick={goBackToUsers}>Volver</BackButton>
           <SubmitButton type="submit" onClick={saveChanges}>
-            Guardar Cambios
+            Guardar
           </SubmitButton>
-          <button
-            onClick={goBackToUsers}
-            className="text-white bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-gray-300 dark:focus:ring-gray-800 shadow-lg shadow-gray-500/50 dark:shadow-lg dark:shadow-gray-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-          >
-            Volver
-          </button>
         </div>
 
         {showAlert && (

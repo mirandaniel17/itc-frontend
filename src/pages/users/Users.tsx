@@ -181,23 +181,19 @@ const Users = () => {
               ? Array.from({ length: 10 }).map((_, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      <Skeleton height={30} />
+                      <Skeleton height={20} />
                     </TableCell>
                     <TableCell>
-                      <Skeleton height={30} />
+                      <Skeleton height={20} />
                     </TableCell>
                     <TableCell>
-                      <Skeleton height={30} />
+                      <Skeleton height={20} />
                     </TableCell>
                     <TableCell>
-                      <Skeleton height={30} />
+                      <Skeleton height={20} />
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-2">
-                        <Skeleton width={80} height={30} />
-                        <Skeleton width={80} height={30} />
-                        <Skeleton width={80} height={30} />
-                      </div>
+                      <Skeleton width={200} height={20} />
                     </TableCell>
                   </TableRow>
                 ))

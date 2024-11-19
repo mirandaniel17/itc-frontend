@@ -5,6 +5,9 @@ const NotificationAlert = () => {
   const [latestNotification, setLatestNotification] = useState<any | null>(
     null
   );
+  const [previousNotificationId, setPreviousNotificationId] = useState<
+    string | null
+  >(null);
   const navigate = useNavigate();
 
   const fetchNotifications = async () => {
@@ -26,8 +29,9 @@ const NotificationAlert = () => {
 
       const data = await response.json();
 
-      if (data.length > 0) {
+      if (data.length > 0 && data[0].id !== previousNotificationId) {
         setLatestNotification(data[0]);
+        setPreviousNotificationId(data[0].id);
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -54,16 +58,17 @@ const NotificationAlert = () => {
   };
 
   useEffect(() => {
-    fetchNotifications();
-  }, []);
+    const interval = setInterval(fetchNotifications, 10000);
+    return () => clearInterval(interval);
+  }, [previousNotificationId, navigate]);
 
   if (!latestNotification) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg p-4 border border-gray-200 z-50">
+    <div className="fixed bottom-4 right-4 bg-white shadow-2xl rounded-lg p-6 border border-gray-200 z-50">
       <div className="flex justify-between items-start">
         <div>
-          <p className="font-bold">Nueva Notificación</p>
+          <h1 className="font-bold">Nueva Notificación</h1>
           <p className="font-bold">Alerta de Faltas</p>
           <p>
             <strong>Estudiante:</strong> {latestNotification.data.student_name}
@@ -76,7 +81,9 @@ const NotificationAlert = () => {
           onClick={() => markAsRead(latestNotification.id)}
           className="text-gray-500 hover:text-gray-800 focus:outline-none ml-2"
         >
-          <span className="mdi mdi-check"></span>
+          <p className="ms-2 text-blue-700 font-bold underline">
+            MARCAR COMO LEÍDO
+          </p>
         </button>
       </div>
     </div>

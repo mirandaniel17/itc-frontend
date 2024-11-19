@@ -86,6 +86,7 @@ const Navbar: React.FC = () => {
       setUserEmail(null);
       navigate("/login");
       setIsDropdownOpen(false);
+      window.location.reload();
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }

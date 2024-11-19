@@ -177,7 +177,9 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         <Route
           path="/teachers"
           element={
-            <ProtectedRoute requiredPermission="Gestión de Usuarios">
+            <ProtectedRoute
+              requiredPermission={["Gestión de Usuarios", "Gestión de Cursos"]}
+            >
               <Teachers />
             </ProtectedRoute>
           }
@@ -185,7 +187,9 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         <Route
           path="/teachers/create"
           element={
-            <ProtectedRoute requiredPermission="Gestión de Usuarios">
+            <ProtectedRoute
+              requiredPermission={["Gestión de Usuarios", "Gestión de Cursos"]}
+            >
               <CreateTeacher />
             </ProtectedRoute>
           }
@@ -193,11 +197,14 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         <Route
           path="/teachers/edit/:id"
           element={
-            <ProtectedRoute requiredPermission="Gestión de Usuarios">
+            <ProtectedRoute
+              requiredPermission={["Gestión de Usuarios", "Gestión de Cursos"]}
+            >
               <EditTeacher />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/courses"
           element={
@@ -345,7 +352,7 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         <Route
           path="/schedules"
           element={
-            <ProtectedRoute requiredPermission="Gestión de Cursos">
+            <ProtectedRoute requiredPermission="Ver Horarios">
               <SetSchedule />
             </ProtectedRoute>
           }
@@ -353,7 +360,7 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         <Route
           path="/schedules/create"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="Ver Horarios">
               <CreateSetSchedule />
             </ProtectedRoute>
           }
@@ -361,7 +368,7 @@ const AppContent = ({ logout }: { logout: () => void }) => {
         <Route
           path="/schedules/edit/:id"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requiredPermission="Ver Horarios">
               <EditSetSchedule />
             </ProtectedRoute>
           }

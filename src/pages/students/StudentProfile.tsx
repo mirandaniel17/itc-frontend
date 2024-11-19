@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Badge from "../../components/Badge";
 import { Student } from "../../types/student";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
+import BackButton from "../../components/BackButton";
 
 const StudentProfile = () => {
   const { id } = useParams<{ id: string }>();
   const [student, setStudent] = useState<Student | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -48,6 +50,10 @@ const StudentProfile = () => {
       fetchStudent();
     }
   }, [id]);
+
+  const goBackToStudents = () => {
+    navigate("/students");
+  };
 
   const imageUrl = student
     ? `http://localhost:8000/storage/${student.image}`
@@ -162,6 +168,9 @@ const StudentProfile = () => {
                       </div>
                     </div>
                   </div>
+                </div>
+                <div className="mt-4 flex justify-end gap-2">
+                  <BackButton onClick={goBackToStudents}>Volver</BackButton>
                 </div>
               </div>
             </div>

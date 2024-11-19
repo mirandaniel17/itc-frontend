@@ -7,6 +7,7 @@ import SelectInput from "../../components/SelectInput";
 import InputError from "../../components/InputError";
 import Skeleton from "react-loading-skeleton";
 import Layout from "../../components/Layout";
+import { Room } from "../../types/room"; // Asegúrate de importar Room
 
 const EditShift = () => {
   const { id } = useParams();
@@ -16,7 +17,7 @@ const EditShift = () => {
     end_time: "",
     room_id: "",
   });
-  const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -43,19 +44,31 @@ const EditShift = () => {
 
         const shiftData = await shiftResponse.json();
 
-        const roomResponse = await fetch(`http://127.0.0.1:8000/api/rooms`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        let allRooms: Room[] = [];
+        let currentPage = 1;
+        let totalPages = 1;
 
-        if (!roomResponse.ok) {
-          throw new Error(`HTTP error! status: ${roomResponse.status}`);
+        while (currentPage <= totalPages) {
+          const roomResponse = await fetch(
+            `http://127.0.0.1:8000/api/rooms?page=${currentPage}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (!roomResponse.ok) {
+            throw new Error(`HTTP error! status: ${roomResponse.status}`);
+          }
+
+          const roomData = await roomResponse.json();
+          allRooms = [...allRooms, ...roomData.data];
+          totalPages = roomData.last_page;
+          currentPage++;
         }
-
-        const roomData = await roomResponse.json();
 
         setFormData({
           name: shiftData.name || "",
@@ -64,7 +77,7 @@ const EditShift = () => {
           room_id: shiftData.room_id || "",
         });
 
-        setRooms(roomData.data);
+        setRooms(allRooms);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching shift and rooms:", error);
@@ -133,6 +146,26 @@ const EditShift = () => {
               </div>
 
               <div className="flex flex-col">
+                <InputLabel htmlFor="room_id">Aula</InputLabel>
+                <SelectInput
+                  name="room_id"
+                  value={formData.room_id}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="" disabled>
+                    Seleccionar Aula
+                  </option>
+                  {rooms.map((room) => (
+                    <option key={room.id} value={room.id}>
+                      {room.name}
+                    </option>
+                  ))}
+                </SelectInput>
+                <InputError message={errors.room_id?.[0]} />
+              </div>
+
+              <div className="flex flex-col">
                 <InputLabel htmlFor="start_time">Hora de Inicio</InputLabel>
                 <TextInput
                   type="time"
@@ -154,26 +187,6 @@ const EditShift = () => {
                   required
                 />
                 <InputError message={errors.end_time?.[0]} />
-              </div>
-
-              <div className="flex flex-col">
-                <InputLabel htmlFor="room_id">Sala</InputLabel>
-                <SelectInput
-                  name="room_id"
-                  value={formData.room_id}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Seleccionar Sala
-                  </option>
-                  {rooms.map((room: { id: number; name: string }) => (
-                    <option key={room.id} value={room.id}>
-                      {room.name}
-                    </option>
-                  ))}
-                </SelectInput>
-                <InputError message={errors.room_id?.[0]} />
               </div>
             </div>
 

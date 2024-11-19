@@ -144,13 +144,13 @@ const SetSchedule: React.FC = () => {
             ? [...Array(5)].map((_, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <Skeleton width={200} height={20} />
+                    <Skeleton width={80} height={20} />
                   </TableCell>
                   <TableCell>
-                    <Skeleton width={100} height={20} />
+                    <Skeleton width={80} height={20} />
                   </TableCell>
                   <TableCell>
-                    <Skeleton width={100} height={20} />
+                    <Skeleton width={80} height={20} />
                   </TableCell>
                 </TableRow>
               ))

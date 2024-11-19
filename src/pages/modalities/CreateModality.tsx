@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
@@ -45,6 +46,10 @@ const CreateModality = () => {
     }
   };
 
+  const goBackToModalities = () => {
+    navigate("/modalities");
+  };
+
   return (
     <div>
       <Layout>
@@ -84,8 +89,8 @@ const CreateModality = () => {
                 <InputError message={errors.duration_in_months?.[0]} />
               </div>
             </div>
-
-            <div className="flex justify-end mt-4">
+            <div className="mt-4 flex justify-end gap-2">
+              <BackButton onClick={goBackToModalities}>Volver</BackButton>
               <SubmitButton type="submit">Guardar</SubmitButton>
             </div>
           </form>

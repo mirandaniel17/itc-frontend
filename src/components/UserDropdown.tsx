@@ -51,6 +51,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
       setName("");
       navigate("/login");
       setIsOpen(false);
+      window.location.reload();
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }

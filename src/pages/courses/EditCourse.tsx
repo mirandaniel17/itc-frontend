@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
@@ -29,7 +30,7 @@ const EditCourse = () => {
     teacher_id: "",
     modality_id: "",
     parallel: "",
-    cost: "", // Agrega cost al formulario
+    cost: "",
   });
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -44,6 +45,40 @@ const EditCourse = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchAllData = async (
+      endpoint: string,
+      setState: React.Dispatch<React.SetStateAction<any[]>>
+    ) => {
+      const token = localStorage.getItem("token");
+      let allData: any[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      try {
+        while (currentPage <= totalPages) {
+          const response = await fetch(
+            `http://127.0.0.1:8000/api/${endpoint}?page=${currentPage}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          const data = await response.json();
+          allData = [...allData, ...data.data];
+          totalPages = data.last_page;
+          currentPage++;
+        }
+
+        setState(allData);
+      } catch (error) {
+        console.error(`Error fetching ${endpoint}:`, error);
+      }
+    };
+
     const fetchCourse = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -66,7 +101,7 @@ const EditCourse = () => {
           teacher_id: data.teacher_id,
           modality_id: data.modality_id,
           parallel: data.parallel || "",
-          cost: data.cost || "", // Carga el costo del curso
+          cost: data.cost || "",
         });
         setSelectedStartDate(new Date(data.start_date));
         if (data.end_date) {
@@ -79,43 +114,9 @@ const EditCourse = () => {
       }
     };
 
-    const fetchTeachers = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://127.0.0.1:8000/api/teachers", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        setTeachers(data.data);
-      } catch (error) {
-        console.error("Error fetching teachers:", error);
-      }
-    };
-
-    const fetchModalities = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://127.0.0.1:8000/api/modalities", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        setModalities(data.data);
-      } catch (error) {
-        console.error("Error fetching modalities:", error);
-      }
-    };
-
     fetchCourse();
-    fetchTeachers();
-    fetchModalities();
+    fetchAllData("teachers", setTeachers);
+    fetchAllData("modalities", setModalities);
   }, [id]);
 
   const handleChange = (
@@ -150,7 +151,7 @@ const EditCourse = () => {
       end_date: selectedEndDate
         ? selectedEndDate.toISOString().split("T")[0]
         : null,
-      cost: parseFloat(formData.cost), // Convierte el costo a número
+      cost: parseFloat(formData.cost),
     };
 
     try {
@@ -172,7 +173,6 @@ const EditCourse = () => {
         state: { message: "Curso actualizado con éxito", color: "green" },
       });
     } catch (error) {
-      console.error("Error updating course:", error);
       setAlertMessage("Error al actualizar el curso");
       setAlertColor("red");
       setShowAlert(true);
@@ -189,12 +189,16 @@ const EditCourse = () => {
     label: modality.name,
   }));
 
+  const goBackToCourses = () => {
+    navigate("/courses");
+  };
+
   return (
     <div>
       <Layout>
         <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-5">
           <h2 className="text-2xl font-bold mb-4 text-center tracking-tighter uppercase">
-            Editar Curso
+            Actualizar datos del Curso
           </h2>
           {showAlert && <Alert message={alertMessage} color={alertColor} />}
           {loading ? (
@@ -256,7 +260,7 @@ const EditCourse = () => {
                     dropdownMode="select"
                     dateFormat="dd/MM/yyyy"
                     placeholderText="Seleccionar fecha de inicio"
-                    className="w-full p-3 text-xs tracking-tighter"
+                    className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                     required
                   />
                   <InputError message={errors.start_date?.[0]} />
@@ -275,7 +279,7 @@ const EditCourse = () => {
                     dropdownMode="select"
                     dateFormat="dd/MM/yyyy"
                     placeholderText="Seleccionar fecha de finalización"
-                    className="w-full p-3 text-xs tracking-tighter"
+                    className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                     required
                   />
                   <InputError message={errors.end_date?.[0]} />
@@ -323,7 +327,8 @@ const EditCourse = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end mt-4">
+              <div className="mt-4 flex justify-end gap-2">
+                <BackButton onClick={goBackToCourses}>Volver</BackButton>
                 <SubmitButton type="submit">Actualizar</SubmitButton>
               </div>
             </form>

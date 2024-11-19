@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
@@ -113,6 +114,10 @@ const CreateTeacher = () => {
     } catch (error) {
       console.error("Error al registrar al docente:", error);
     }
+  };
+
+  const goBackToTeachers = () => {
+    navigate("/teachers");
   };
 
   return (
@@ -241,7 +246,7 @@ const CreateTeacher = () => {
                   dateFormat="dd/MM/yyyy"
                   placeholderText="Ingresar fecha"
                   maxDate={new Date()}
-                  className="w-full p-3 text-xs tracking-tighter"
+                  className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                   required
                 />
                 <InputError message={errors.dateofbirth?.[0]} />
@@ -280,7 +285,8 @@ const CreateTeacher = () => {
               </div>
             </div>
 
-            <div className="flex justify-end mt-4">
+            <div className="mt-4 flex justify-end gap-2">
+              <BackButton onClick={goBackToTeachers}>Volver</BackButton>
               <SubmitButton type="submit">Guardar</SubmitButton>
             </div>
           </form>
