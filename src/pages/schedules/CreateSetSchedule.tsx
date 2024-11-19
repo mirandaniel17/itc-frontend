@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout";
 import Alert from "../../components/Alert";
+import BackButton from "../../components/BackButton";
 import SubmitButton from "../../components/SubmitButton";
 import Select from "react-select";
 import { Course } from "../../types/course";
@@ -112,6 +113,9 @@ const CreateSetSchedule: React.FC = () => {
     const updatedSchedules = [...schedules];
     updatedSchedules[index][field] = value;
     setSchedules(updatedSchedules);
+  };
+  const goBackToRooms = () => {
+    navigate("/schedules");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -226,6 +230,7 @@ const CreateSetSchedule: React.FC = () => {
               ))}
             </tbody>
           </table>
+          <BackButton onClick={goBackToRooms}>Volver</BackButton>
           <SubmitButton type="submit" className="mt-5">
             Guardar
           </SubmitButton>

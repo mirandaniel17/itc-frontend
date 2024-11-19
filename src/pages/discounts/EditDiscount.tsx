@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
@@ -85,6 +86,9 @@ const EditDiscount = () => {
       console.error("Error al actualizar el descuento:", error);
     }
   };
+  const goBackToRooms = () => {
+    navigate("/discounts");
+  };
 
   return (
     <Layout>
@@ -124,6 +128,7 @@ const EditDiscount = () => {
             </div>
 
             <div className="flex justify-end mt-4">
+              <BackButton onClick={goBackToRooms}>Volver</BackButton>
               <SubmitButton type="submit">Actualizar</SubmitButton>
             </div>
           </form>

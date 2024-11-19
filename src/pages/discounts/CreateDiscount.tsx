@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
+import BackButton from "../../components/BackButton";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
 import Layout from "../../components/Layout";
@@ -48,6 +49,9 @@ const CreateDiscount = () => {
       console.error("Error al crear el descuento:", error);
     }
   };
+  const goBackToRooms = () => {
+    navigate("/discounts");
+  };
 
   return (
     <div>
@@ -91,6 +95,7 @@ const CreateDiscount = () => {
             </div>
 
             <div className="flex justify-end mt-4">
+              <BackButton onClick={goBackToRooms}>Volver</BackButton>
               <SubmitButton type="submit">Guardar</SubmitButton>
             </div>
           </form>

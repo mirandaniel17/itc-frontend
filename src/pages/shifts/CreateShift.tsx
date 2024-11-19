@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
+import BackButton from "../../components/BackButton";
 import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
 import Select from "react-select";
@@ -19,6 +20,9 @@ const CreateShift = () => {
   const [rooms, setRooms] = useState<{ value: string; label: string }[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
+  const goBackToRooms = () => {
+    navigate("/shifts");
+  };
 
   useEffect(() => {
     const fetchAllRooms = async () => {
@@ -162,6 +166,7 @@ const CreateShift = () => {
           </div>
 
           <div className="flex justify-end mt-4">
+            <BackButton onClick={goBackToRooms}>Volver</BackButton>
             <SubmitButton type="submit">Guardar</SubmitButton>
           </div>
         </form>

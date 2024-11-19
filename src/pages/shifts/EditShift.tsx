@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import SubmitButton from "../../components/SubmitButton";
 import InputLabel from "../../components/InputLabel";
 import TextInput from "../../components/TextInput";
+import BackButton from "../../components/BackButton";
 import SelectInput from "../../components/SelectInput";
 import InputError from "../../components/InputError";
 import Skeleton from "react-loading-skeleton";
@@ -21,6 +22,9 @@ const EditShift = () => {
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const goBackToRooms = () => {
+    navigate("/shifts");
+  };
 
   useEffect(() => {
     const fetchShiftAndRooms = async () => {
@@ -191,6 +195,7 @@ const EditShift = () => {
             </div>
 
             <div className="flex justify-end mt-4">
+              <BackButton onClick={goBackToRooms}>Volver</BackButton>
               <SubmitButton type="submit">Actualizar</SubmitButton>
             </div>
           </form>
