@@ -10,6 +10,7 @@ import Pagination from "../../components/Pagination";
 import AddButton from "../../components/AddButton";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import Alert from "../../components/Alert";
+import ToggleButton from "../../components/ToggleButton";
 import { Student } from "../../types/student";
 import { formatDate } from "../../utils/dateUtils";
 import { debounce } from "lodash";
@@ -24,6 +25,7 @@ const Students = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<number | null>(null);
+  const [studentToToggle, setStudentToToggle] = useState<number | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColor, setAlertColor] = useState("blue");
@@ -77,13 +79,58 @@ const Students = () => {
     fetchStudents(currentPage, searchQuery);
   }, [currentPage]);
 
-  const handleEdit = (student: Student) => {
-    navigate(`/students/edit/${student.id}`);
-    showAlertWithMessage("Estudiante actualizado con éxito", "green");
+  const handleToggleStatusClick = (id: number) => {
+    setStudentToToggle(id);
+    setIsConfirmationModalOpen(true);
   };
 
-  const handleProfile = (student: Student) => {
-    navigate(`/students/profile/${student.id}`);
+  const handleToggleStatusConfirm = async () => {
+    if (studentToToggle !== null) {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/students/${studentToToggle}/disable`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setStudents((prevStudents) =>
+          prevStudents.map((student) =>
+            student.id === studentToToggle
+              ? { ...student, status: data.status }
+              : student
+          )
+        );
+
+        setIsConfirmationModalOpen(false);
+        setStudentToToggle(null);
+        showAlertWithMessage(
+          "Estado del estudiante actualizado con éxito",
+          "green"
+        );
+      } catch (error) {
+        console.error("Error updating student status:", error);
+        showAlertWithMessage(
+          "Error al actualizar el estado del estudiante",
+          "red"
+        );
+      }
+    }
+  };
+
+  const handleToggleStatusCancel = () => {
+    setIsConfirmationModalOpen(false);
+    setStudentToToggle(null);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -125,12 +172,13 @@ const Students = () => {
     setStudentToDelete(null);
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const handleEdit = (student: Student) => {
+    navigate(`/students/edit/${student.id}`);
+    showAlertWithMessage("Estudiante actualizado con éxito", "green");
   };
 
-  const handleNew = () => {
-    navigate("/students/create");
+  const handleProfile = (student: Student) => {
+    navigate(`/students/profile/${student.id}`);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,7 +215,10 @@ const Students = () => {
               />
             </div>
           </form>
-          <AddButton label="Nuevo" onClick={handleNew} />
+          <AddButton
+            label="Nuevo"
+            onClick={() => navigate("/students/create")}
+          />
         </div>
 
         <Table>
@@ -177,6 +228,7 @@ const Students = () => {
               "Nombre",
               "Fecha de Nacimiento",
               "Carnet de Identidad",
+              "Estado",
               "Acciones",
             ]}
           />
@@ -197,6 +249,9 @@ const Students = () => {
                     <Skeleton width={80} height={20} />
                   </TableCell>
                   <TableCell>
+                    <Skeleton width={50} height={20} />
+                  </TableCell>
+                  <TableCell>
                     <Skeleton width={150} height={20} />
                   </TableCell>
                 </TableRow>
@@ -210,33 +265,41 @@ const Students = () => {
                   <TableCell>{student.name}</TableCell>
                   <TableCell>{formatDate(student.dateofbirth)}</TableCell>
                   <TableCell>{student.ci}</TableCell>
-                  <TableActionButtons
-                    actions={[
-                      {
-                        label: "Ver Perfil",
-                        onClick: () => handleProfile(student),
-                        className:
-                          "text-white text-xs bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                      },
-                      {
-                        label: "Editar",
-                        onClick: () => handleEdit(student),
-                        className:
-                          "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                      },
-                      {
-                        label: "Eliminar",
-                        onClick: () => handleDeleteClick(student.id),
-                        className:
-                          "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                      },
-                    ]}
-                  />
+                  <TableCell>
+                    <ToggleButton
+                      checked={student.status}
+                      onChange={() => handleToggleStatusClick(student.id)}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <TableActionButtons
+                      actions={[
+                        {
+                          label: "Ver Perfil",
+                          onClick: () => handleProfile(student),
+                          className:
+                            "text-white text-xs bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                        },
+                        {
+                          label: "Editar",
+                          onClick: () => handleEdit(student),
+                          className:
+                            "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                        },
+                        {
+                          label: "Eliminar",
+                          onClick: () => handleDeleteClick(student.id),
+                          className:
+                            "text-white text-xs bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
+                        },
+                      ]}
+                    />
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center">
+                <TableCell colSpan={6} className="text-center">
                   No se encontraron estudiantes.
                 </TableCell>
               </TableRow>
@@ -250,16 +313,24 @@ const Students = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={handlePageChange}
+            onPageChange={(page) => setCurrentPage(page)}
           />
         )}
       </Layout>
 
       <ConfirmationModal
-        message="¿Estás seguro de que quieres eliminar a este estudiante?"
+        message={
+          studentToToggle
+            ? "¿Estás seguro de que quieres cambiar el estado de este estudiante?"
+            : "¿Estás seguro de que quieres eliminar a este estudiante?"
+        }
         isVisible={isConfirmationModalOpen}
-        onConfirm={handleDeleteConfirm}
-        onCancel={handleDeleteCancel}
+        onConfirm={
+          studentToToggle ? handleToggleStatusConfirm : handleDeleteConfirm
+        }
+        onCancel={
+          studentToToggle ? handleToggleStatusCancel : handleDeleteCancel
+        }
       />
     </div>
   );

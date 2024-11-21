@@ -38,6 +38,13 @@ const NotificationAlert = () => {
     }
   };
 
+  useEffect(() => {
+    const interval = setInterval(fetchNotifications, 10000);
+    return () => clearInterval(interval);
+  }, [previousNotificationId, navigate]);
+
+  if (!latestNotification) return null;
+
   const markAsRead = async (id: string) => {
     try {
       await fetch(
@@ -57,22 +64,27 @@ const NotificationAlert = () => {
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(fetchNotifications, 10000);
-    return () => clearInterval(interval);
-  }, [previousNotificationId, navigate]);
-
-  if (!latestNotification) return null;
-
   return (
     <div className="fixed bottom-4 right-4 bg-white shadow-2xl rounded-lg p-6 border border-gray-200 z-50">
       <div className="flex justify-between items-start">
         <div>
           <h1 className="font-bold">Nueva Notificación</h1>
-          <p className="font-bold">Alerta de Faltas</p>
-          <p>
-            <strong>Estudiante:</strong> {latestNotification.data.student_name}
-          </p>
+          {latestNotification.data.course_name ? (
+            <>
+              <p className="font-bold">Finalización del Curso</p>
+              <p>
+                <strong>Curso:</strong> {latestNotification.data.course_name}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="font-bold">Alerta de Faltas</p>
+              <p>
+                <strong>Estudiante:</strong>{" "}
+                {latestNotification.data.student_name}
+              </p>
+            </>
+          )}
           <small>
             {new Date(latestNotification.created_at).toLocaleString()}
           </small>

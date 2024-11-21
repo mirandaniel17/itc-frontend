@@ -267,7 +267,7 @@ const CreatePayment = () => {
                         }
                       >
                         {detail.course?.name} - Costo: {detail.course?.cost} Bs
-                        - Total Pagado: {detail.total_payments} Bs - Saldo
+                        - Monto Acumulado: {detail.total_payments} Bs - Saldo
                         Pendiente: {balance} Bs
                       </button>
                     </li>
