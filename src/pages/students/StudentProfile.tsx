@@ -82,9 +82,10 @@ const StudentProfile = () => {
     navigate("/students");
   };
 
-  const imageUrl = student
-    ? `http://localhost:8000/storage/${student.image}`
-    : null;
+  const imageUrl = student?.image
+  ? `http://localhost:8000/storage/${student.image}`
+  : "/public/avatar.png";
+
 
   return (
     <Layout>
