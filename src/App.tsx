@@ -54,6 +54,9 @@ import EditRoom from "./pages/rooms/EditRoom";
 import Notifications from "./pages/notifications/Notifications";
 import NotificationAlert from "./components/NotificationAlert";
 import Tasks from "./pages/tasks/Tasks";
+import Payments from "./pages/payments/Payments";
+import CreatePayment from "./pages/payments/CreatePayment";
+import Reports from "./pages/reports/Reports";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -386,6 +389,30 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           element={
             <ProtectedRoute requiredPermission="Gestión de Cursos">
               <Tasks />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payments"
+          element={
+            <ProtectedRoute requiredPermission="Gestión de Cursos">
+              <Payments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payments/create"
+          element={
+            <ProtectedRoute requiredPermission="Gestión de Cursos">
+              <CreatePayment />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute requiredPermission="Gestión de Cursos">
+              <Reports />
             </ProtectedRoute>
           }
         />

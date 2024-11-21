@@ -135,7 +135,7 @@ const CreateShift = () => {
                 onChange={handleSelectChange}
                 placeholder="Seleccionar Aula"
                 isSearchable
-                className="w-full text-xs tracking-tighter"
+                className="w-full text-sm tracking-normal"
               />
               <InputError message={errors.room_id?.[0]} />
             </div>

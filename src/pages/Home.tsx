@@ -11,6 +11,7 @@ const Home = () => {
     totalModalities: 0,
     totalRooms: 0,
     totalShifts: 0,
+    totalPayments: 0,
   });
 
   const fetchCounts = async () => {
@@ -144,6 +145,19 @@ const Home = () => {
               <div>
                 <h2 className="text-black text-md font-bold pb-2">
                   Total de Horarios
+                </h2>
+                <p className="text-black py-1">{counts.totalShifts}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative bg-white block p-6 border border-gray-100 rounded-lg">
+            <span className="absolute inset-x-0 bottom-0 h-2 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600"></span>
+            <div className="flex items-center my-4">
+              <i className="mdi mdi-cash-multiple text-4xl text-yellow-300 mr-4"></i>
+              <div>
+                <h2 className="text-black text-md font-bold pb-2">
+                  Total de Pagos
                 </h2>
                 <p className="text-black py-1">{counts.totalShifts}</p>
               </div>

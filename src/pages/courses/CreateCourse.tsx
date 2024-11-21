@@ -217,7 +217,7 @@ const CreateCourse = () => {
                   dropdownMode="select"
                   dateFormat="dd/MM/yyyy"
                   placeholderText="Seleccionar fecha de inicio"
-                  className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                  className="w-full p-3 rounded-sm text-sm tracking-normal border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                   required
                 />
                 <InputError message={errors.start_date?.[0]} />
@@ -236,7 +236,7 @@ const CreateCourse = () => {
                   dropdownMode="select"
                   dateFormat="dd/MM/yyyy"
                   placeholderText="Seleccionar fecha de finalización"
-                  className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                  className="w-full p-3 rounded-sm text-sm tracking-normal border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                   required
                 />
                 <InputError message={errors.end_date?.[0]} />
@@ -249,7 +249,7 @@ const CreateCourse = () => {
                   onChange={handleTeacherChange}
                   isSearchable
                   placeholder="Buscar docente"
-                  className="w-full text-xs tracking-tighter"
+                  className="w-full text-sm tracking-normal"
                 />
                 <InputError message={errors.teacher_id?.[0]} />
               </div>
@@ -260,7 +260,7 @@ const CreateCourse = () => {
                   options={modalityOptions}
                   onChange={handleModalityChange}
                   placeholder="Seleccionar Modalidad"
-                  className="w-full text-xs tracking-tighter"
+                  className="w-full text-sm tracking-normal"
                 />
                 <InputError message={errors.modality_id?.[0]} />
               </div>

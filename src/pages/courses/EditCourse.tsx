@@ -250,42 +250,6 @@ const EditCourse = () => {
                 </div>
 
                 <div className="flex flex-col">
-                  <InputLabel htmlFor="start_date">Fecha de Inicio</InputLabel>
-                  <DatePicker
-                    selected={selectedStartDate}
-                    onChange={(date: Date | null) => setSelectedStartDate(date)}
-                    locale="es"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    dateFormat="dd/MM/yyyy"
-                    placeholderText="Seleccionar fecha de inicio"
-                    className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
-                    required
-                  />
-                  <InputError message={errors.start_date?.[0]} />
-                </div>
-
-                <div className="flex flex-col">
-                  <InputLabel htmlFor="end_date">
-                    Fecha de Finalización
-                  </InputLabel>
-                  <DatePicker
-                    selected={selectedEndDate}
-                    onChange={(date: Date | null) => setSelectedEndDate(date)}
-                    locale="es"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    dateFormat="dd/MM/yyyy"
-                    placeholderText="Seleccionar fecha de finalización"
-                    className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
-                    required
-                  />
-                  <InputError message={errors.end_date?.[0]} />
-                </div>
-
-                <div className="flex flex-col">
                   <InputLabel htmlFor="teacher_id">Docente</InputLabel>
                   <Select
                     options={teacherOptions}
@@ -295,7 +259,7 @@ const EditCourse = () => {
                     )}
                     isSearchable
                     placeholder="Buscar docente"
-                    className="w-full text-xs tracking-tighter"
+                    className="w-full text-sm tracking-normal"
                   />
                   <InputError message={errors.teacher_id?.[0]} />
                 </div>
@@ -309,7 +273,7 @@ const EditCourse = () => {
                       (option) => option.value === Number(formData.modality_id)
                     )}
                     placeholder="Seleccionar Modalidad"
-                    className="w-full text-xs tracking-tighter"
+                    className="w-full text-sm tracking-normal"
                   />
                   <InputError message={errors.modality_id?.[0]} />
                 </div>
@@ -325,6 +289,42 @@ const EditCourse = () => {
                   />
                   <InputError message={errors.cost?.[0]} />
                 </div>
+              </div>
+
+              <div className="flex flex-col">
+                <InputLabel htmlFor="start_date">Fecha de Inicio</InputLabel>
+                <DatePicker
+                  selected={selectedStartDate}
+                  onChange={(date: Date | null) => setSelectedStartDate(date)}
+                  locale="es"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="Seleccionar fecha de inicio"
+                  className="w-full p-3 rounded-sm text-sm tracking-normal border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                  required
+                />
+                <InputError message={errors.start_date?.[0]} />
+              </div>
+
+              <div className="flex flex-col">
+                <InputLabel htmlFor="end_date">
+                  Fecha de Finalización
+                </InputLabel>
+                <DatePicker
+                  selected={selectedEndDate}
+                  onChange={(date: Date | null) => setSelectedEndDate(date)}
+                  locale="es"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="Seleccionar fecha de finalización"
+                  className="w-full p-3 rounded-sm text-sm tracking-normal border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                  required
+                />
+                <InputError message={errors.end_date?.[0]} />
               </div>
 
               <div className="mt-4 flex justify-end gap-2">

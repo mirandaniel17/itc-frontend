@@ -202,33 +202,11 @@ const Teachers = () => {
               teachers.map((teacher) => (
                 <TableRow key={teacher.id}>
                   <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {teacher.last_name} {teacher.second_last_name}
-                      </div>
-                    </div>
+                    {teacher.last_name} {teacher.second_last_name}
                   </TableCell>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {teacher.name}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {teacher.specialty}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {teacher.phone}
-                      </div>
-                    </div>
-                  </TableCell>
+                  <TableCell>{teacher.name}</TableCell>
+                  <TableCell>{teacher.specialty}</TableCell>
+                  <TableCell>{teacher.phone}</TableCell>
                   <TableActionButtons
                     actions={[
                       {

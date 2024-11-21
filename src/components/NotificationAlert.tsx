@@ -82,7 +82,7 @@ const NotificationAlert = () => {
           className="text-gray-500 hover:text-gray-800 focus:outline-none ml-2"
         >
           <p className="ms-2 text-blue-700 font-bold underline">
-            MARCAR COMO LEÍDO
+            NO VOLVER A MOSTRAR
           </p>
         </button>
       </div>

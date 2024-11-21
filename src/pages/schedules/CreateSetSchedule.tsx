@@ -185,7 +185,7 @@ const CreateSetSchedule: React.FC = () => {
       {showAlert && <Alert message={alertMessage} color={alertColor} />}
       <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto">
         <h2 className="text-2xl font-bold mb-4 text-center uppercase">
-          Crear Nuevo Horario
+          Registrar Nuevo Horario
         </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-6">

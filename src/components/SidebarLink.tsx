@@ -5,7 +5,7 @@ interface SidebarLinkProps {
   icon: string;
   label: string;
   onClick?: () => void;
-  className?: string; // Agregar className como una prop opcional
+  className?: string;
 }
 
 const SidebarLink: React.FC<SidebarLinkProps> = ({
@@ -23,9 +23,9 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({
       <Link
         to={to}
         onClick={onClick}
-        className={`flex items-center p-2 rounded-lg ${
+        className={`flex items-center p-2 rounded-lg text-lg tracking-wide ${
           isActive
-            ? "bg-sky-900 text-white"
+            ? "bg-sky-900 text-white font-bold"
             : "text-gray-900 dark:text-white hover:bg-sky-900 hover:text-white dark:hover:bg-gray-700"
         } ${className} group`}
       >

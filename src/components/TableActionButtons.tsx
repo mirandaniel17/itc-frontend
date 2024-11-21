@@ -8,7 +8,7 @@ interface TableActionButtonsProps {
 
 const TableActionButtons: React.FC<TableActionButtonsProps> = ({ actions }) => {
   return (
-    <td className="px-6 py-4">
+    <td className="flex space-x-2 my-2">
       {actions.map((action) => (
         <button
           key={action.label}

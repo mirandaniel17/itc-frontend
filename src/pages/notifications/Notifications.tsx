@@ -11,13 +11,16 @@ const Notifications = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/notifications", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await fetch(
+        "http://localhost:8000/api/notifications/all",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -94,7 +97,8 @@ const Notifications = () => {
                   <strong>Estudiante:</strong> {notification.data.student_name}
                 </p>
                 <p>
-                  <strong>Faltas acumuladas:</strong> 5
+                  <strong>Faltas acumuladas:</strong>{" "}
+                  {notification.data.absence_count}
                 </p>
                 <div className="flex justify-between mt-2">
                   <small>

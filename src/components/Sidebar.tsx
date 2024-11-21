@@ -33,7 +33,9 @@ const Sidebar: React.FC = () => {
     setIsCoursesDropdownOpen(isCoursesDropdownRoute);
 
     const isUsersDropdownRoute =
-      location.pathname === "/users" || location.pathname === "/users/roles";
+      location.pathname === "/users" ||
+      location.pathname === "/users/roles" ||
+      location.pathname === "/reports";
     setIsUsersDropdownOpen(isUsersDropdownRoute);
   }, [location.pathname]);
 
@@ -74,7 +76,25 @@ const Sidebar: React.FC = () => {
             </Link>
             <hr className="pb-2" />
             <SidebarLink to="/home" icon="mdi-apps" label="Inicio" />
-
+            {hasPermission("Gestión de Usuarios") && (
+              <DropdownLink
+                label="Gestión de Usuarios"
+                icon="mdi-security"
+                isOpen={isUsersDropdownOpen}
+                setIsOpen={setIsUsersDropdownOpen}
+              >
+                <SidebarLink
+                  to="/users"
+                  icon="mdi-account-multiple-outline"
+                  label="Usuarios"
+                />
+                <SidebarLink
+                  to="/reports"
+                  icon="mdi-file-chart"
+                  label="Reportes"
+                />
+              </DropdownLink>
+            )}
             {isLoading ? (
               <Skeleton count={6} height={40} />
             ) : (
@@ -165,25 +185,18 @@ const Sidebar: React.FC = () => {
 
                 {hasPermission("Gestión de Cursos") && (
                   <SidebarLink
+                    to="/payments"
+                    icon="mdi-cash-multiple"
+                    label="Pagos"
+                  />
+                )}
+
+                {hasPermission("Gestión de Cursos") && (
+                  <SidebarLink
                     to="/tasks"
                     icon="mdi-book-open-variant-outline"
                     label="Tareas"
                   />
-                )}
-
-                {hasPermission("Gestión de Usuarios") && (
-                  <DropdownLink
-                    label="Gestión de Usuarios"
-                    icon="mdi-security"
-                    isOpen={isUsersDropdownOpen}
-                    setIsOpen={setIsUsersDropdownOpen}
-                  >
-                    <SidebarLink
-                      to="/users"
-                      icon="mdi-account-multiple-outline"
-                      label="Usuarios"
-                    />
-                  </DropdownLink>
                 )}
               </>
             )}

@@ -9,7 +9,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import { es } from "date-fns/locale";
-
 registerLocale("es", es);
 
 const Attendances = () => {
@@ -22,6 +21,12 @@ const Attendances = () => {
     message: string;
     color: string;
   } | null>(null);
+  const [courseStartDate, setCourseStartDate] = useState<Date | undefined>(
+    undefined
+  );
+  const [courseEndDate, setCourseEndDate] = useState<Date | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     fetchCourses();
@@ -78,6 +83,34 @@ const Attendances = () => {
         message: "Error al cargar los estudiantes.",
         color: "red",
       });
+    }
+  };
+
+  const handleCourseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const courseId = Number(e.target.value);
+    const selected = courses.find((course) => course.id === courseId);
+
+    if (selected) {
+      setSelectedCourse(courseId);
+      setCourseStartDate(
+        selected.start_date ? new Date(selected.start_date) : undefined
+      );
+      setCourseEndDate(
+        selected.end_date
+          ? new Date(
+              new Date(selected.end_date).setDate(
+                new Date(selected.end_date).getDate() + 1
+              )
+            )
+          : undefined
+      );
+
+      if (selectedDate) fetchStudents(courseId, selectedDate);
+    } else {
+      setSelectedCourse(null);
+      setCourseStartDate(undefined);
+      setCourseEndDate(undefined);
+      setStudents([]);
     }
   };
 
@@ -144,11 +177,7 @@ const Attendances = () => {
         <div className="mb-6">
           <SelectInput
             value={selectedCourse || ""}
-            onChange={(e) => {
-              const courseId = Number(e.target.value);
-              setSelectedCourse(courseId);
-              if (selectedDate) fetchStudents(courseId, selectedDate);
-            }}
+            onChange={handleCourseChange}
             className="w-full p-3 border rounded"
           >
             <option value="">Selecciona un curso</option>
@@ -169,9 +198,10 @@ const Attendances = () => {
                 selected={selectedDate}
                 onChange={(date: Date | null) => setSelectedDate(date)}
                 locale="es"
-                className="ml-2 border p-2 rounded"
+                className="ml-2 border p-2 focus:border-sky-500 focus:ring-sky-500 text-center"
                 dateFormat="dd/MM/yyyy"
-                maxDate={new Date()}
+                maxDate={courseEndDate}
+                minDate={courseStartDate}
               />
             </label>
 
@@ -182,7 +212,7 @@ const Attendances = () => {
                   className="flex justify-between p-3 border-b"
                 >
                   <span>{`${student.name} ${student.last_name}`}</span>
-                  <div className="flex space-x-4">
+                  <div className="flex space-x-8">
                     <label>
                       <input
                         type="radio"
@@ -192,6 +222,7 @@ const Attendances = () => {
                         onChange={() =>
                           handleAttendanceChange(student.id, "PRESENTE")
                         }
+                        className="me-2"
                       />{" "}
                       Presente
                     </label>
@@ -204,6 +235,7 @@ const Attendances = () => {
                         onChange={() =>
                           handleAttendanceChange(student.id, "AUSENTE")
                         }
+                        className="me-2"
                       />{" "}
                       Ausente
                     </label>
@@ -216,6 +248,7 @@ const Attendances = () => {
                         onChange={() =>
                           handleAttendanceChange(student.id, "LICENCIA")
                         }
+                        className="me-2"
                       />{" "}
                       Licencia
                     </label>

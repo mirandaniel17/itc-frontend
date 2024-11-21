@@ -185,11 +185,7 @@ const Rooms = () => {
             ) : rooms.length > 0 ? (
               rooms.map((room) => (
                 <TableRow key={room.id}>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">{room.name}</div>
-                    </div>
-                  </TableCell>
+                  <TableCell>{room.name}</TableCell>
                   <TableCell>
                     {room.created_at
                       ? formatDate(room.created_at)

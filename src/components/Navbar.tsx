@@ -139,6 +139,9 @@ const Navbar: React.FC = () => {
       "/schedules/set-schedule": "Configurar Horario",
       "/attendances": "Asistencias",
       "/tasks": "Tareas",
+      "/payments": "Pagos",
+      "/payments/create": "Registrar Pago",
+      "/reports": "Reportes",
     };
 
     let breadcrumb = pathnames.map((part, index) => {

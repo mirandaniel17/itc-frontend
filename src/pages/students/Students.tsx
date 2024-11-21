@@ -205,25 +205,11 @@ const Students = () => {
               students.map((student) => (
                 <TableRow key={student.id}>
                   <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {student.last_name} {student.second_last_name}
-                      </div>
-                    </div>
+                    {student.last_name} {student.second_last_name}
                   </TableCell>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {student.name}
-                      </div>
-                    </div>
-                  </TableCell>
+                  <TableCell>{student.name}</TableCell>
                   <TableCell>{formatDate(student.dateofbirth)}</TableCell>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">{student.ci}</div>
-                    </div>
-                  </TableCell>
+                  <TableCell>{student.ci}</TableCell>
                   <TableActionButtons
                     actions={[
                       {

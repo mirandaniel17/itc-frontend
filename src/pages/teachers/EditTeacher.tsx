@@ -181,7 +181,7 @@ const EditTeacher = () => {
                     placeholder="Cédula de Identidad"
                     value={formData.ci}
                     onChange={handleChange}
-                    className="w-full p-3"
+                    className="w-full p-2"
                   />
                   <InputError message={errors.ci?.[0]} />
                 </div>
@@ -200,7 +200,7 @@ const EditTeacher = () => {
                     dateFormat="dd/MM/yyyy"
                     placeholderText="Ingresar fecha"
                     maxDate={new Date()}
-                    className="w-full p-3 rounded-sm text-xs tracking-tighter border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                    className="w-full p-3 rounded-sm text-sm tracking-normal border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500"
                     required
                   />
                   <InputError message={errors.dateofbirth?.[0]} />

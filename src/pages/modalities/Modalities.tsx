@@ -184,20 +184,8 @@ const Modalities = () => {
             ) : modalities.length > 0 ? (
               modalities.map((modality) => (
                 <TableRow key={modality.id}>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {modality.name}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="pl-3">
-                      <div className="font-semibold text-xs">
-                        {modality.duration_in_months} meses
-                      </div>
-                    </div>
-                  </TableCell>
+                  <TableCell>{modality.name}</TableCell>
+                  <TableCell>{modality.duration_in_months} meses</TableCell>
                   <TableActionButtons
                     actions={[
                       {

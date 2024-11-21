@@ -8,6 +8,7 @@ import { Task } from "../../types/task";
 import { Student } from "../../types/student";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { formatDate } from "../../utils/dateUtils";
 
 const Tasks = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -70,7 +71,7 @@ const Tasks = () => {
   const handleCreateTask = async () => {
     if (!selectedCourse || !taskTitle) {
       setAlertMessage({
-        message: "El curso y el título de la tarea son obligatorios",
+        message: "El curso y el título de la actividad son obligatorios",
         color: "red",
       });
       return;
@@ -92,14 +93,17 @@ const Tasks = () => {
     });
 
     if (response.ok) {
-      setAlertMessage({ message: "Tarea creada con éxito", color: "green" });
+      setAlertMessage({
+        message: "Actividad creada con éxito",
+        color: "green",
+      });
       setTaskTitle("");
       setTaskDescription("");
       setDueDate(null);
       setShowTaskForm(false);
       fetchTasks(selectedCourse);
     } else {
-      setAlertMessage({ message: "Error al crear la tarea", color: "red" });
+      setAlertMessage({ message: "Error al crear la actividad", color: "red" });
     }
   };
 
@@ -131,8 +135,10 @@ const Tasks = () => {
 
   return (
     <Layout>
-      <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto mb-">
-        <h1 className="text-2xl font-bold mb-4">Registro de Tareas</h1>
+      <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-6xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">
+          Registro de Actividades y Notas
+        </h1>
         {alertMessage && (
           <Alert message={alertMessage.message} color={alertMessage.color} />
         )}
@@ -161,36 +167,127 @@ const Tasks = () => {
             {tasks.length > 0 ? (
               <>
                 <h2 className="text-2xl font-semibold mb-4">
-                  Tareas Asignadas
+                  Actividades Asignadas
                 </h2>
                 <ul className="mb-6 space-y-3">
                   {tasks.map((task) => (
                     <li
                       key={task.id}
-                      className="flex justify-between items-center p-3 border rounded shadow-sm hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        setSelectedTask(task.id);
-                        fetchStudentsWithGrades(task.id);
-                      }}
+                      className="p-3 border rounded shadow-sm hover:bg-gray-100"
                     >
-                      <span>
-                        <strong>{task.title}</strong> - Fecha de entrega:{" "}
-                        {task.due_date || "No especificada"}
-                      </span>
+                      <div className="flex justify-between items-center">
+                        <span>
+                          <strong>{task.title}</strong> - Fecha de entrega:{" "}
+                          {formatDate(task.due_date || "No especificada")}
+                        </span>
+                        <button
+                          onClick={() => {
+                            if (selectedTask === task.id) {
+                              setSelectedTask(null);
+                              setStudents([]);
+                            } else {
+                              setSelectedTask(task.id);
+                              fetchStudentsWithGrades(task.id);
+                            }
+                          }}
+                          className="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                        >
+                          {selectedTask === task.id
+                            ? "Ocultar Notas"
+                            : "Ver Notas"}
+                        </button>
+                      </div>
+
+                      <div
+                        className="mt-3 p-3 bg-white border rounded"
+                        dangerouslySetInnerHTML={{
+                          __html: task.description || "",
+                        }}
+                      ></div>
+
+                      {selectedTask === task.id && (
+                        <div className="mt-3 p-3 bg-gray-50 border rounded">
+                          {students.length > 0 ? (
+                            <>
+                              <h3 className="text-lg font-bold">
+                                Estudiantes:
+                              </h3>
+                              <ul className="space-y-2 mt-2">
+                                {students.map((student) => (
+                                  <li
+                                    key={student.id}
+                                    className="flex justify-between items-center p-2 border rounded bg-white"
+                                  >
+                                    <span>
+                                      {student.name} {student.last_name}{" "}
+                                      {student.second_last_name}
+                                    </span>
+                                    <input
+                                      type="number"
+                                      value={grades[student.id]?.grade || ""}
+                                      onChange={(e) => {
+                                        const grade = Number(e.target.value);
+                                        setGrades((prev) => ({
+                                          ...prev,
+                                          [student.id]: {
+                                            ...prev[student.id],
+                                            grade,
+                                          },
+                                        }));
+                                      }}
+                                      placeholder="Nota"
+                                      className="border p-2 rounded w-20 text-center"
+                                    />
+                                    <label className="flex items-center space-x-2">
+                                      <input
+                                        type="checkbox"
+                                        checked={
+                                          grades[student.id]?.delivered || false
+                                        }
+                                        onChange={(e) => {
+                                          const delivered = e.target.checked;
+                                          setGrades((prev) => ({
+                                            ...prev,
+                                            [student.id]: {
+                                              ...prev[student.id],
+                                              delivered,
+                                            },
+                                          }));
+                                        }}
+                                      />
+                                      <span>Entregado</span>
+                                    </label>
+                                  </li>
+                                ))}
+                              </ul>
+                              <SubmitButton
+                                onClick={handleSaveGrades}
+                                className="mt-4"
+                              >
+                                Guardar
+                              </SubmitButton>
+                            </>
+                          ) : (
+                            <p>
+                              No hay estudiantes asignados a esta actividad.
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>
                 <SubmitButton onClick={() => setShowTaskForm(true)}>
-                  Nueva Tarea
+                  Nueva Actividad
                 </SubmitButton>
               </>
             ) : (
               <div className="mb-6">
-                <p className="text-gray-700">
-                  No hay tareas asignadas para este curso.
+                <p className="text-gray-700 my-6">
+                  No hay actividades asignadas para este curso.
                 </p>
                 <SubmitButton onClick={() => setShowTaskForm(true)}>
-                  Nueva Tarea
+                  Nueva Actividad
                 </SubmitButton>
               </div>
             )}
@@ -199,15 +296,18 @@ const Tasks = () => {
 
         {showTaskForm && (
           <div className="mt-6 p-5 border rounded bg-gray-50 shadow-sm">
-            <h2 className="text-xl font-bold mb-4">Crear Nueva Tarea</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Registrar Nueva Actividad
+            </h2>
+            <h2 className="text-md mb-2">Título de la Actividad</h2>
             <input
               type="text"
-              placeholder="Título de la tarea"
+              placeholder="Título de la Actividad"
               value={taskTitle}
               onChange={(e) => setTaskTitle(e.target.value)}
               className="w-full border p-3 mb-4 rounded"
             />
-            <h2 className="text-xl mb-2">Descripción de la Tarea</h2>
+            <h2 className="text-md mb-2">Descripción de la Actividad</h2>
             <div className="w-full border p-3 rounded bg-white">
               <CKEditor
                 editor={ClassicEditor}
@@ -246,61 +346,8 @@ const Tasks = () => {
                 className="ml-2 border p-2 rounded w-full"
               />
             </label>
-            <SubmitButton onClick={handleCreateTask}>Crear Tarea</SubmitButton>
-          </div>
-        )}
-
-        {selectedTask && students.length > 0 && (
-          <div className="mt-6">
-            <h2 className="text-2xl font-bold mb-4">Asignar notas</h2>
-
-            <div className="bg-gray-200 p-3 rounded-t flex justify-between font-bold">
-              <span className="w-1/2">Estudiante</span>
-              <span className="w-1/4 text-center">Nota</span>
-              <span className="w-1/4 text-center">Entregado</span>
-            </div>
-
-            <ul className="space-y-3">
-              {students.map((student) => (
-                <li
-                  key={student.id}
-                  className="flex justify-between items-center p-3 border rounded shadow-sm bg-gray-50"
-                >
-                  <span className="w-1/2">
-                    {student.name} {student.last_name}{" "}
-                    {student.second_last_name}
-                  </span>
-                  <input
-                    type="number"
-                    value={grades[student.id]?.grade || ""}
-                    onChange={(e) => {
-                      const grade = Number(e.target.value);
-                      setGrades((prev) => ({
-                        ...prev,
-                        [student.id]: { ...prev[student.id], grade },
-                      }));
-                    }}
-                    placeholder="Nota"
-                    className="border p-2 rounded w-1/4 text-center"
-                  />
-                  <label className="w-1/4 flex justify-center items-center">
-                    <input
-                      type="checkbox"
-                      checked={grades[student.id]?.delivered || false}
-                      onChange={(e) => {
-                        const delivered = e.target.checked;
-                        setGrades((prev) => ({
-                          ...prev,
-                          [student.id]: { ...prev[student.id], delivered },
-                        }));
-                      }}
-                    />
-                  </label>
-                </li>
-              ))}
-            </ul>
-            <SubmitButton onClick={handleSaveGrades} className="mt-4">
-              Guardar Notas
+            <SubmitButton onClick={handleCreateTask}>
+              Registrar Actividad
             </SubmitButton>
           </div>
         )}
