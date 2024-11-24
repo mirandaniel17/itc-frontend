@@ -18,6 +18,7 @@ registerLocale("es", es);
 
 const EditStudent = () => {
   const API_URL = import.meta.env.VITE_API_URL;
+  const STORAGE_URL = import.meta.env.VITE_STORAGE_URL;
   const { id } = useParams();
   const [formData, setFormData] = useState({
     name: "",
@@ -69,7 +70,7 @@ const EditStudent = () => {
         });
         setSelectedDate(data.dateofbirth ? new Date(data.dateofbirth) : null);
         setPreviewImage(
-          data.image ? `http://127.0.0.1:8000/storage/${data.image}` : null
+          data.image ? `${STORAGE_URL}/${data.image}` : null
         );
         setLoading(false);
       } catch (error) {
