@@ -7,6 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
 
 const Roles = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState<string>("Cargando...");
@@ -18,16 +19,13 @@ const Roles = () => {
   const fetchUserRoles = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/user/${userId}/role`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${API_URL}/user/${userId}/role`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      });
 
       if (!response.ok) {
         throw new Error(`Error HTTP! status: ${response.status}`);
@@ -37,7 +35,7 @@ const Roles = () => {
       setUserRole(role);
       setSelectedRole(role);
 
-      const rolesResponse = await fetch("http://127.0.0.1:8000/api/roles", {
+      const rolesResponse = await fetch(`${API_URL}/roles`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -60,19 +58,16 @@ const Roles = () => {
   const saveRole = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/user/${userId}/role`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            role: selectedRole === "Sin rol" ? null : selectedRole,
-          }),
-        }
-      );
+      const response = await fetch(`${API_URL}/user/${userId}/role`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          role: selectedRole === "Sin rol" ? null : selectedRole,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`Error HTTP! status: ${response.status}`);

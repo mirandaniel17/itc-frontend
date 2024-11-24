@@ -17,6 +17,8 @@ interface AcademicHistory {
 }
 
 const StudentProfile = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
+  const STORAGE_URL = import.meta.env.VITE_STORAGE_URL;
   const { id } = useParams<{ id: string }>();
   const [student, setStudent] = useState<any | null>(null);
   const [academicHistory, setAcademicHistory] = useState<AcademicHistory[]>([]);
@@ -29,17 +31,14 @@ const StudentProfile = () => {
       if (!token) return;
 
       try {
-        const response = await fetch(
-          `http://localhost:8000/api/students/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${API_URL}/students/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
         if (!response.ok) throw new Error(`Error ${response.status}`);
         setStudent(await response.json());
       } catch (error) {
@@ -53,7 +52,7 @@ const StudentProfile = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:8000/api/students/${id}/academic-history`,
+          `${API_URL}/students/${id}/academic-history`,
           {
             method: "GET",
             headers: {
@@ -83,9 +82,8 @@ const StudentProfile = () => {
   };
 
   const imageUrl = student?.image
-  ? `http://localhost:8000/storage/${student.image}`
-  : "/public/avatar.png";
-
+    ? `${STORAGE_URL}/${student.image}`
+    : "/public/avatar.png";
 
   return (
     <Layout>

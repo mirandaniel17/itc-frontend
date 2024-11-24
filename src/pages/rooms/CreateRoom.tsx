@@ -11,6 +11,7 @@ const CreateRoom = () => {
   const [formData, setFormData] = useState({ name: "" });
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,7 +21,7 @@ const CreateRoom = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/rooms", {
+      const response = await fetch(`${API_URL}/rooms`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

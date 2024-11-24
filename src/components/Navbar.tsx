@@ -12,6 +12,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const Navbar: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
@@ -33,16 +34,13 @@ const Navbar: React.FC = () => {
 
   const fetchUnreadNotifications = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/notifications/unread",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/notifications/unread`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -74,7 +72,7 @@ const Navbar: React.FC = () => {
 
   const logout = async () => {
     try {
-      await fetch("http://localhost:8000/api/logout", {
+      await fetch(`${API_URL}/logout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

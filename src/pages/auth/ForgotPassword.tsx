@@ -6,6 +6,7 @@ import PrimaryButton from "../../components/PrimaryButton";
 import Alert from "../../components/Alert";
 
 const ForgotPassword = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [email, setEmail] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColor, setAlertColor] = useState("red");
@@ -17,14 +18,11 @@ const ForgotPassword = () => {
     setAlertColor("red");
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/forgot-password",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
+      const response = await fetch(`${API_URL}/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
       if (response.ok) {
         setAlertMessage(

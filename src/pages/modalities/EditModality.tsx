@@ -18,13 +18,14 @@ const EditModality = () => {
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchModality = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/modalities/${id}`,
+          `${API_URL}/modalities/${id}`,
           {
             method: "GET",
             headers: {
@@ -60,7 +61,7 @@ const EditModality = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/modalities/${id}`,
+        `${API_URL}/modalities/${id}`,
         {
           method: "PUT",
           credentials: "include",

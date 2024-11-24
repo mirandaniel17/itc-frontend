@@ -17,10 +17,10 @@ import { Modality } from "../../types/modality";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
-
 registerLocale("es", es);
 
 const EditCourse = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const { id } = useParams();
   const [formData, setFormData] = useState({
     name: "",
@@ -57,7 +57,7 @@ const EditCourse = () => {
       try {
         while (currentPage <= totalPages) {
           const response = await fetch(
-            `http://127.0.0.1:8000/api/${endpoint}?page=${currentPage}`,
+            `${API_URL}/${endpoint}?page=${currentPage}`,
             {
               method: "GET",
               headers: {
@@ -82,16 +82,13 @@ const EditCourse = () => {
     const fetchCourse = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/courses/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${API_URL}/courses/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setFormData({
           name: data.name,
@@ -156,7 +153,7 @@ const EditCourse = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://127.0.0.1:8000/api/courses/${id}`, {
+      const response = await fetch(`${API_URL}/courses/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -19,6 +19,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
 
 const Students = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [students, setStudents] = useState<Student[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -37,7 +38,7 @@ const Students = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/students?per_page=10&page=${page}&query=${query}`,
+        `${API_URL}/students?per_page=10&page=${page}&query=${query}`,
         {
           method: "GET",
           headers: {
@@ -89,7 +90,7 @@ const Students = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/students/${studentToToggle}/disable`,
+          `${API_URL}/students/${studentToToggle}/disable`,
           {
             method: "PATCH",
             headers: {
@@ -142,17 +143,14 @@ const Students = () => {
     if (studentToDelete !== null) {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/students/${studentToDelete}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${API_URL}/students/${studentToDelete}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

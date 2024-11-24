@@ -29,12 +29,13 @@ const Teachers = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchTeachers = async (page: number, query = "") => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/teachers?per_page=10&page=${page}&query=${query}`,
+        `${API_URL}/teachers?per_page=10&page=${page}&query=${query}`,
         {
           method: "GET",
           headers: {
@@ -91,7 +92,7 @@ const Teachers = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/teachers/${teacherToDelete}`,
+          `${API_URL}/teachers/${teacherToDelete}`,
           {
             method: "DELETE",
             headers: {

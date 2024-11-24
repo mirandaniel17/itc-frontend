@@ -29,6 +29,7 @@ const EditTeacher = () => {
     specialty: "",
   });
 
+  const API_URL = import.meta.env.VITE_API_URL;
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const [loading, setLoading] = useState(true); // Estado de carga
@@ -39,7 +40,7 @@ const EditTeacher = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/teachers/${id}`,
+          `${API_URL}/teachers/${id}`,
           {
             method: "GET",
             headers: {

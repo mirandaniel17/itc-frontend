@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const NotificationAlert = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [latestNotification, setLatestNotification] = useState<any | null>(
     null
   );
@@ -12,7 +13,7 @@ const NotificationAlert = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/notifications", {
+      const response = await fetch(`${API_URL}/notifications`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -47,16 +48,13 @@ const NotificationAlert = () => {
 
   const markAsRead = async (id: string) => {
     try {
-      await fetch(
-        `http://localhost:8000/api/notifications/${id}/mark-as-read`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      await fetch(`${API_URL}/notifications/${id}/mark-as-read`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       setLatestNotification(null);
     } catch (error) {

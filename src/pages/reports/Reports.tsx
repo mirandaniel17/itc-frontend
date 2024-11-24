@@ -10,6 +10,7 @@ import Layout from "../../components/Layout";
 registerLocale("es", es);
 
 const Reports: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [reportType, setReportType] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
@@ -23,7 +24,7 @@ const Reports: React.FC = () => {
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/courses", {
+      const response = await fetch(`${API_URL}/courses`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -66,19 +67,19 @@ const Reports: React.FC = () => {
           );
           return;
         }
-        endpoint = "/api/export-attendance-report";
+        endpoint = "/export-attendance-report";
         fileName = `reporte_asistencias_${
           startDate.toISOString().split("T")[0]
         }_al_${endDate.toISOString().split("T")[0]}.xlsx`;
         break;
 
       case "enrollment":
-        endpoint = "/api/export-enrollment-report";
+        endpoint = "/export-enrollment-report";
         fileName = `reporte_inscripciones_curso_${courseNameSlug}.xlsx`;
         break;
 
       case "grades":
-        endpoint = "/api/export-grades-report";
+        endpoint = "/export-grades-report";
         fileName = `reporte_notas_curso_${courseNameSlug}.xlsx`;
         break;
 
@@ -96,7 +97,7 @@ const Reports: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://127.0.0.1:8000${endpoint}`, {
+      const response = await fetch(`${API_URL}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

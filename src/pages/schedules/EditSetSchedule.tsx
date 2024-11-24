@@ -6,6 +6,7 @@ import SubmitButton from "../../components/SubmitButton";
 import Alert from "../../components/Alert";
 
 const EditSetSchedule: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -25,13 +26,13 @@ const EditSetSchedule: React.FC = () => {
 
       try {
         const [scheduleRes, shiftsRes] = await Promise.all([
-          fetch(`http://127.0.0.1:8000/api/schedules/${id}`, {
+          fetch(`${API_URL}/schedules/${id}`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("http://127.0.0.1:8000/api/shifts", {
+          fetch(`${API_URL}/shifts`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
@@ -69,7 +70,7 @@ const EditSetSchedule: React.FC = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/schedules/${id}`, {
+      const response = await fetch(`${API_URL}/schedules/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

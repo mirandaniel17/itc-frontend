@@ -10,6 +10,7 @@ const ProtectedRoute = ({
   children,
   requiredPermission,
 }: ProtectedRouteProps) => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 
@@ -22,7 +23,7 @@ const ProtectedRoute = ({
       }
 
       try {
-        const response = await fetch("http://localhost:8000/api/user", {
+        const response = await fetch(`${API_URL}/user`, {
           method: "GET",
           credentials: "include",
         });

@@ -17,6 +17,7 @@ const CreateShift = () => {
     room_id: "",
   });
 
+  const API_URL = import.meta.env.VITE_API_URL;
   const [rooms, setRooms] = useState<{ value: string; label: string }[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ const CreateShift = () => {
       try {
         while (currentPage <= totalPages) {
           const response = await fetch(
-            `http://127.0.0.1:8000/api/rooms?page=${currentPage}&per_page=100`,
+            `${API_URL}/rooms?page=${currentPage}&per_page=100`,
             {
               method: "GET",
               headers: {
@@ -84,7 +85,7 @@ const CreateShift = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/shifts", {
+      const response = await fetch(`${API_URL}/shifts`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

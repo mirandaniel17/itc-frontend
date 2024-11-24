@@ -16,6 +16,7 @@ import { debounce } from "lodash";
 import Layout from "../../components/Layout";
 
 const Users = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -34,7 +35,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://localhost:8000/api/users?per_page=10&page=${page}&query=${query}`,
+        `${API_URL}/users?per_page=10&page=${page}&query=${query}`,
         {
           method: "GET",
           headers: {
@@ -81,13 +82,10 @@ const Users = () => {
   const handleDeleteConfirm = async () => {
     if (userToDelete !== null) {
       try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/users/${userToDelete}`,
-          {
-            method: "DELETE",
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${API_URL}/users/${userToDelete}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -129,14 +127,6 @@ const Users = () => {
 
   const handleViewDetails = (userId: number) => {
     navigate(`/users/${userId}`);
-  };
-
-  const handleViewPermissions = (userId: number) => {
-    navigate(`/users/${userId}/permissions`);
-  };
-
-  const handleViewRoles = (userId: number) => {
-    navigate(`/users/${userId}/roles`);
   };
 
   const handleViewRolesPermissions = (userId: number) => {

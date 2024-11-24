@@ -7,6 +7,7 @@ import InputError from "../../components/InputError";
 import Alert from "../../components/Alert";
 
 const ResetPassword = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const { token } = useParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +20,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/reset-password/email/${token}`)
+    fetch(`${API_URL}/reset-password/email/${token}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("No se pudo obtener el correo electrónico.");

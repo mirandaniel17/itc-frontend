@@ -25,6 +25,7 @@ type Schedule = {
 };
 
 const SetSchedule: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
@@ -43,7 +44,7 @@ const SetSchedule: React.FC = () => {
     const fetchSchedules = async () => {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/schedules", {
+        const response = await fetch(`${API_URL}/schedules`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -98,15 +99,12 @@ const SetSchedule: React.FC = () => {
     if (confirm("¿Estás seguro de eliminar este horario?")) {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/schedules/${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${API_URL}/schedules/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) throw new Error("Error al eliminar el horario");
         setSchedules((prev) => prev.filter((schedule) => schedule.id !== id));
         setAlertMessage("Horario eliminado correctamente");

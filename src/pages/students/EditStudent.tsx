@@ -17,6 +17,7 @@ import Layout from "../../components/Layout";
 registerLocale("es", es);
 
 const EditStudent = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const { id } = useParams();
   const [formData, setFormData] = useState({
     name: "",
@@ -41,17 +42,14 @@ const EditStudent = () => {
     const fetchStudent = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/students/${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${API_URL}/students/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -162,7 +160,7 @@ const EditStudent = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://127.0.0.1:8000/api/students/${id}`, {
+      const response = await fetch(`${API_URL}/students/${id}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

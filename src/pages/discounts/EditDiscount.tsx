@@ -7,6 +7,7 @@ import TextInput from "../../components/TextInput";
 import InputError from "../../components/InputError";
 import Skeleton from "react-loading-skeleton";
 import Layout from "../../components/Layout";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const EditDiscount = () => {
   const { id } = useParams();
@@ -23,7 +24,7 @@ const EditDiscount = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/discounts/${id}`,
+          `${API_URL}/discounts/${id}`,
           {
             method: "GET",
             headers: {
@@ -62,7 +63,7 @@ const EditDiscount = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/discounts/${id}`,
+        `${API_URL}/discounts/${id}`,
         {
           method: "PUT",
           headers: {

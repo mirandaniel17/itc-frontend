@@ -30,12 +30,13 @@ const Rooms = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchRooms = async (page: number, query = "") => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/rooms?per_page=10&page=${page}&query=${query}`,
+        `${API_URL}/rooms?per_page=10&page=${page}&query=${query}`,
         {
           method: "GET",
           headers: {
@@ -91,7 +92,7 @@ const Rooms = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/rooms/${studentToDelete}`,
+          `${API_URL}/rooms/${studentToDelete}`,
           {
             method: "DELETE",
             headers: {

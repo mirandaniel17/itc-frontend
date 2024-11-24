@@ -3,16 +3,15 @@ import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import AuthFormContainer from "../../components/AuthFormContainer";
 import PrimaryInput from "../../components/PrimaryInput";
 import PrimaryButton from "../../components/PrimaryButton";
-import FormLabel from "../../components/FormLabel";
 import InputError from "../../components/InputError";
 import Alert from "../../components/Alert";
 
 const Login = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [verifiedMessage, setVerifiedMessage] = useState<string | null>(null);
@@ -32,14 +31,13 @@ const Login = () => {
     setAlertMessage("");
 
     try {
-      const response = await fetch("http://localhost:8000/api/login", {
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           email,
           password,
-          remember,
         }),
       });
 
@@ -84,24 +82,6 @@ const Login = () => {
         />
         <InputError message={errorMessage} />
         <div className="flex items-center justify-between">
-          {/**
-           * PENDIENTE
-           * 
-           * <div className="flex items-start">
-            <div className="flex items-center h-5">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={() => setRemember(!remember)}
-                className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300"
-              />
-            </div>
-            <div className="ml-3 text-sm">
-              <FormLabel text="Recuérdame" />
-            </div>
-          </div>
-           * 
-           */}
           <Link
             to="/forgot-password"
             className="text-sm font-medium text-gray-900 hover:underline"

@@ -8,11 +8,12 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchNotifications = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8000/api/notifications/all",
+        `${API_URL}/notifications/all`,
         {
           method: "GET",
           headers: {
@@ -41,7 +42,7 @@ const Notifications = () => {
   const markAsRead = async (id: string) => {
     try {
       await fetch(
-        `http://localhost:8000/api/notifications/${id}/mark-as-read`,
+        `${API_URL}/notifications/${id}/mark-as-read`,
         {
           method: "POST",
           headers: {
@@ -61,7 +62,7 @@ const Notifications = () => {
 
   const deleteNotification = async (id: string) => {
     try {
-      await fetch(`http://localhost:8000/api/notifications/${id}`, {
+      await fetch(`${API_URL}/api/notifications/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

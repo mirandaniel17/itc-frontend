@@ -7,6 +7,7 @@ import InputError from "../../components/InputError";
 import Alert from "../../components/Alert";
 
 const Register = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,10 +21,10 @@ const Register = () => {
 
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
-    setErrors({}); // Limpiar errores antes de enviar
+    setErrors({});
 
     try {
-      const response = await fetch("http://localhost:8000/api/register", {
+      const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -42,7 +43,6 @@ const Register = () => {
         }, 3000);
       } else {
         const data = await response.json();
-        // Verificar si hay errores de validación
         if (data.errors) {
           setErrors(data.errors);
         }

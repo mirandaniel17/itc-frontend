@@ -7,6 +7,7 @@ import Layout from "../../components/Layout";
 import BackButton from "../../components/BackButton";
 
 const UserDetail = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
 
@@ -20,17 +21,14 @@ const UserDetail = () => {
         console.error("Token no encontrado.");
         return;
       }
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/users/${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${API_URL}/users/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

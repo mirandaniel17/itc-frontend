@@ -12,6 +12,7 @@ import { es } from "date-fns/locale";
 registerLocale("es", es);
 
 const Attendances = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
@@ -35,15 +36,12 @@ const Attendances = () => {
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/courses-attendance",
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/courses-attendance`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Error al obtener los cursos.");
@@ -60,7 +58,7 @@ const Attendances = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/courses/${courseId}/students?date=${
+        `${API_URL}/courses/${courseId}/students?date=${
           date.toISOString().split("T")[0]
         }`,
         {
@@ -131,7 +129,7 @@ const Attendances = () => {
       }
 
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/attendance", {
+      const response = await fetch(`${API_URL}/attendance`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

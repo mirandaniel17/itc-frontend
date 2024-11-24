@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 const Enrollments = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -38,7 +39,7 @@ const Enrollments = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/enrollments?per_page=10&page=${page}&query=${query}`,
+        `${API_URL}/enrollments?per_page=10&page=${page}&query=${query}`,
         {
           method: "GET",
           headers: {
@@ -96,7 +97,7 @@ const Enrollments = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/enrollments/${enrollmentToDelete}`,
+          `${API_URL}/enrollments/${enrollmentToDelete}`,
           {
             method: "DELETE",
             headers: {

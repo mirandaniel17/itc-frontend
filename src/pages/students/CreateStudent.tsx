@@ -14,6 +14,7 @@ import Layout from "../../components/Layout";
 registerLocale("es", es);
 
 const CreateStudent = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [formData, setFormData] = useState({
     name: "",
     last_name: "",
@@ -35,6 +36,7 @@ const CreateStudent = () => {
   const [imageName, setImageName] = useState<string>("");
   const navigate = useNavigate();
 
+  
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -126,7 +128,7 @@ const CreateStudent = () => {
     }
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/students", {
+      const response = await fetch(`${API_URL}/students`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

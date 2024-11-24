@@ -9,6 +9,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
 
 const RolesPermissions = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState<string>("Cargando...");
@@ -23,20 +24,17 @@ const RolesPermissions = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const roleResponse = await fetch(
-        `http://127.0.0.1:8000/api/user/${userId}/role`,
-        {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-          credentials: "include",
-        }
-      );
+      const roleResponse = await fetch(`${API_URL}/user/${userId}/role`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
+      });
       const roleData = await roleResponse.json();
       setUserRole(roleData.role || "Sin rol");
       setSelectedRole(roleData.role || "Sin rol");
 
       const permissionsResponse = await fetch(
-        `http://127.0.0.1:8000/api/users/${userId}/permissions`,
+        `${API_URL}/users/${userId}/permissions`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
@@ -47,7 +45,7 @@ const RolesPermissions = () => {
       setAllPermissions(permissionsData.all_permissions);
       setAssignedPermissions(permissionsData.assigned_permissions);
 
-      const rolesResponse = await fetch("http://127.0.0.1:8000/api/roles", {
+      const rolesResponse = await fetch(`${API_URL}/roles`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
@@ -72,7 +70,7 @@ const RolesPermissions = () => {
     try {
       const token = localStorage.getItem("token");
       const rolePermissionsResponse = await fetch(
-        `http://127.0.0.1:8000/api/roles/${newRole}/permissions`,
+        `${API_URL}/roles/${newRole}/permissions`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
@@ -98,7 +96,7 @@ const RolesPermissions = () => {
     try {
       const token = localStorage.getItem("token");
 
-      await fetch(`http://127.0.0.1:8000/api/user/${userId}/role`, {
+      await fetch(`${API_URL}/user/${userId}/role`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,17 +107,14 @@ const RolesPermissions = () => {
         }),
       });
 
-      await fetch(
-        `http://127.0.0.1:8000/api/users/${userId}/permissions/save`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ permissions: assignedPermissions }),
-        }
-      );
+      await fetch(`${API_URL}/users/${userId}/permissions/save`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ permissions: assignedPermissions }),
+      });
 
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 5000);

@@ -15,10 +15,10 @@ import { es } from "date-fns/locale";
 import { Teacher } from "../../types/teacher";
 import { Modality } from "../../types/modality";
 import Layout from "../../components/Layout";
-
 registerLocale("es", es);
 
 const CreateCourse = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -53,7 +53,7 @@ const CreateCourse = () => {
       try {
         while (currentPage <= totalPages) {
           const response = await fetch(
-            `http://127.0.0.1:8000/api/${endpoint}?page=${currentPage}`,
+            `${API_URL}/${endpoint}?page=${currentPage}`,
             {
               method: "GET",
               headers: {
@@ -116,7 +116,7 @@ const CreateCourse = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/courses", {
+      const response = await fetch(`${API_URL}/courses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

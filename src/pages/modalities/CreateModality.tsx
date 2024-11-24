@@ -15,6 +15,7 @@ const CreateModality = () => {
 
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,7 +25,7 @@ const CreateModality = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/modalities", {
+      const response = await fetch(`${API_URL}/modalities`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

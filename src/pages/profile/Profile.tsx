@@ -6,8 +6,11 @@ import Layout from "../../components/Layout";
 import Alert from "../../components/Alert";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import SubmitButton from "../../components/SubmitButton";
+import BackButton from "../../components/BackButton";
 
 const Profile = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -53,7 +56,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/user", {
+    fetch(`${API_URL}/user`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -110,23 +113,24 @@ const Profile = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
 
-    fetch("http://localhost:8000/api/user/update", {
+    const dataToSend: Record<string, string> = {};
+    if (editData.name) dataToSend.name = editData.name;
+    if (editData.currentPassword)
+      dataToSend.currentPassword = editData.currentPassword;
+    if (editData.newPassword) dataToSend.newPassword = editData.newPassword;
+
+    fetch(`${API_URL}/user/update`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        name: editData.name,
-        email: editData.email,
-        currentPassword: editData.currentPassword,
-        newPassword: editData.newPassword,
-      }),
+      body: JSON.stringify(dataToSend),
     })
       .then((response) => {
         if (!response.ok) {
           return response.json().then((err) => {
-            throw new Error(err.error || "Error al actualizar el perfil");
+            throw new Error(err.message || "Error al actualizar el perfil");
           });
         }
         return response.json();
@@ -235,28 +239,52 @@ const Profile = () => {
               </div>
             ) : (
               <form onSubmit={handleSave}>
-                <InputLabel htmlFor="name" value="Nombre de Usuario" />
-                <TextInput
-                  name="name"
-                  className="block w-full"
-                  value={editData.name}
-                  onChange={handleInputChange}
-                />
-                <InputError />
-                <div className="flex space-x-4">
-                  <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-300 mt-4"
-                  >
-                    Guardar Cambios
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    className="bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-gray-300 mt-4"
-                  >
-                    Cancelar
-                  </button>
+                <div className="flex flex-col">
+                  <InputLabel htmlFor="name" value="Nombre de Usuario" />
+                  <TextInput
+                    name="name"
+                    className="block w-full"
+                    value={editData.name}
+                    onChange={handleInputChange}
+                  />
+                  <InputError />
+                </div>
+                <div className="flex flex-col mt-4">
+                  <InputLabel
+                    htmlFor="currentPassword"
+                    value="Contraseña Actual"
+                  />
+                  <TextInput
+                    name="currentPassword"
+                    type="password"
+                    className="block w-full"
+                    value={editData.currentPassword}
+                    onChange={handleInputChange}
+                    placeholder="Contraseña Actual"
+                  />
+                  <InputError />
+                </div>
+                <div className="flex flex-col mt-4">
+                  <InputLabel htmlFor="newPassword" value="Nueva Contraseña" />
+                  <TextInput
+                    name="newPassword"
+                    type="password"
+                    className="block w-full"
+                    value={editData.newPassword}
+                    onChange={handleInputChange}
+                    placeholder="Nueva Contraseña"
+                  />
+                  <InputError />
+                </div>
+                <div className="flex flex-col my-2">
+                  <p className="tracking-tight font-light text-sm">
+                    La nueva contraseña debe tener al menos 8 carácteres, debe
+                    empezar por mayúscula y tener 1 carácter especial.
+                  </p>
+                </div>
+                <div className="flex space-x-2 mt-4">
+                  <BackButton onClick={handleCancel}>Volver</BackButton>
+                  <SubmitButton type="submit">Guardar</SubmitButton>
                 </div>
               </form>
             )}

@@ -25,6 +25,7 @@ const EditShift = () => {
   const goBackToRooms = () => {
     navigate("/shifts");
   };
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchShiftAndRooms = async () => {
@@ -32,7 +33,7 @@ const EditShift = () => {
         const token = localStorage.getItem("token");
 
         const shiftResponse = await fetch(
-          `http://127.0.0.1:8000/api/shifts/${id}`,
+          `${API_URL}/shifts/${id}`,
           {
             method: "GET",
             headers: {
@@ -54,7 +55,7 @@ const EditShift = () => {
 
         while (currentPage <= totalPages) {
           const roomResponse = await fetch(
-            `http://127.0.0.1:8000/api/rooms?page=${currentPage}`,
+            `${API_URL}/rooms?page=${currentPage}`,
             {
               method: "GET",
               headers: {
@@ -103,7 +104,7 @@ const EditShift = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://127.0.0.1:8000/api/shifts/${id}`, {
+      const response = await fetch(`${API_URL}/shifts/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,

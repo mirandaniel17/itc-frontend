@@ -30,12 +30,13 @@ const Shifts = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchShifts = async (page: number, query = "") => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/shifts?per_page=10&page=${page}&query=${query}`,
+        `${API_URL}/shifts?per_page=10&page=${page}&query=${query}`,
         {
           method: "GET",
           headers: {
@@ -92,7 +93,7 @@ const Shifts = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/shifts/${shiftToDelete}`,
+          `${API_URL}/shifts/${shiftToDelete}`,
           {
             method: "DELETE",
             headers: {

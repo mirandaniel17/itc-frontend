@@ -29,12 +29,13 @@ const Modalities = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchModalities = async (page: number, query = "") => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/modalities?per_page=10&page=${page}&query=${query}`,
+        `${API_URL}/modalities?per_page=10&page=${page}&query=${query}`,
         {
           method: "GET",
           headers: {
@@ -91,7 +92,7 @@ const Modalities = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/modalities/${modalityToDelete}`,
+          `${API_URL}/modalities/${modalityToDelete}`,
           {
             method: "DELETE",
             headers: {

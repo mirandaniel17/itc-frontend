@@ -26,6 +26,7 @@ type CalendarEvent = {
 };
 
 const CreateEnrollment = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [formData, setFormData] = useState({
     student_id: "",
     courses: [] as string[],
@@ -56,7 +57,7 @@ const CreateEnrollment = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/students/all`, {
+      const response = await fetch(`${API_URL}/students/all`, {
         method: "GET",
 
         headers: {
@@ -105,7 +106,7 @@ const CreateEnrollment = () => {
       try {
         while (currentPage <= totalPages) {
           const response = await fetch(
-            `http://127.0.0.1:8000/api/${endpoint}?page=${currentPage}`,
+            `${API_URL}/${endpoint}?page=${currentPage}`,
             {
               method: "GET",
               headers: {
@@ -168,7 +169,7 @@ const CreateEnrollment = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/schedules?course_ids=${courseIds.join(",")}`,
+        `${API_URL}/schedules?course_ids=${courseIds.join(",")}`,
         {
           method: "GET",
           headers: {
@@ -362,7 +363,7 @@ const CreateEnrollment = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/enrollments", {
+      const response = await fetch(`${API_URL}/enrollments`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

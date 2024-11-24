@@ -42,11 +42,13 @@ const CreatePayment = () => {
     color?: string;
   } | null>(null);
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
+
 
   const fetchStudents = async (inputValue: string) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/students/all`, {
+      const response = await fetch(`${API_URL}/students/all`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +82,7 @@ const CreatePayment = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/payments/student-details/${studentId}`,
+        `${API_URL}/payments/student-details/${studentId}`,
         {
           method: "GET",
           headers: {
@@ -174,7 +176,7 @@ const CreatePayment = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/payments`, {
+      const response = await fetch(`${API_URL}/payments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

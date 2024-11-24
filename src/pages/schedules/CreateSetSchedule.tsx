@@ -14,6 +14,7 @@ type Schedule = {
 };
 
 const CreateSetSchedule: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [courseId, setCourseId] = useState<{
     value: string;
     label: string;
@@ -48,7 +49,7 @@ const CreateSetSchedule: React.FC = () => {
 
         while (currentPage <= totalPages) {
           const response = await fetch(
-            `http://127.0.0.1:8000/api/courses?page=${currentPage}`,
+            `${API_URL}/courses?page=${currentPage}`,
             {
               headers: {
                 "Content-Type": "application/json",
@@ -77,7 +78,7 @@ const CreateSetSchedule: React.FC = () => {
 
         while (currentPage <= totalPages) {
           const response = await fetch(
-            `http://127.0.0.1:8000/api/shifts?page=${currentPage}`,
+            `${API_URL}/shifts?page=${currentPage}`,
             {
               headers: {
                 "Content-Type": "application/json",
@@ -147,7 +148,7 @@ const CreateSetSchedule: React.FC = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/schedules", {
+      const response = await fetch(`${API_URL}/schedules`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

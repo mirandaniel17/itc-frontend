@@ -15,6 +15,7 @@ const CreateDiscount = () => {
 
   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -26,7 +27,7 @@ const CreateDiscount = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/discounts", {
+      const response = await fetch(`${API_URL}/discounts`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

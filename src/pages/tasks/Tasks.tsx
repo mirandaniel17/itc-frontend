@@ -11,6 +11,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { formatDate } from "../../utils/dateUtils";
 
 const Tasks = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -34,7 +35,7 @@ const Tasks = () => {
 
   const fetchCourses = async () => {
     const token = localStorage.getItem("token");
-    const response = await fetch("http://127.0.0.1:8000/api/tasks/courses", {
+    const response = await fetch(`${API_URL}/tasks/courses`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await response.json();
@@ -43,12 +44,9 @@ const Tasks = () => {
 
   const fetchTasks = async (courseId: number) => {
     const token = localStorage.getItem("token");
-    const response = await fetch(
-      `http://127.0.0.1:8000/api/tasks/course/${courseId}/list`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`${API_URL}/tasks/course/${courseId}/list`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await response.json();
     setTasks(data);
     setSelectedTask(null);
@@ -57,12 +55,9 @@ const Tasks = () => {
 
   const fetchStudentsWithGrades = async (taskId: number) => {
     const token = localStorage.getItem("token");
-    const response = await fetch(
-      `http://127.0.0.1:8000/api/tasks/${taskId}/students`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    const response = await fetch(`${API_URL}/tasks/${taskId}/students`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     const data = await response.json();
     setStudents(data.students);
     setGrades(data.grades);
@@ -78,7 +73,7 @@ const Tasks = () => {
     }
 
     const token = localStorage.getItem("token");
-    const response = await fetch("http://127.0.0.1:8000/api/tasks/create", {
+    const response = await fetch(`${API_URL}/tasks/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -110,7 +105,7 @@ const Tasks = () => {
   const handleSaveGrades = async () => {
     const token = localStorage.getItem("token");
     const response = await fetch(
-      `http://127.0.0.1:8000/api/tasks/${selectedTask}/grades/save`,
+      `${API_URL}/tasks/${selectedTask}/grades/save`,
       {
         method: "POST",
         headers: {
@@ -312,7 +307,7 @@ const Tasks = () => {
               <CKEditor
                 editor={ClassicEditor}
                 data={taskDescription}
-                onChange={(event, editor) => {
+                onChange={(_, editor) => {
                   const data = editor.getData();
                   setTaskDescription(data);
                 }}

@@ -16,6 +16,7 @@ import { Course } from "../../types/course";
 import { debounce } from "lodash";
 
 const Courses: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [groupedCourses, setGroupedCourses] = useState<
     Record<string, Course[]>
   >({});
@@ -48,16 +49,13 @@ const Courses: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/courses?query=${query}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/courses?query=${query}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) throw new Error("Error fetching courses");
 
@@ -106,16 +104,13 @@ const Courses: React.FC = () => {
     if (courseToDelete !== null) {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/courses/${courseToDelete}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${API_URL}/courses/${courseToDelete}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) throw new Error("Error deleting course");
 
         setIsConfirmationModalOpen(false);

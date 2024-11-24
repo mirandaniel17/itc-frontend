@@ -29,12 +29,13 @@ const Discounts = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchDiscounts = async (page: number, query = "") => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `http://127.0.0.1:8000/api/discounts?per_page=10&page=${page}&query=${query}`,
+        `${API_URL}/discounts?per_page=10&page=${page}&query=${query}`,
         {
           method: "GET",
           headers: {
@@ -91,7 +92,7 @@ const Discounts = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `http://127.0.0.1:8000/api/discounts/${discountToDelete}`,
+          `${API_URL}/discounts/${discountToDelete}`,
           {
             method: "DELETE",
             headers: {
