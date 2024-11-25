@@ -57,6 +57,7 @@ import Tasks from "./pages/tasks/Tasks";
 import Payments from "./pages/payments/Payments";
 import CreatePayment from "./pages/payments/CreatePayment";
 import Reports from "./pages/reports/Reports";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -94,6 +95,16 @@ const AppContent = ({ logout }: { logout: () => void }) => {
           element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute
+              requiredPermission={["Gestión de Usuarios", "Gestión de Cursos"]}
+            >
+              <Dashboard />
             </ProtectedRoute>
           }
         />

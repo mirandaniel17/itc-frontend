@@ -24,7 +24,7 @@ const CreateStudent = () => {
     placeofbirth: "",
     phone: "",
     gender: "",
-    status: true,
+    status: 1,
   });
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -36,7 +36,6 @@ const CreateStudent = () => {
   const [imageName, setImageName] = useState<string>("");
   const navigate = useNavigate();
 
-  
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {

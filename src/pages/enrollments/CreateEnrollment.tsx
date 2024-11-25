@@ -57,7 +57,7 @@ const CreateEnrollment = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`${API_URL}/students/all`, {
+      const response = await fetch(`${API_URL}/students/active`, {
         method: "GET",
 
         headers: {

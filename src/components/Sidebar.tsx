@@ -76,6 +76,14 @@ const Sidebar: React.FC = () => {
             </Link>
             <hr className="pb-2" />
             <SidebarLink to="/home" icon="mdi-apps" label="Inicio" />
+            {(hasPermission("Gestión de Cursos") ||
+              hasPermission("Gestión de Usuarios")) && (
+              <SidebarLink
+                to="/dashboard"
+                icon="mdi-view-dashboard"
+                label="Panel de Control"
+              />
+            )}
             {hasPermission("Gestión de Usuarios") && (
               <DropdownLink
                 label="Gestión de Usuarios"
