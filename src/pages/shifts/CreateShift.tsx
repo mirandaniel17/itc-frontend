@@ -101,7 +101,7 @@ const CreateShift = () => {
       }
 
       navigate("/shifts", {
-        state: { message: "Turno creado con éxito", color: "green" },
+        state: { message: "Turno registrado con éxito", color: "green" },
       });
     } catch (error) {
       console.error("Error al crear el turno:", error);

@@ -44,10 +44,10 @@ const CreateDiscount = () => {
       }
 
       navigate("/discounts", {
-        state: { message: "Descuento creado con éxito", color: "green" },
+        state: { message: "Descuento registrado con éxito", color: "green" },
       });
     } catch (error) {
-      console.error("Error al crear el descuento:", error);
+      console.error("Error al registrar el descuento:", error);
     }
   };
   const goBackToRooms = () => {

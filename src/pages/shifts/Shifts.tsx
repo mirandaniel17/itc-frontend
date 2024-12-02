@@ -33,6 +33,7 @@ const Shifts = () => {
   const API_URL = import.meta.env.VITE_API_URL;
 
   const fetchShifts = async (page: number, query = "") => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -53,16 +54,17 @@ const Shifts = () => {
       setShifts(data.data);
       setCurrentPage(data.current_page);
       setTotalPages(data.last_page);
-      setLoading(false);
     } catch (error) {
-      console.log("Error fetching shifts:", error);
+      console.error("Error fetching shifts:", error);
+      setShifts([]);
+    } finally {
       setLoading(false);
     }
   };
 
   const debouncedFetchShifts = debounce((query: string, page: number) => {
     fetchShifts(page, query);
-  }, 500);
+  });
 
   useEffect(() => {
     if (location.state?.message) {
@@ -92,17 +94,14 @@ const Shifts = () => {
     if (shiftToDelete !== null) {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          `${API_URL}/shifts/${shiftToDelete}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${API_URL}/shifts/${shiftToDelete}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

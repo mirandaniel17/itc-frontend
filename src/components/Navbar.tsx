@@ -140,6 +140,7 @@ const Navbar: React.FC = () => {
       "/payments": "Pagos",
       "/payments/create": "Registrar Pago",
       "/reports": "Reportes",
+      "/dashboard": "Panel de Control",
     };
 
     let breadcrumb = pathnames.map((part, index) => {
