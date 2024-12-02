@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SidebarLink from "./SidebarLink";
 import DropdownLink from "./DropdownLink";
 import SidebarToggle from "./SidebarToggle";
@@ -8,12 +8,15 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const Sidebar: React.FC = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [isCoursesDropdownOpen, setIsCoursesDropdownOpen] = useState(false);
   const [isUsersDropdownOpen, setIsUsersDropdownOpen] = useState(false);
   const [permissions, setPermissions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const storedPermissions = localStorage.getItem("permissions");
     if (storedPermissions) {
@@ -45,6 +48,25 @@ const Sidebar: React.FC = () => {
 
   const hasPermission = (permission: string) => {
     return permissions.includes(permission);
+  };
+
+  const logout = async () => {
+    try {
+      await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      localStorage.removeItem("permissions");
+      setPermissions([]);
+      navigate("/login");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
   };
 
   return (
@@ -206,6 +228,13 @@ const Sidebar: React.FC = () => {
                     label="Tareas"
                   />
                 )}
+                <button
+                  onClick={logout}
+                  className="flex items-center p-2 rounded-lg text-sm tracking-wide "
+                >
+                  <span className="mdi mdi-exit-to-app"></span>
+                  <span className="ml-3">Salir</span>
+                </button>
               </>
             )}
           </ul>

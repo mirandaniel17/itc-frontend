@@ -14,6 +14,7 @@ import { Modality } from "../../types/modality";
 import { debounce } from "lodash";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { formatDate } from "../../utils/dateUtils";
 import Layout from "../../components/Layout";
 
 const Modalities = () => {
@@ -166,7 +167,9 @@ const Modalities = () => {
           <AddButton label="Nuevo" onClick={handleNew} />
         </div>
         <Table>
-          <TableHead headers={["Nombre", "Duración", "Acciones"]} />
+          <TableHead
+            headers={["Nombre", "Duración", "Fecha de Registro", "Acciones"]}
+          />
           <TableBody>
             {loading ? (
               [...Array(10)].map((_, index) => (
@@ -180,6 +183,9 @@ const Modalities = () => {
                   <TableCell>
                     <Skeleton width={150} height={20} />
                   </TableCell>
+                  <TableCell>
+                    <Skeleton width={150} height={20} />
+                  </TableCell>
                 </TableRow>
               ))
             ) : modalities.length > 0 ? (
@@ -187,6 +193,11 @@ const Modalities = () => {
                 <TableRow key={modality.id}>
                   <TableCell>{modality.name}</TableCell>
                   <TableCell>{modality.duration_in_months} meses</TableCell>
+                  <TableCell>
+                    {modality.created_at
+                      ? formatDate(modality.created_at)
+                      : "Sin fecha"}
+                  </TableCell>
                   <TableActionButtons
                     actions={[
                       {

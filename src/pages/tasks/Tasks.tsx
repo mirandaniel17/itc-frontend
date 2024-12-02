@@ -9,12 +9,15 @@ import { Student } from "../../types/student";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { formatDate } from "../../utils/dateUtils";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 const Tasks = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [students, setStudents] = useState<Student[]>([]);
   const [grades, setGrades] = useState<{
     [key: number]: { grade: number; delivered: boolean };
@@ -49,8 +52,41 @@ const Tasks = () => {
     });
     const data = await response.json();
     setTasks(data);
-    setSelectedTask(null);
-    setStudents([]);
+  };
+
+  const handleDeleteTask = async () => {
+    if (!selectedTaskId) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/tasks/${selectedTaskId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        setTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== selectedTaskId)
+        );
+        setAlertMessage({
+          message: "La actividad ha sido eliminada exitosamente.",
+          color: "red",
+        });
+        setSelectedTaskId(null);
+        setIsModalVisible(false);
+        setTimeout(() => setAlertMessage(null), 3000);
+      } else {
+        throw new Error("Error al eliminar la tarea");
+      }
+    } catch (error) {
+      console.error("Error al eliminar la tarea:", error);
+      setAlertMessage({
+        message: "Hubo un problema al intentar eliminar la tarea.",
+        color: "red",
+      });
+
+      setTimeout(() => setAlertMessage(null), 3000);
+    }
   };
 
   const fetchStudentsWithGrades = async (taskId: number) => {
@@ -89,9 +125,10 @@ const Tasks = () => {
 
     if (response.ok) {
       setAlertMessage({
-        message: "Actividad creada con éxito",
+        message: "Actividad registrada con éxito",
         color: "green",
       });
+      setTimeout(() => setAlertMessage(null), 3000);
       setTaskTitle("");
       setTaskDescription("");
       setDueDate(null);
@@ -175,22 +212,33 @@ const Tasks = () => {
                           <strong>{task.title}</strong> - Fecha de entrega:{" "}
                           {formatDate(task.due_date || "No especificada")}
                         </span>
-                        <button
-                          onClick={() => {
-                            if (selectedTask === task.id) {
-                              setSelectedTask(null);
-                              setStudents([]);
-                            } else {
-                              setSelectedTask(task.id);
-                              fetchStudentsWithGrades(task.id);
-                            }
-                          }}
-                          className="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-                        >
-                          {selectedTask === task.id
-                            ? "Ocultar Notas"
-                            : "Ver Notas"}
-                        </button>
+                        <div>
+                          <button
+                            onClick={() => {
+                              if (selectedTask === task.id) {
+                                setSelectedTask(null);
+                                setStudents([]);
+                              } else {
+                                setSelectedTask(task.id);
+                                fetchStudentsWithGrades(task.id);
+                              }
+                            }}
+                            className="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                          >
+                            {selectedTask === task.id
+                              ? "Ocultar Notas"
+                              : "Ver Notas"}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSelectedTaskId(task.id);
+                              setIsModalVisible(true);
+                            }}
+                            className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                          >
+                            Deshacer
+                          </button>
+                        </div>
                       </div>
 
                       <div
@@ -272,6 +320,12 @@ const Tasks = () => {
                     </li>
                   ))}
                 </ul>
+                <ConfirmationModal
+                  message="¿Estás seguro de que deseas eliminar esta tarea?"
+                  onConfirm={handleDeleteTask}
+                  onCancel={() => setIsModalVisible(false)}
+                  isVisible={isModalVisible}
+                />
                 <SubmitButton onClick={() => setShowTaskForm(true)}>
                   Nueva Actividad
                 </SubmitButton>

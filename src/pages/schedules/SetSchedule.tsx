@@ -11,6 +11,7 @@ import SelectInput from "../../components/SelectInput";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Alert from "../../components/Alert";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 type Schedule = {
   id: number;
@@ -38,6 +39,9 @@ const SetSchedule: React.FC = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertColor, setAlertColor] = useState("green");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [scheduleToDelete, setScheduleToDelete] = useState<number | null>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,28 +99,39 @@ const SetSchedule: React.FC = () => {
     navigate("/schedules/create");
   };
 
-  const handleDeleteSchedule = async (id: number) => {
-    if (confirm("¿Estás seguro de eliminar este horario?")) {
-      const token = localStorage.getItem("token");
-      try {
-        const response = await fetch(`${API_URL}/schedules/${id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) throw new Error("Error al eliminar el horario");
-        setSchedules((prev) => prev.filter((schedule) => schedule.id !== id));
-        setAlertMessage("Horario eliminado correctamente");
-        setAlertColor("green");
-      } catch {
-        setAlertMessage("Error al eliminar el horario");
-        setAlertColor("red");
-      } finally {
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-      }
+  const confirmDeleteSchedule = async () => {
+    if (scheduleToDelete === null) return;
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${API_URL}/schedules/${scheduleToDelete}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Error al eliminar el horario");
+
+      setSchedules((prev) =>
+        prev.filter((schedule) => schedule.id !== scheduleToDelete)
+      );
+      setAlertMessage("Horario eliminado correctamente");
+      setAlertColor("green");
+    } catch {
+      setAlertMessage("Error al eliminar el horario");
+      setAlertColor("red");
+    } finally {
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      setIsModalVisible(false);
+      setScheduleToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setIsModalVisible(false);
+    setScheduleToDelete(null);
   };
 
   const toggleExpand = (courseKey: string) => {
@@ -182,23 +197,6 @@ const SetSchedule: React.FC = () => {
                             ? "Ocultar Detalles"
                             : "Ver Detalles"}
                         </button>
-
-                        <button
-                          className="text-red-500 underline"
-                          onClick={() =>
-                            handleDeleteSchedule(
-                              schedules.find(
-                                (schedule) =>
-                                  schedule.course_name === courseKey &&
-                                  schedule.parallel ===
-                                    (selectedParallels[courseKey] ||
-                                      parallels[0])
-                              )?.id || 0
-                            )
-                          }
-                        >
-                          Eliminar
-                        </button>
                       </TableCell>
                     </TableRow>
                     {expandedCourse === courseKey && (
@@ -211,6 +209,7 @@ const SetSchedule: React.FC = () => {
                                 "Turno",
                                 "Fecha inicio/fin",
                                 "Hora inicio/fin",
+                                "Acción",
                               ]}
                             />
                             <TableBody>
@@ -234,6 +233,17 @@ const SetSchedule: React.FC = () => {
                                       {schedule.start_time} -{" "}
                                       {schedule.end_time}
                                     </TableCell>
+                                    <TableCell>
+                                      <button
+                                        className="text-red-500 underline"
+                                        onClick={() => {
+                                          setScheduleToDelete(schedule.id);
+                                          setIsModalVisible(true);
+                                        }}
+                                      >
+                                        Eliminar
+                                      </button>
+                                    </TableCell>
                                   </TableRow>
                                 ))}
                             </TableBody>
@@ -246,6 +256,13 @@ const SetSchedule: React.FC = () => {
               })}
         </TableBody>
       </Table>
+
+      <ConfirmationModal
+        isVisible={isModalVisible}
+        message="¿Estás seguro de eliminar este horario?"
+        onConfirm={confirmDeleteSchedule}
+        onCancel={cancelDelete}
+      />
     </Layout>
   );
 };

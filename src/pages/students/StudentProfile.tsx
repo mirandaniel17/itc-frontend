@@ -5,6 +5,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Layout from "../../components/Layout";
 import BackButton from "../../components/BackButton";
+import { formatDate } from "../../utils/dateUtils";
 
 interface AcademicHistory {
   course: string;
@@ -158,16 +159,22 @@ const StudentProfile = () => {
                 key={index}
                 className="mb-6 p-4 border rounded bg-gray-50 shadow"
               >
-                <h3 className="text-xl font-bold">{record.course}</h3>
-                <p>
-                  <strong>Fecha de inicio:</strong> {record.start_date}
+                <h3 className="text-xl font-bold mb-5">
+                  Curso: {record.course}
+                </h3>
+                <p className="text-lg">
+                  <strong className="mr-4">Fecha de inicio:</strong>
+                  {record.start_date
+                    ? formatDate(record.start_date)
+                    : "Sin fecha"}
                 </p>
-                <p>
-                  <strong>Fecha final:</strong> {record.end_date}
+                <p className="text-lg">
+                  <strong className="mr-4">Fecha final:</strong>
+                  {record.end_date ? formatDate(record.end_date) : "Sin fecha"}
                 </p>
                 <div className="mt-4">
-                  <h4 className="font-medium">Horario:</h4>
-                  <ul>
+                  <h4 className="text-xl font-bold">Horario:</h4>
+                  <ul className="text-lg">
                     {(record.schedules || []).map((schedule, idx) => (
                       <li key={idx}>
                         {schedule.day}:{" "}
@@ -180,8 +187,8 @@ const StudentProfile = () => {
                 </div>
 
                 <div className="mt-4">
-                  <h4 className="font-medium">Notas:</h4>
-                  <ul>
+                  <h4 className="text-xl font-bold">Notas:</h4>
+                  <ul className="text-lg">
                     {(record.grades || []).map((grade, idx) => (
                       <li key={idx}>
                         {grade.task}: {grade.grade}
@@ -191,15 +198,21 @@ const StudentProfile = () => {
                 </div>
 
                 <div className="mt-4">
-                  <h4 className="font-medium">Asistencias:</h4>
-                  <p>Presente: {record.attendance?.PRESENTE || 0}</p>
-                  <p>Ausente: {record.attendance?.AUSENTE || 0}</p>
-                  <p>Licencia: {record.attendance?.LICENCIA || 0}</p>
+                  <h4 className="text-xl font-bold">Asistencias:</h4>
+                  <p className="text-lg">
+                    Presente: {record.attendance?.PRESENTE || 0}
+                  </p>
+                  <p className="text-lg">
+                    Ausente: {record.attendance?.AUSENTE || 0}
+                  </p>
+                  <p className="text-lg">
+                    Licencia: {record.attendance?.LICENCIA || 0}
+                  </p>
                 </div>
 
                 <div className="mt-4">
-                  <h4 className="font-medium">Pagos Totales:</h4>
-                  <p>{record.payments || 0} Bs.</p>
+                  <h4 className="text-xl font-bold">Pagos Totales:</h4>
+                  <p className="text-lg">{record.payments || 0} Bs.</p>
                 </div>
               </div>
             ))

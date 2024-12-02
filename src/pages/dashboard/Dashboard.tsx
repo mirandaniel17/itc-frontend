@@ -114,19 +114,18 @@ const Dashboard: React.FC = () => {
                 data={data}
                 keys={["value"]}
                 indexBy="category"
-                margin={{ top: 50, right: 30, bottom: 50, left: 60 }}
+                margin={{ top: 50, right: 30, bottom: 100, left: 60 }}
                 padding={0.3}
                 valueScale={{ type: "linear" }}
-                colors={{ scheme: "set2" }}
+                colors={{ scheme: "set3" }}
                 axisTop={null}
                 axisRight={null}
                 axisBottom={{
-                  tickSize: 5,
-                  tickPadding: 5,
-                  tickRotation: 0,
-                  legend: "Categorías",
+                  tickSize: 10,
+                  tickPadding: 10,
+                  tickRotation: -40,
                   legendPosition: "middle",
-                  legendOffset: 40,
+                  legendOffset: 60,
                 }}
                 axisLeft={{
                   tickSize: 5,
@@ -137,10 +136,19 @@ const Dashboard: React.FC = () => {
                   legendOffset: -50,
                 }}
                 tooltip={({ value, indexValue }) => (
-                  <strong>
+                  <strong className="tracking-wide text-lg">
                     {indexValue}: {value}
                   </strong>
                 )}
+                theme={{
+                  axis: {
+                    ticks: {
+                      text: {
+                        fontSize: 16,
+                      },
+                    },
+                  },
+                }}
                 animate={true}
                 motionConfig="wobbly"
               />
