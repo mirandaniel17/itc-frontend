@@ -211,12 +211,7 @@ const Payments = () => {
                   <TableCell>{formatDate(payment.payment_date)}</TableCell>
                   <TableActionButtons
                     actions={[
-                      {
-                        label: "Editar",
-                        onClick: () => handleEdit(payment),
-                        className:
-                          "text-white text-xs bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80 font-medium rounded-lg px-4 py-1.5 text-center me-2 mb-2",
-                      },
+                        
                       {
                         label: "Eliminar",
                         onClick: () => handleDeleteClick(payment.id),
